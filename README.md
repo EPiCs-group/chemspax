@@ -2,6 +2,11 @@
 
 correct_rotation_substituent should be used to correctly functionalize TM complexes.
 
+## Use case
+The code should be able to generate a library of substituents and be 
+able to find the centroid of a substituent. In the end this would allow 
+for automatic functionalization of complexes.
+
 ## Contents
   **substituents_xyz/**  
   - contains .xyz files for substituents that will be tested  
@@ -29,6 +34,15 @@ correct_rotation_substituent should be used to correctly functionalize TM comple
   n is set to be 0,0,1.
   **The final distances seem to have an error 0.1 probably from the errors in arccos and arctan calculations**
   **or there is some silly mistake somewhere if the edge of equilateral triangle is a then a = 2sqrt(2/3)b **
+
+## ToDo  
+  - Make *generate_substituent_vectors()* look nicer
+  - Check if c in *generate_substituent_vectors()* doesn't become 0
+  - In *generate_tetrahedron.py* add central atom to *write_xyz()* 
+  to allow automation of *find_centroid*
+  - Use central atom as input in *find_centroid* 
+  - Make code usable on molecules like ethyl and methoxide
+  - Test test test
 
 ## Authors
 Adarsh Kalikadien & Vivek Sinha

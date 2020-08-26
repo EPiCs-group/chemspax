@@ -17,32 +17,32 @@ class Complex:
         self.path = path_to_data
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
-        self.atom_to_be_functionalized_index = 0
+        self.atom_to_be_functionalized_index = 0  # index in .xyz file of atom to be functionalized
         self.atom_to_be_functionalized_xyz = self.data_matrix.loc[
-            self.atom_to_be_functionalized_index, ['x', 'y', 'z']]  # get xyz coordinate of atom to be functionalized
-        self.bonded_atom_index = 1
+            self.atom_to_be_functionalized_index, ['x', 'y', 'z']]  # get xyz coordinate of atom to be functionalized - H
+        self.bonded_atom_index = 1  # index in .xyz file of atom bonded to atom to be functionalized
         self.bonded_atom_xyz = self.data_matrix.loc[
-            self.bonded_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of bonded atom
-        self.bond_length = self.atom_to_be_functionalized_xyz - self.bonded_atom_xyz  # bond between current C-H
-        self.bond_length_norm = self.bond_length / np.linalg.norm(self.bond_length)  # real bond length between C-H
+            self.bonded_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of bonded atom - C
+        self.bond_length = self.atom_to_be_functionalized_xyz - self.bonded_atom_xyz  # vector with origin on C and points to H in xyz plane
+        self.bond_length_norm = self.bond_length / np.linalg.norm(self.bond_length)  # real bond between C-H in xyz plane
         self.equilateral_triangle = np.array([[0, 1/np.sqrt(3.0), 0],
                                               [-0.5, -0.5/np.sqrt(3.0), 0],
-                                              [0.5, -0.5/np.sqrt(3.0), 0]])
+                                              [0.5, -0.5/np.sqrt(3.0), 0]])  # equilateral triangle with centroid at origin
 
     @staticmethod
     def distance(a, b):
         d = a - b
-        return np.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2])
+        return np.sqrt((d[0])**2 + (d[1])**2 + (d[2])**2)
 
     @staticmethod
     def find_angle(v1, v2):
         cos_th = (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (np.linalg.norm(v1) * np.linalg.norm(v2))
-        return np.arccos(cos_th) * 57.3
+        return np.arccos(cos_th) * 57.29577951308232
 
     def find_centroid(self):
-        b = self.distance(self.atom_to_be_functionalized_xyz, self.bonded_atom_xyz)  # bond to be functionalized
+        b = np.linalg.norm(self.bond_length)  # bond to be functionalized -H
         b = b * (2.0 * np.sqrt(2.0 / 3.0))
-        self.equilateral_triangle = b*self.equilateral_triangle
+        self.equilateral_triangle = b*self.equilateral_triangle  # make side lengths equal to tetrahedral bond length
         centroid = self.atom_to_be_functionalized_xyz + (b/3.0) * self.bond_length_norm
         return centroid
 
@@ -52,22 +52,28 @@ class Complex:
         v2 = self.equilateral_triangle[1, :]
         v3 = self.equilateral_triangle[2, :]
         normal_vector = np.array([0, 0, 1])
-        normal_vector = normal_vector / np.linalg.norm(normal_vector)  # real length of vector
-        starting_coordinate = np.zeros(3)
+        normal_vector = normal_vector / np.linalg.norm(normal_vector)  # make unit vector
+        starting_coordinate = np.zeros(3)  # origin of original defined equilateral triangle
         # theta = np.arccos(np.dot(self.bond_length_norm.T, normal_vector.T))
 
         bond_length_norm = np.array(self.bond_length_norm.astype('float64'))
-        v = np.cross(normal_vector.T, bond_length_norm.T)
+        v = np.cross(normal_vector.T, bond_length_norm.T)  # v is perpendicular to normal vector and bond between C-H
         v_x = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+        ''' ToDo: include check if angle with normal-vector
+        and this != 0 or 180 else c = -1 which gives 1/inf in rotation matrix
+        https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d '''
         v_xsq = np.dot(v_x, v_x)
-        c = np.dot(np.array(self.bond_length_norm).T, normal_vector.T)
+        c = np.dot(bond_length_norm.T, normal_vector.T)
         rotation_matrix = np.eye(3) + v_x + v_xsq * (1 / (1 + c))
 
-        substituent_1_vector = np.dot(rotation_matrix, v1)
+        # rotate vectors s.t. they are aligned with C-H bond
+        # ToDO: compress these functions into two lines
+        substituent_1_vector = np.dot(rotation_matrix, v1.T)
         substituent_2_vector = np.dot(rotation_matrix, v2.T)
         substituent_3_vector = np.dot(rotation_matrix, v3.T)
 
-        substituent_1_vector = -(starting_coordinate - centroid) + substituent_1_vector
+        # find path in correct direction and shift object to new position
+        substituent_1_vector = (centroid - starting_coordinate) + substituent_1_vector
         substituent_2_vector = -(starting_coordinate - centroid) + substituent_2_vector
         substituent_3_vector = -(starting_coordinate - centroid) + substituent_3_vector
 
@@ -94,7 +100,7 @@ class Complex:
         # write correct .xyz format
         with open(filename, 'a') as file:
             file.write('4\n')
-            file.write('\n')
+            file.write('\n')  # ToDo: in .xyz write central atom on comment line
         file.close()
         write_data.to_csv(filename, sep=' ', header=False, mode='a')
 
@@ -109,13 +115,13 @@ class Complex:
 
 if __name__ == '__main__':
     methyl = Complex('substituents_xyz/CH3.xyz')
-
+    methyl.find_centroid()
     # print(methyl.atom_to_be_functionalized_xyz)
     # print(methyl.bonded_atom_xyz)
     # methyl.generate_substituent_vectors()
 
     methyl.write_xyz('test.xyz', 'H', 'H', 'H')
-
+    # methyl.generate_substituent_vectors()
     # v_1, v_2, v_3 = methyl.generate_substituent_vectors()
     # print("H", methyl.bonded_atom_xyz[0], methyl.bonded_atom_xyz[1], methyl.bonded_atom_xyz[2])
     # print("C", methyl.atom_to_be_functionalized_xyz[0], methyl.atom_to_be_functionalized_xyz[1], methyl.atom_to_be_functionalized_xyz[2])
