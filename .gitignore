@@ -91,5 +91,6 @@ modules.xml
 .idea/sonarlint
 test.xyz
 substituents_xyz/test.xyz
+__pycache__/
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
