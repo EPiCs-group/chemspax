@@ -5,16 +5,18 @@
 #                                                     #
 import numpy as np
 import pandas as pd
+from utilities import *
 '''Take ligands and find centroids'''
 
 
 class Substituent:
     # ask user for central atom
-    def __init__(self, path_to_data='substituents_xyz/CH3.xyz', bond_length=1.2):
+    def __init__(self, path_to_data='substituents_xyz/automatically_generated/CH4.xyz', bond_length=1.2):
         self.path = path_to_data
         self.bond_length = bond_length  # bond_length for the newly formed bond
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True, names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
-        self.central_atom = self.data_matrix.loc[0, ['x', 'y', 'z']]  # get xyz coordinate of central atom
+        self.central_atom_index = read_central_atom_index(self.path)
+        self.central_atom = self.data_matrix.loc[self.central_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of central atom
 
     @staticmethod
     def distance(a, b):
@@ -62,16 +64,18 @@ class Substituent:
 
 
 if __name__ == "__main__":
-    methyl = Substituent('substituents_xyz/CH3.xyz', 1.2)
+    methyl = Substituent('substituents_xyz/automatically_generated/CH4.xyz', 1.2)
     # print(methyl.data_matrix)
     # print(methyl.central_atom)
-    # centroid , indices = methyl.first_coordination()
+    centroid, indices = methyl.first_coordination()
+    print(centroid)
+    print(np.linalg.norm(centroid[0, :] - centroid[1, :]))
     # vector, assertion = methyl.check_vector()
     # print(vector)
     # print(assertion)
     # test_scale = methyl.scale(vector[0], methyl.central_atom, 1.2)
     # print(methyl.distance(methyl.central_atom, test_scale))
-    c = methyl.generate_substituent_vectors()
-    c = (c[0] + c[1] + c[2])/3
-    print(c)
-    print(methyl.distance(c, methyl.central_atom))  # should be approx 0.4 in correct equilateral triangle
+    # c = methyl.generate_substituent_vectors()
+    # c = (c[0] + c[1] + c[2])/3
+    # print(c)
+    # print(methyl.distance(c, methyl.central_atom))  # should be approx 0.4 in correct equilateral triangle

@@ -44,7 +44,7 @@ class Complex:
     def find_centroid(self):
         b = np.linalg.norm(self.bond_length)  # bond to be functionalized -H
         b = b * (2.0 * np.sqrt(2.0 / 3.0))
-        self.equilateral_triangle = b*self.equilateral_triangle  # make side lengths equal to tetrahedral bond length
+        self.equilateral_triangle = b*self.equilateral_triangle  # make side lengths equal to tetrahedral bond lengthw
         centroid = self.atom_to_be_functionalized_xyz + (b/3.0) * self.bond_length_norm
         return centroid
 
@@ -75,6 +75,9 @@ class Complex:
         return substituent_vectors[0], substituent_vectors[1], substituent_vectors[2]
 
     def write_xyz(self, filename, substituent_1_atom, substituent_2_atom, substituent_3_atom, view_file=False, save_file=False):
+        folder = 'substituents_xyz/automatically_generated/'
+        extension = '.xyz'
+        filename = folder + filename + extension
         v_1, v_2, v_3 = self.generate_substituent_vectors()
 
         atom_to_be_functionalized = self.data_matrix.loc[
@@ -124,12 +127,12 @@ class Complex:
 
 if __name__ == '__main__':
     methyl = Complex('substituents_xyz/manually_generated/CH3.xyz')
-    methyl.find_centroid()
+    # methyl.find_centroid()
     # print(methyl.atom_to_be_functionalized_xyz)
     # print(methyl.bonded_atom_xyz)
     # methyl.generate_substituent_vectors()
 
-    methyl.write_xyz('substituents_xyz/automatically_generated/CH4.xyz', 'H', 'H', 'H', False, False)
+    methyl.write_xyz('CH4', 'H', 'H', 'H', True, False)
     # methyl.generate_substituent_vectors()
     # v_1, v_2, v_3= methyl.generate_substituent_vectors()
     # print("H", methyl.bonded_atom_xyz[0], methyl.bonded_atom_xyz[1], methyl.bonded_atom_xyz[2])

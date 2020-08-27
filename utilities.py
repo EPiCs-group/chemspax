@@ -5,6 +5,7 @@
 #                                                     #
 import ase.io as io
 from ase.visualize import view
+from itertools import islice
 
 
 def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
@@ -23,7 +24,15 @@ def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
             io.write('substituents_xyz/visualizations/' + filename[35:-4] + '.png', molecule)
         else:
             io.write('substituents_xyz/visualizations/' + filename[40:-4] + '.png', molecule)
+    else:
+        return
 
+
+def read_central_atom_index(filename):
+    with open(filename) as f:
+        next(f)
+        return int(next(f))
 
 if __name__ == '__main__':
-    visualize_xyz_file('substituents_xyz/automatically_generated/CH4.xyz', False, False)
+    # visualize_xyz_file('substituents_xyz/automatically_generated/CH4.xyz', False, False)
+    print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
