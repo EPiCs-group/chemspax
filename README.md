@@ -36,12 +36,16 @@ for automatic functionalization of complexes.
   **or there is some silly mistake somewhere if the edge of equilateral triangle is a then a = 2sqrt(2/3)b **
 
 ## ToDo  
-  - Make *generate_substituent_vectors()* look nicer
-  - Check if c in *generate_substituent_vectors()* doesn't become 0
-  - In *generate_tetrahedron.py* add central atom to *write_xyz()* 
-  to allow automation of *find_centroid*
-  - Use central atom as input in *find_centroid* 
-  - Make code usable on molecules like ethyl and methoxide
+  - Make *generate_substituent_vectors()* look nicer (done)
+  - Add check if c in *generate_substituent_vectors()* doesn't become 0 (done)
+  - In *generate_tetrahedron.py* add central atom to *write_xyz()* to allow automation of *find_centroid*
+  (done manually, think about automating this)
+  - Use central atom as input in *find_centroid* (done)
+  - Use ASE to combine *generate_tetrahedron.py* to get more substituents (partly done)
+  - Use ASE to visualize created substituents (done, but make pictures better?)
+  - Make code usable to create molecules like ethyl and methoxide, recursively (WIP)
+   - Use ASE to find distances between molecules (done)
+  - convert .xyz to .gjf
   - Test test test
 
 ## Authors
