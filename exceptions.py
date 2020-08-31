@@ -11,3 +11,9 @@ class RotationMatrixError(Exception):
     """
     def __init__(self):
         super().__init__('c = -1, which gives 1/0=undefined in rotation matrix. Exiting program')
+
+
+class InvalidRecursiveOrInitialArgumentError(Exception):
+
+    def __init__(self):
+        super().__init__('recursive_or_initial argument is invalid. Exiting program')

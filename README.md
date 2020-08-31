@@ -38,14 +38,17 @@ for automatic functionalization of complexes.
 ## ToDo  
   - Make *generate_substituent_vectors()* look nicer (done)
   - Add check if c in *generate_substituent_vectors()* doesn't become 0 (done)
-  - In *generate_tetrahedron.py* add central atom to *write_xyz()* to allow automation of *find_centroid*
-  (done manually, think about automating this)
+  - In *generate_tetrahedron.py* add central atom to *write_xyz()*  (done manually, think about automating this)
+  to allow automation of *find_centroid*
   - Use central atom as input in *find_centroid* (done)
-  - Use ASE to combine *generate_tetrahedron.py* to get more substituents (partly done)
+  - Use ASE to combine *generate_tetrahedron.py* to get more substituents (done)
   - Use ASE to visualize created substituents (done, but make pictures better?)
-  - Make code usable to create molecules like ethyl and methoxide, recursively (WIP)
-   - Use ASE to find distances between molecules (done)
-  - convert .xyz to .gjf
+  - Make code usable to create molecules like ethyl and methoxide, recursively (Done)
+  - Use ASE to find distances between molecules (done)
+  - convert .xyz to .gjf (optional, skipped for now)  
+  - make python file usable with system arguments  
+  - add bonded_atom and atom_to_be_functionalized to comment line of .xyz file  
+  - make bash script that is able to use python file and deliver intermediates and final version of functionalized & optimized complex
   - Test test test
 
 ## Authors
