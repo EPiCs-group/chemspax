@@ -13,24 +13,49 @@ import pandas as pd
 from exceptions import *
 from utilities import *
 import os
+import ast
+import sys
 
 
 class Complex:
-    def __init__(self, path_to_data, atom_to_be_functionalized_index, bonded_atom_index,
-                 functionalization_site_list, recursive_or_intial='initial'):
-        self.path = path_to_data
+    def __init__(self, path_to_source_data, functionalization_site_list=None, recursive_or_intial='recursive'):
+        self.path = path_to_source_data
+        self.functionalization_site_list = functionalization_site_list
+        self.recursive_or_initial = recursive_or_intial
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
-        self.atom_to_be_functionalized_index = atom_to_be_functionalized_index  # index in .xyz file of atom to be functionalized
-        self.bonded_atom_index = bonded_atom_index  # index in .xyz file of atom bonded to atom to be functionalized
+
+        if self.recursive_or_initial.lower() == 'initial':
+            self.atom_to_be_functionalized_index = functionalization_list[0][0]  # index in .xyz file of atom to be functionalized
+            self.bonded_atom_index = functionalization_site_list[0][1]  # index in .xyz file of atom bonded to atom to be functionalized
+        elif self.recursive_or_initial.lower() == 'recursive' or functionalization_site_list is None:
+            # read second line of .xyz file
+            with open(path_to_source_data) as f:
+                lines = f.readlines()
+                self.functionalization_site_list = lines[1]
+                # print(self.functionalization_site_list)
+                # f.close()
+            # convert list from string to integer
+            self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)
+            if len(self.functionalization_site_list) != 0:
+                # take indices from converted list and assign to correct variable
+                self.atom_to_be_functionalized_index = self.functionalization_site_list[0][0]  # index in .xyz file of atom to be functionalized
+                self.bonded_atom_index = self.functionalization_site_list[0][1]  # index in .xyz file of atom bonded to atom to be functionalized
+                # remove first item of nested list for correct formatting in generate_and_write_xyz function
+                self.functionalization_site_list = self.functionalization_site_list[1:]
+                # write to .xyz file in generate_and_write_xyz function
+            else:
+                print('No more indices left. Exiting program')
+                sys.exit()
+        else:
+            raise InvalidRecursiveOrInitialArgumentError
+
         self.atom_to_be_functionalized_xyz = self.data_matrix.loc[
             self.atom_to_be_functionalized_index, ['x', 'y', 'z']]  # get xyz coordinate of atom to be functionalized - H
         self.bonded_atom_xyz = self.data_matrix.loc[
             self.bonded_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of bonded atom - C (in CH3: C= central atom)
         self.bond_length = self.atom_to_be_functionalized_xyz - self.bonded_atom_xyz  # vector with origin on C and points to H in xyz plane
         self.bond_length_norm = self.bond_length / np.linalg.norm(self.bond_length)  # real bond between C-H in xyz plane
-        self.functionalization_site_list = functionalization_site_list
-        self.recursive_or_initial = recursive_or_intial
         self.equilateral_triangle = np.array([[0, 1/np.sqrt(3.0), 0],
                                               [-0.5, -0.5/np.sqrt(3.0), 0],
                                               [0.5, -0.5/np.sqrt(3.0), 0]])  # equilateral triangle with centroid at origin
@@ -118,6 +143,7 @@ class Complex:
                 lines = f.readlines()
                 lines[0] = int(lines[0]) + 3
                 lines[0] = str(lines[0])+'\n'
+                lines[1] = str(self.functionalization_site_list)+'\n'  # write modified functionalization list to file
                 lines[-1] = lines[-1] + '\n'  # add newline to prevent .to_csv to write on same line
             with open(filename, 'w') as wr:
                 wr.writelines(lines)
@@ -148,10 +174,17 @@ class Complex:
 if __name__ == '__main__':
     # example usage for ethyl
     # generates a CH3-CH3 'molecule' (orientation and bonds are of course incorrect)
-    # os.remove('substituents_xyz/automatically_generated/CH4.xyz')
+    if os.path.exists('substituents_xyz/automatically_generated/CH4.xyz'):
+        os.remove('substituents_xyz/automatically_generated/CH4.xyz')
+        functionalization_list = [[1, 0], [4, 0]]
+        methyl = Complex('substituents_xyz/manually_generated/CH3.xyz', functionalization_list, 'initial')
+        methyl.generate_substituent_and_write_xyz('CH4', 'H', 'H', 'C', False, False)
+        ethyl = Complex('substituents_xyz/automatically_generated/CH4.xyz', None, 'recursive')
+        ethyl.generate_substituent_and_write_xyz('CH4', 'H', 'H', 'H', True, False)
     functionalization_list = [[1, 0], [4, 0]]
-    methyl = Complex('substituents_xyz/manually_generated/CH3.xyz', 1, 0, functionalization_list, 'initial')
+    methyl = Complex('substituents_xyz/manually_generated/CH3.xyz', functionalization_list, 'initial')
     methyl.generate_substituent_and_write_xyz('CH4', 'H', 'H', 'C', False, False)
-    ethyl = Complex('substituents_xyz/automatically_generated/CH4.xyz', 4, 0, functionalization_list, 'recursive')
+    ethyl = Complex('substituents_xyz/automatically_generated/CH4.xyz', None, 'recursive')
     ethyl.generate_substituent_and_write_xyz('CH4', 'H', 'H', 'H', True, False)
+
 
