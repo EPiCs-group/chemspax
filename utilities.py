@@ -19,11 +19,10 @@ def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
     molecule = io.read(filename)
     view(molecule)
     if save_picture:  # ToDo: use matplotlib for nicer visualizations
-                        # ToDo: output distances from ase
         if manually_generated:
-            io.write('substituents_xyz/visualizations/' + filename[35:-4] + '.png', molecule)
+            io.write('substituents_xyz/visualizations/' + filename[35:-4] + '.png', molecule, rotation='45x,45y,0z')
         else:
-            io.write('substituents_xyz/visualizations/' + filename[40:-4] + '.png', molecule)
+            io.write('substituents_xyz/visualizations/' + filename[40:-4] + '.png', molecule, rotation='45x,45y,0z')
     else:
         return
 
@@ -73,8 +72,8 @@ def create_molecule_and_write_xyz(input_molecule, filename):
 
 
 if __name__ == '__main__':
-    # visualize_xyz_file('substituents_xyz/automatically_generated/H2O.xyz', False, False)
-    # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
-    # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
     molec = 'H2O'
     create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
+    visualize_xyz_file('substituents_xyz/automatically_generated/H2O.xyz', True, False)
+    # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
+    # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
