@@ -72,8 +72,8 @@ def create_molecule_and_write_xyz(input_molecule, filename):
 
 
 if __name__ == '__main__':
-    molec = 'H2O'
-    create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
-    # visualize_xyz_file('substituents_xyz/automatically_generated/CH4.xyz', True, False)
+    # molec = 'H2O'
+    # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
+    visualize_xyz_file('substituents_xyz/automatically_generated/RUPNP_CH4.xyz', True, False)
     # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
     # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
