@@ -50,6 +50,8 @@ for automatic functionalization of complexes.
   - add bonded_atom and atom_to_be_functionalized to comment line of .xyz file  
   - make bash script that is able to use python file and deliver intermediates and final version of functionalized & optimized complex
   - Test test test
-
+## Example usage
+  - For the initial creation of a CH4 molecule from the CLI run: ```python main.py substituents_xyz/manually_generated/CH3.xyz CH4 [[1,0],[4,0]] initial H H C False False```
+  - To create a C2H6 from this generated CH4 and view the molecule run: ```python main.py substituents_xyz/automatically_generated/CH4.xyz CH4 None recursive H H H True False```
 ## Authors
 Adarsh Kalikadien & Vivek Sinha
