@@ -15,7 +15,7 @@ class Substituent:
         self.path = path_to_data
         self.bond_length = bond_length  # bond_length for the newly formed bond
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True, names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
-        self.central_atom_index = read_central_atom_index(self.path)
+        self.central_atom_index = 0
         self.central_atom = self.data_matrix.loc[self.central_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of central atom
 
     @staticmethod
@@ -27,6 +27,7 @@ class Substituent:
         return central_atom + vector*self.bond_length  # length in angstrom
 
     def first_coordination(self):
+        # find centroid around a central atom, it is assumad that central atom has 3 coordinations
         indices = []
         centroid = np.zeros((3, 3))
         r_critical = 2.0  # circle radius in which we want to search
@@ -37,6 +38,7 @@ class Substituent:
                     d[2]) ** 2) < r_critical**2:  # if coordinates are within radius append
                 centroid[i-1, :] = np.array(temp[0:4])
                 indices.append(i)
+        centroid = (centroid[0, :] + centroid[1, :] + centroid[2, :])/3
         return centroid, indices
 
     def check_vector(self):
@@ -64,12 +66,12 @@ class Substituent:
 
 
 if __name__ == "__main__":
-    methyl = Substituent('substituents_xyz/automatically_generated/CH4.xyz', 1.2)
+    methyl = Substituent('substituents_xyz/manually_generated/CH3.xyz', 1.2)
     # print(methyl.data_matrix)
     # print(methyl.central_atom)
     centroid, indices = methyl.first_coordination()
     print(centroid)
-    print(np.linalg.norm(centroid[0, :] - centroid[1, :]))
+    # print(np.linalg.norm(centroid[0, :] - centroid[1, :]))
     # vector, assertion = methyl.check_vector()
     # print(vector)
     # print(assertion)
