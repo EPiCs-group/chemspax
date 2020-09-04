@@ -113,8 +113,14 @@ class Complex:
         filename = folder + filename + extension
         v_1, v_2, v_3 = self.generate_substituent_vectors()
 
+        # scale vectors with right bond length between atom_to_be_functionalized and new substituent
+        v_1 = self.atom_to_be_functionalized_xyz + 1.1*(v_1-self.atom_to_be_functionalized_xyz)/(np.linalg.norm(v_1-self.atom_to_be_functionalized_xyz))
+        v_2 = self.atom_to_be_functionalized_xyz + 1.1*(v_2-self.atom_to_be_functionalized_xyz)/(np.linalg.norm(self.atom_to_be_functionalized_xyz-v_2))
+        v_3 = self.atom_to_be_functionalized_xyz + 1.1 * (v_3-self.atom_to_be_functionalized_xyz ) / (
+            np.linalg.norm(self.atom_to_be_functionalized_xyz - v_3))
+
         atom_to_be_functionalized = self.data_matrix.loc[
-            self.atom_to_be_functionalized_index, ['atom', 'x', 'y', 'z']]
+            self.atom_to_be_functionalized_index, ['atom', 'x', 'y', 'z']]  # type = pandas.Series convert to df
         atom_to_be_functionalized = pd.DataFrame([[atom_to_be_functionalized[0], atom_to_be_functionalized[1],
                                                    atom_to_be_functionalized[2], atom_to_be_functionalized[3]]],
                                                  columns=['atom', 'x', 'y', 'z']).set_index('atom')
