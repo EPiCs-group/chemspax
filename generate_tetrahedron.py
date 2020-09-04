@@ -56,7 +56,7 @@ class Complex:
         self.bonded_atom_xyz = self.data_matrix.loc[
             self.bonded_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of bonded atom - C (in CH3: C= central atom)
         self.bond_length = self.atom_to_be_functionalized_xyz - self.bonded_atom_xyz  # vector with origin on C and points to H in xyz plane
-        self.bond_length_norm = self.bond_length / np.linalg.norm(self.bond_length)  # real bond between C-H in xyz plane
+        self.normalized_bond_vector = self.bond_length / np.linalg.norm(self.bond_length)  # real bond between C-H in xyz plane
         self.equilateral_triangle = np.array([[0, 1/np.sqrt(3.0), 0],
                                               [-0.5, -0.5/np.sqrt(3.0), 0],
                                               [0.5, -0.5/np.sqrt(3.0), 0]])  # equilateral triangle with centroid at origin
@@ -76,7 +76,7 @@ class Complex:
         b = np.linalg.norm(self.bond_length)  # bond to be functionalized -H
         b = b * (2.0 * np.sqrt(2.0 / 3.0))
         self.equilateral_triangle = b*self.equilateral_triangle  # make side lengths equal to tetrahedral bond lengthw
-        centroid = self.atom_to_be_functionalized_xyz + (b/3.0) * self.bond_length_norm
+        centroid = self.atom_to_be_functionalized_xyz + (b/3.0) * self.normalized_bond_vector
         return centroid
 
     def generate_substituent_vectors(self):
@@ -86,7 +86,7 @@ class Complex:
         starting_coordinate = np.zeros(3)  # origin of original defined equilateral triangle
         # theta = np.arccos(np.dot(self.bond_length_norm.T, normal_vector.T))
 
-        bond_length_norm = np.array(self.bond_length_norm.astype('float64'))
+        bond_length_norm = np.array(self.normalized_bond_vector.astype('float64'))
         # https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d
         v = np.cross(normal_vector.T, bond_length_norm.T)  # v is perpendicular to normal vector and bond between C-H
         v_x = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])

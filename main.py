@@ -3,7 +3,6 @@
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
-from find_centroid import Substituent
 from generate_tetrahedron import Complex
 import sys
 

@@ -1,27 +1,60 @@
 # correct_rotation_substituent
 
 correct_rotation_substituent should be used to correctly functionalize TM complexes.
+Two approaches were considered (currently for tetrahedral substituents only): 
+  1) From a library of existing substituents (with 1 lone pair of electrons) construct the 
+  centroid vector and align it with the site to be functionalized on the skeleton and then attach it.
+  See attach_substituent.py.
+  2) The user inputs an atom to be functionalized on a skeleton complex, 
+  then a tetrahedron is formed around this atom and this atom can be replaced. 
+  See generate_tetrahedron.py.
 
 ## Use case
-The code should be able to generate a library of substituents and be 
-able to find the centroid of a substituent. In the end this would allow 
+This code should be able to attach substituents given a functionalization site. In the end this would allow 
 for automatic functionalization of complexes.
 
 ## Contents
+  **skeletons/**
+  - contains .xyz files with skeletons of complexes to be functionalized 
+  
   **substituents_xyz/**  
   - contains .xyz files for substituents that will be tested  
-
-  **correct_rotation.py**  
-  - load .xyz files and loads substituent in class object 
-  - Create first coordination shell
-  - check distance between molecules  
+      * automatically_generated/: output of functionalized skeletons by generate_tetrahedron.py
+      * manually_generated/: manually generated substituents that will be used for approach 1.
+      * old/: contains substituents that became either obsolete or will be dealt with later.
+      * visualizations/: contains .png files of the functionalizations made in generate_tetrahedron.py
   
-  **generate_tetrahedron.py** 
-  - load .xyz files and loads complex in class object
-  - find centroid
-  - create and correctly rotate equilateral triangle
-  - write final tetrahedron to .xyz file  
+  **attach_substituent**  
+  - Load .xyz files and loads substituent in class object 
+  - Create first coordination shell to find centroid vector of the whole group
+  - Writes group name, central atom and centroid vector to .csv file
    
+  
+  **generate_tetrahedron.py, run.sh and main.py** 
+  - Load .xyz files and loads complex in class object
+  - Find centroid
+  - Create and correctly rotate equilateral triangle
+  - Write final tetrahedron to .xyz file with 'initial' flag or 
+  creates tetrahedron around atom_to_be_functionalized with 'recursive flag' 
+  and appends new atoms to source .xyz file
+  - Takes system argument in main.py and usage is shown in **run.sh** 
+  
+  **utilities.py**
+  - Uses the ase module for certain utilities
+  - Find distances between atoms
+  - Visualize molecules
+  - Build molecules and write .xyz file from the ase g2 database
+  - Read comment line of .xyz files (obsolete, central atom indices used to be written to 
+  comment line of .xyz file but are now contained in a .csv file)
+  - Remove last line of files 
+  
+  **exceptions.py**
+  - Contains custom made exceptions that can be used for bugfixing
+  
+  **gjf_to_xyz.py and gjf_to_xyz.sh**
+  - Run gjf_to_xyz.py to convert all .gjf files in current path to .xyz files
+  
+ ### Explanation of generating a tetrahedron 
   Given a vector (v), say a H-C bond length where C is to be functionalized and converted into a tetrahedral group.
   This code generates the tetrahedral functionalization.
 
@@ -36,22 +69,23 @@ for automatic functionalization of complexes.
   **or there is some silly mistake somewhere if the edge of equilateral triangle is a then a = 2sqrt(2/3)b **
 
 ## ToDo  
-  - Make *generate_substituent_vectors()* look nicer (done)
-  - Add check if c in *generate_substituent_vectors()* doesn't become 0 (done)
-  - In *generate_tetrahedron.py* add central atom to *write_xyz()*  (done manually, think about automating this)
-  to allow automation of *find_centroid*
-  - Use central atom as input in *find_centroid* (done)
-  - Use ASE to combine *generate_tetrahedron.py* to get more substituents (done)
+  **generate_tetrahedron.py**
   - Use ASE to visualize created substituents (done, but make pictures better?)
-  - Make code usable to create molecules like ethyl and methoxide, recursively (Done)
-  - Use ASE to find distances between molecules (done)
-  - convert .xyz to .gjf (optional, skipped for now)  
-  - make python file usable with system arguments  
-  - add bonded_atom and atom_to_be_functionalized to comment line of .xyz file  
-  - make bash script that is able to use python file and deliver intermediates and final version of functionalized & optimized complex
+  - convert .xyz to .gjf (done)  
+  - make generate_tetrahedron usable with system arguments (done)
+  - add bonded_atom and atom_to_be_functionalized to comment line of .xyz file (done)
+  - make bash script that is able to use python file and deliver intermediates 
+  and final version of functionalized & optimized complex 
+  using generate_tetrahedron.py (partly done, optimization can be added) 
+  - Test test test
+  
+  **attach_substituent.py**
+  - find centroid vector of substituent group (done)
+  - write central atom and centroid vector to .csv (done)
+  - attach substituent to skeleton 
   - Test test test
 ## Example usage
-  - For the initial creation of a CH4 molecule from the CLI run: ```python main.py substituents_xyz/manually_generated/CH3.xyz CH4 [[1,0],[4,0]] initial H H C False False```
-  - To create a C2H6 from this generated CH4 and view the molecule run: ```python main.py substituents_xyz/automatically_generated/CH4.xyz CH4 None recursive H H H True False```
+  - ```./run.sh``` to functionalize a RuPNP skeleton where 4 H sites 
+  will be substituted for methyl groups using generate_tetrahedron.py
 ## Authors
 Adarsh Kalikadien & Vivek Sinha
