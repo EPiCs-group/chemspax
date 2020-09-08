@@ -8,11 +8,11 @@ import pandas as pd
 from utilities import *
 import os
 import glob
+import sys
 '''Take ligands and find centroids that point in correct direction to be added to a skeleton'''
 
 
 class Substituent:
-    # ask user for central atom
     def __init__(self, molecule, central_atom=0, bond_length=1.2):
         folder = 'substituents_xyz/manually_generated/'
         extension = '.xyz'
@@ -50,9 +50,8 @@ class Substituent:
         coordination = coordination[coordination[:, -1].argsort()]
         edges = coordination[-3:, 1:4]
         # scale bonds such that an hypothetical symmetrical molecule is created say C-X' C-Y' C-Z'
-        edges[0, :] = self.scale(edges[0, :]-self.central_atom, self.central_atom)
-        edges[1, :] = self.scale(edges[1, :]-self.central_atom, self.central_atom)
-        edges[2, :] = self.scale(edges[2, :]-self.central_atom, self.central_atom)
+        for i in range(np.shape(edges)[0]):
+            scale_vector(self.central_atom, (edges[i, :]-self.central_atom), self.bond_length)
         # calculate centroid of this hypothetical molecule, which will be similar to real molecule
         centroid = (edges[0, :]+edges[1, :]+edges[2, :])/3
         # get correct orientation of total group s.t. the centroid vector is pointing towards the bond to be made
@@ -74,14 +73,118 @@ class Substituent:
             write_data.to_csv(path_to_file, sep=',', header=False, mode='a')
 
 
+class Complex:
+    def __init__(self, source_data, substituent_to_be_attached, path_to_database):
+        # skeleton data
+        self.skeleton_path = source_data
+        self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
+                                         names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+        # substituent data
+        self.substituent_molecule = substituent_to_be_attached
+        substituent_folder = 'substituents_xyz/manually_generated/'
+        extension = '.xyz'
+        self.substituent_path = substituent_folder + self.substituent_molecule + extension
+        self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
+                                         names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+        self.database_df = pd.read_csv(path_to_database, delimiter=',')
+                                       # ,converters={'centroid': convert_list_of_string_to_np_array})
+        try:
+            self.substituent_df = self.database_df.loc[self.database_df['group_to_be_attached']
+                                                       == self.substituent_molecule]
+        except KeyError:
+            raise KeyError
+        self.substituent_central_atom_index = int(self.substituent_df['central_atom_index'])
+        self.substituent_centroid_vector = self.substituent_df['centroid'].values
+        self.substituent_centroid_vector = convert_list_of_string_to_np_array(self.substituent_centroid_vector)
+        self.substituent_central_atom_xyz = self.substituent_xyz.loc[
+            self.substituent_central_atom_index, ['x', 'y', 'z']]
+
+        # functionalization list from source file
+        with open(self.skeleton_path) as f:
+            lines = f.readlines()
+            self.functionalization_site_list = lines[1]
+            # print(self.functionalization_site_list)
+            # f.close()
+        # convert list from string to integer
+        self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)
+        if len(self.functionalization_site_list) != 0:
+            # take indices from converted list and assign to correct variable
+            self.skeleton_atom_to_be_functionalized_index = self.functionalization_site_list[
+                0][0]  # index in .xyz file of atom to be functionalized
+            self.skeleton_bonded_atom_index = self.functionalization_site_list[
+                0][1]  # index in .xyz file of atom bonded to atom to be functionalized
+            # remove first item of nested list for correct formatting later
+            self.functionalization_site_list = self.functionalization_site_list[1:]
+            # write to .xyz file in generate_and_write_xyz function
+        else:
+            print('No more indices left. Exiting program')
+            sys.exit()
+
+        self.skeleton_atom_to_be_functionalized_xyz = self.skeleton_xyz.loc[
+            self.skeleton_atom_to_be_functionalized_index, [
+                'x', 'y', 'z']]  # get xyz coordinate of atom to be functionalized - H
+        self.skeleton_bonded_atom_xyz = self.skeleton_xyz.loc[
+            self.skeleton_bonded_atom_index, [
+                'x', 'y', 'z']]  # get xyz coordinate of bonded atom - C (in CH3: C= central atom)
+        self.bond_length = self.skeleton_atom_to_be_functionalized_xyz \
+                         - self.skeleton_bonded_atom_xyz  # vector with origin on C and points to H in xyz plane
+        self.normalized_bond_vector = self.bond_length / np.linalg.norm(
+            self.bond_length)  # real bond between C-H in xyz plane
+
+    def find_new_centroid(self):
+        # find new centroid and find where equilateral triangle needs to be translated to
+        b = np.linalg.norm(self.bond_length)  # bond to be functionalized -H
+        b = b * (2.0 * np.sqrt(2.0 / 3.0))
+        # ToDo: do I need to do b*substituent atoms like in generate_tetrahedron.py?
+        centroid = self.skeleton_atom_to_be_functionalized_xyz + (b/3.0) * self.normalized_bond_vector
+        return centroid
+
+    def generate_substituent_group_vector(self, length_skeleton_bonded_substituent_central=1.54):
+        new_centroid = self.find_new_centroid()
+        normal_vector = self.substituent_centroid_vector
+        # normal_vector = normal_vector / np.linalg.norm(normal_vector)  # vector is already unit vector (remove this)
+        starting_coordinate = np.zeros(3)  # origin
+
+        # construct rotation matrix
+        bond_length_norm = np.array(self.normalized_bond_vector.astype('float64'))
+
+        # https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d
+        v = np.cross(normal_vector.T, bond_length_norm.T)  # v is perpendicular to normal vector and bond between C-H
+        v_x = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+        v_xsq = np.dot(v_x, v_x)
+        c = np.dot(bond_length_norm.T, normal_vector.T)
+        if c != -1.0:
+            rotation_matrix = np.eye(3) + v_x + v_xsq * (1 / (1 + c))
+        else:
+            rotation_matrix = np.eye(3)
+            # raise RotationMatrixError
+
+        n_atoms, n_columns = len(self.substituent_xyz), len(self.substituent_xyz.columns)  # n_atoms in substituent group
+        substituent_vectors = np.zeros((n_atoms, n_columns-1))  # xyz only, skip name column
+        for i in range(n_atoms):
+            # apply rotation
+            current_atom_as_np_array = np.array(self.substituent_xyz.loc[i, ['x', 'y', 'z']].values)  # .T works on np
+            # only bond of central atom of substituent with skeleton bonded_atom needs to be scaled
+            if i == self.substituent_central_atom_index:
+                substituent_vectors[i, :] = scale_vector(self.skeleton_bonded_atom_xyz,
+                             (self.skeleton_atom_to_be_functionalized_xyz-self.skeleton_bonded_atom_xyz),
+                             float(length_skeleton_bonded_substituent_central))
+            substituent_vectors[i, :] = (new_centroid - starting_coordinate) + \
+                                        np.dot(rotation_matrix, current_atom_as_np_array.T)
+            # ToDo: but then the substituents should be scaled based on new position of their central atom?
+
+        return substituent_vectors
+
+
 if __name__ == "__main__":
-    os.remove('substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    for file in glob.glob('substituents_xyz/manually_generated/*.xyz'):
-        atom = Substituent(file[36:-4], 0, 2.0)
-        atom.write_central_atom_and_centroid_to_csv('manually')
+    # os.remove('substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    # for file in glob.glob('substituents_xyz/manually_generated/*.xyz'):
+    #     atom = Substituent(file[36:-4], 0, 2.0)
+    #     atom.write_central_atom_and_centroid_to_csv('manually')
     # ethyl has central atom index=4 and needs to be done separately
     # ethyl = Substituent('CH2CH3', 4, 2.0)
     # ethyl.write_central_atom_and_centroid_to_csv('manually')
 
-    # centroid = methyl.first_coordination()
-    # print(centroid)
+    some_complex = Complex('skeletons/RuPNP_Ph.xyz', 'CH3',
+                      'substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    print(some_complex.generate_substituent_group_vector(1.54))

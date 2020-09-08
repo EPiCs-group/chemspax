@@ -67,16 +67,11 @@ class Complex:
         return np.sqrt((d[0])**2 + (d[1])**2 + (d[2])**2)
 
     @staticmethod
-    def scale_vector(starting_point, vector, length):
-        vector = vector/np.linalg.norm(vector)
-        return starting_point + vector*length
-
-    @staticmethod
     def find_angle(v1, v2):
         cos_th = (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]) / (np.linalg.norm(v1) * np.linalg.norm(v2))
         return np.arccos(cos_th) * 57.29577951308232
 
-    def find_centroid(self):
+    def find_new_centroid(self):
         # find new centroid and find where equilateral triangle needs to be translated to
         b = np.linalg.norm(self.bond_length)  # bond to be functionalized -H
         b = b * (2.0 * np.sqrt(2.0 / 3.0))
@@ -86,12 +81,13 @@ class Complex:
 
     def generate_substituent_vectors(self, length_sub_0_1=1.1, length_sub_0_2=1.1, length_sub_0_3=1.1):  # 1.1 = C-H
         length_sub_0_x_list = [float(length_sub_0_1), float(length_sub_0_2), float(length_sub_0_3)]
-        centroid = self.find_centroid()
+        centroid = self.find_new_centroid()
         normal_vector = np.array([0, 0, 1])
         normal_vector = normal_vector / np.linalg.norm(normal_vector)  # make unit vector
         starting_coordinate = np.zeros(3)  # origin of original defined equilateral triangle
         # theta = np.arccos(np.dot(self.bond_length_norm.T, normal_vector.T))
 
+        # construct rotation matrix
         bond_length_norm = np.array(self.normalized_bond_vector.astype('float64'))
         # https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d
         v = np.cross(normal_vector.T, bond_length_norm.T)  # v is perpendicular to normal vector and bond between C-H
@@ -108,10 +104,11 @@ class Complex:
         substituent_vectors = np.zeros((num_rows, num_columns))
         # find path in correct direction & shift object to new position + rotate vectors s.t. they are aligned with C-H
         for i in range(num_rows):
+            # apply rotation
             substituent_vectors[i, :] = (centroid - starting_coordinate) + \
                                         np.dot(rotation_matrix, self.equilateral_triangle[i, :].T)
             # scale vectors with right bond length between atom_to_be_functionalized and new substituent
-            substituent_vectors[i, :] = self.scale_vector(self.atom_to_be_functionalized_xyz,
+            substituent_vectors[i, :] = scale_vector(self.atom_to_be_functionalized_xyz,
                                                           (substituent_vectors[i,:]-self.atom_to_be_functionalized_xyz),
                                                           length_sub_0_x_list[i])
 
@@ -175,7 +172,7 @@ class Complex:
             atom_to_be_functionalized_data = self.data_matrix.loc[
                 self.atom_to_be_functionalized_index].copy()
             # scale bond between atom_to_be_functionalized and bonded_atom s.t. it resembles a C-C bond for Ph example
-            new_bond_functionalized_and_bonded_atom = self.scale_vector(self.bonded_atom_xyz,
+            new_bond_functionalized_and_bonded_atom = scale_vector(self.bonded_atom_xyz,
                                                                         (self.atom_to_be_functionalized_xyz -
                                                                          self.bonded_atom_xyz),
                                                                         float(bonded_atom_sub_0_length))
