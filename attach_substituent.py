@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from utilities import *
 import os
-import glob
 import sys
 '''Take ligands and find centroids that point in correct direction to be added to a skeleton'''
 
@@ -131,19 +130,9 @@ class Complex:
         self.normalized_bond_vector = self.bond_length / np.linalg.norm(
             self.bond_length)  # real bond between C-H in xyz plane
 
-    def find_new_centroid(self):
-        # find new centroid and find where equilateral triangle needs to be translated to
-        b = np.linalg.norm(self.bond_length)  # bond to be functionalized -H
-        b = b * (2.0 * np.sqrt(2.0 / 3.0))
-        # ToDo: do I need to do b*substituent atoms like in generate_tetrahedron.py?
-        centroid = self.skeleton_atom_to_be_functionalized_xyz + (b/3.0) * self.normalized_bond_vector
-        return centroid
-
     def generate_substituent_group_vector(self, length_skeleton_bonded_substituent_central=1.54):
-        new_centroid = self.find_new_centroid()
         normal_vector = self.substituent_centroid_vector
-        # normal_vector = normal_vector / np.linalg.norm(normal_vector)  # vector is already unit vector (remove this)
-        starting_coordinate = np.zeros(3)  # origin
+        # normal_vector = normal_vector / np.linalg.norm(normal_vector)  # vector is already unit vector (redundant)
 
         # construct rotation matrix
         bond_length_norm = np.array(self.normalized_bond_vector.astype('float64'))
@@ -159,21 +148,53 @@ class Complex:
             rotation_matrix = np.eye(3)
             # raise RotationMatrixError
 
-        n_atoms, n_columns = len(self.substituent_xyz), len(self.substituent_xyz.columns)  # n_atoms in substituent group
-        substituent_vectors = np.zeros((n_atoms, n_columns-1))  # xyz only, skip name column
-        for i in range(n_atoms):
-            # apply rotation
-            current_atom_as_np_array = np.array(self.substituent_xyz.loc[i, ['x', 'y', 'z']].values)  # .T works on np
-            # only bond of central atom of substituent with skeleton bonded_atom needs to be scaled
-            if i == self.substituent_central_atom_index:
-                substituent_vectors[i, :] = scale_vector(self.skeleton_bonded_atom_xyz,
-                             (self.skeleton_atom_to_be_functionalized_xyz-self.skeleton_bonded_atom_xyz),
-                             float(length_skeleton_bonded_substituent_central))
-            substituent_vectors[i, :] = (new_centroid - starting_coordinate) + \
-                                        np.dot(rotation_matrix, current_atom_as_np_array.T)
-            # ToDo: but then the substituents should be scaled based on new position of their central atom?
+        n_atoms, n_columns = len(self.substituent_xyz), len(self.substituent_xyz.columns)  # atoms in substituent group
+        substituent_vectors = np.array(self.substituent_xyz.loc[:, ['x', 'y', 'z']].values)  # xyz only
+        new_position_substiuent = np.array(scale_vector(self.skeleton_bonded_atom_xyz,
+                            (self.skeleton_atom_to_be_functionalized_xyz - self.skeleton_bonded_atom_xyz),
+                            float(length_skeleton_bonded_substituent_central)))
 
+        # do rotation first
+        for i in range(n_atoms):
+            substituent_vectors[i, :] = np.dot(rotation_matrix, substituent_vectors[i, :].T)
+        # save copy of correctly rotated central atom of substituent
+        central_atom = substituent_vectors[self.substituent_central_atom_index, :].copy()
+        # do translation after
+        for i in range(n_atoms):
+            substituent_vectors[i, :] = substituent_vectors[i, :] + (new_position_substiuent - central_atom)
         return substituent_vectors
+
+    def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
+        folder = 'substituents_xyz/automatically_generated/'
+        extension = '.xyz'
+        target_path = folder + target_filename + extension
+
+        # replace substituent x y z with newly calculated positions
+        substituent_vectors = self.generate_substituent_group_vector(length_skeleton_bonded_substituent_central)
+        substituents_new_data = self.substituent_xyz.copy()  # always copy a df to modify it!
+        substituents_new_data.loc[:, ['x', 'y', 'z']] = substituent_vectors
+        # replace skeleton_atom_to_be_functionalized with central atom of substituent group
+        skeleton_new_data = self.skeleton_xyz.copy()
+        skeleton_new_data.loc[self.skeleton_atom_to_be_functionalized_index, :] = \
+            substituents_new_data.loc[self.substituent_central_atom_index, :]
+        # remove central atom from dataframe of substituent group
+        substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
+        # concat both dataframes
+        write_data = pd.concat([skeleton_new_data, substituents_new_data])
+        write_data = write_data.astype({'x': float, 'y': float, 'z': float})  # correct types in df
+        write_data = write_data.set_index('atom')
+        # increase n_atoms of source file accordingly
+        with open(self.skeleton_path) as f:
+            n_atoms = int(f.readline())
+        n_atoms += len(substituents_new_data)
+        # write to file
+        with open(target_path, 'w') as wr:
+            wr.write(str(n_atoms)+'\n')
+            wr.write(str(self.functionalization_site_list)+'\n')
+
+        write_data.to_csv(target_path, sep=' ', header=False, mode='a')
+        # remove last whiteline generated by pandas' to_csv function
+        remove_last_line(target_path)
 
 
 if __name__ == "__main__":
@@ -184,7 +205,11 @@ if __name__ == "__main__":
     # ethyl has central atom index=4 and needs to be done separately
     # ethyl = Substituent('CH2CH3', 4, 2.0)
     # ethyl.write_central_atom_and_centroid_to_csv('manually')
-
-    some_complex = Complex('skeletons/RuPNP_Ph.xyz', 'CH3',
-                      'substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    print(some_complex.generate_substituent_group_vector(1.54))
+    if os.path.exists('substituents_xyz/automatically_generated/something.xyz'):
+        os.remove('substituents_xyz/automatically_generated/something.xyz')
+    some_complex = Complex('skeletons/RuPNP_iPr_skl.xyz', 'CCl2F',
+                           'substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    some_complex.generate_substituent_and_write_xyz('something', 1.54)
+    other_complex = Complex('substituents_xyz/automatically_generated/something.xyz', 'CCl2F',
+                           'substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
