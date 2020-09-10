@@ -3,8 +3,8 @@
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
-from generate_tetrahedron import Complex
 import sys
+from generate_tetrahedron_folder.generate_tetrahedron import Complex  # conflicting folder name gave error
 
 
 def main():

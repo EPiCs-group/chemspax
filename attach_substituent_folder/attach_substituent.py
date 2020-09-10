@@ -3,17 +3,22 @@
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
-import numpy as np
-import pandas as pd
-from utilities import *
 import os
 import sys
-'''Take ligands and find centroids that point in correct direction to be added to a skeleton'''
+import ast
+import numpy as np
+import pandas as pd
+sys.path.append("..")
+from utilities import *
+
+'''class Substituent: Take ligands and find centroids that point in correct direction to be added to a skeleton
+   class Complex: Functionalize a skeleton with a substituent using the generated .csv database 
+'''
 
 
 class Substituent:
     def __init__(self, molecule, central_atom=0, bond_length=1.2):
-        folder = 'substituents_xyz/manually_generated/'
+        folder = '../substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.molecule = molecule
         self.path = folder + self.molecule + extension
@@ -58,7 +63,7 @@ class Substituent:
         return np.array(centroid)
 
     def write_central_atom_and_centroid_to_csv(self, manually_or_automatically_generated):
-        folder = 'substituents_xyz/'
+        folder = '../substituents_xyz/'
         filename = 'central_atom_centroid_database.csv'
         path_to_file = folder + manually_or_automatically_generated + '_generated/' + filename
         centroid = self.first_coordination()
@@ -80,7 +85,7 @@ class Complex:
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
-        substituent_folder = 'substituents_xyz/manually_generated/'
+        substituent_folder = '../substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.substituent_path = substituent_folder + self.substituent_molecule + extension
         self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
@@ -150,6 +155,7 @@ class Complex:
 
         n_atoms, n_columns = len(self.substituent_xyz), len(self.substituent_xyz.columns)  # atoms in substituent group
         substituent_vectors = np.array(self.substituent_xyz.loc[:, ['x', 'y', 'z']].values)  # xyz only
+        # calculate new position of substituent_central_atom, the other atoms will be placed around this
         new_position_substiuent = np.array(scale_vector(self.skeleton_bonded_atom_xyz,
                             (self.skeleton_atom_to_be_functionalized_xyz - self.skeleton_bonded_atom_xyz),
                             float(length_skeleton_bonded_substituent_central)))
@@ -158,19 +164,19 @@ class Complex:
         for i in range(n_atoms):
             substituent_vectors[i, :] = np.dot(rotation_matrix, substituent_vectors[i, :].T)
         # save copy of correctly rotated central atom of substituent
-        central_atom = substituent_vectors[self.substituent_central_atom_index, :].copy()
+        substituent_central_atom = substituent_vectors[self.substituent_central_atom_index, :].copy()
         # do translation after
         for i in range(n_atoms):
-            substituent_vectors[i, :] = substituent_vectors[i, :] + (new_position_substiuent - central_atom)
+            substituent_vectors[i, :] = substituent_vectors[i, :] + (new_position_substiuent - substituent_central_atom)
         return substituent_vectors
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
-        folder = 'substituents_xyz/automatically_generated/'
+        folder = '../substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension
 
         # replace substituent x y z with newly calculated positions
-        substituent_vectors = self.generate_substituent_group_vector(length_skeleton_bonded_substituent_central)
+        substituent_vectors = self.generate_substituent_group_vector(float(length_skeleton_bonded_substituent_central))
         substituents_new_data = self.substituent_xyz.copy()  # always copy a df to modify it!
         substituents_new_data.loc[:, ['x', 'y', 'z']] = substituent_vectors
         # replace skeleton_atom_to_be_functionalized with central atom of substituent group
@@ -205,11 +211,11 @@ if __name__ == "__main__":
     # ethyl has central atom index=4 and needs to be done separately
     # ethyl = Substituent('CH2CH3', 4, 2.0)
     # ethyl.write_central_atom_and_centroid_to_csv('manually')
-    if os.path.exists('substituents_xyz/automatically_generated/something.xyz'):
-        os.remove('substituents_xyz/automatically_generated/something.xyz')
-    some_complex = Complex('skeletons/RuPNP_iPr_skl.xyz', 'CCl2F',
-                           'substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    if os.path.exists('../substituents_xyz/automatically_generated/something.xyz'):
+        os.remove('../substituents_xyz/automatically_generated/something.xyz')
+    some_complex = Complex('../skeletons/RuPNP_iPr_skl.xyz', 'CCl2F',
+                           '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('something', 1.54)
-    other_complex = Complex('substituents_xyz/automatically_generated/something.xyz', 'CCl2F',
-                           'substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'CCl2F',
+                           '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('something_1', 1.54)

@@ -10,11 +10,14 @@ in the end this code will also allow substitution by O-CH3 type groups
 """
 import numpy as np
 import pandas as pd
-from exceptions import *
-from utilities import *
+import sys
 import os
 import ast
-import sys
+sys.path.append("..")
+from exceptions import *
+from utilities import *
+
+
 
 
 class Complex:
@@ -118,7 +121,7 @@ class Complex:
                                            sub_0_sub_1_length, substituent_1_atom,
                                            sub_0_sub_2_length, substituent_2_atom,
                                            sub_0_sub_3_length, substituent_3_atom):  # view_file=False, save_file=False):
-        folder = 'substituents_xyz/automatically_generated/'
+        folder = '../substituents_xyz/automatically_generated/'
         extension = '.xyz'
         filename = folder + filename + extension
         v_1, v_2, v_3 = self.generate_substituent_vectors(sub_0_sub_1_length, sub_0_sub_2_length, sub_0_sub_3_length)
@@ -224,17 +227,17 @@ class Complex:
 if __name__ == '__main__':
     # example usage for ethyl
     # generates a CH3-CH3 'molecule' (orientation and bonds are of course incorrect)
-    if os.path.exists('substituents_xyz/automatically_generated/CH4.xyz'):
-        os.remove('substituents_xyz/automatically_generated/CH4.xyz')
+    if os.path.exists('../substituents_xyz/automatically_generated/CH4.xyz'):
+        os.remove('../substituents_xyz/automatically_generated/CH4.xyz')
         functionalization_list = '[[1, 0], [4, 0]]'
-        methyl = Complex('substituents_xyz/manually_generated/CH3.xyz', functionalization_list, 'initial')
+        methyl = Complex('../substituents_xyz/manually_generated/CH3.xyz', functionalization_list, 'initial')
         methyl.generate_substituent_and_write_xyz('CH4', 'C', 'H', 'H', 'C', False, False)
-        ethyl = Complex('substituents_xyz/automatically_generated/CH4.xyz', None, 'recursive')
+        ethyl = Complex('../substituents_xyz/automatically_generated/CH4.xyz', None, 'recursive')
         ethyl.generate_substituent_and_write_xyz('CH4', 'C', 'H', 'H', 'H', True, False)
     functionalization_list = '[[1, 0], [4, 0]]'
-    methyl = Complex('substituents_xyz/manually_generated/CH3.xyz', functionalization_list, 'initial')
+    methyl = Complex('../substituents_xyz/manually_generated/CH3.xyz', functionalization_list, 'initial')
     methyl.generate_substituent_and_write_xyz('CH4', 'C', 'H', 'H', 'C', False, False)
-    ethyl = Complex('substituents_xyz/automatically_generated/CH4.xyz', None, 'recursive')
+    ethyl = Complex('../substituents_xyz/automatically_generated/CH4.xyz', None, 'recursive')
     ethyl.generate_substituent_and_write_xyz('CH4', 'C', 'H', 'H', 'H', True, False)
 
 

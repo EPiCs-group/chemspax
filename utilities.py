@@ -97,8 +97,8 @@ def convert_list_of_string_to_np_array(array_string):
 if __name__ == '__main__':
     # molec = 'H2O'
     # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
-    visualize_xyz_file('substituents_xyz/automatically_generated/something.xyz', True, False)
-    # visualize_xyz_file('skeletons/RuPNP_Ph.xyz', False, False)
+    # visualize_xyz_file('substituents_xyz/automatically_generated/something.xyz', True, False)
+    visualize_xyz_file('skeletons/RuPNP_iPr_skl.xyz', False, False)
     # print(convert_list_of_string_to_np_array(['[-0.33332174004836124 0.9428131403470853 0.0]']))
     # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
     # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
