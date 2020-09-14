@@ -15,22 +15,33 @@ for automatic functionalization of complexes.
 
 ## Contents
   **skeletons/**
-  - contains .xyz files with skeletons of complexes to be functionalized 
+  - contains .xyz files with skeletons of complexes to be functionalized. 
+  Currently a nested list (without spaces, otherwise sys.argv() will split the list into 2 arguments)
+  with functionalizations is needed on the comment line of the .xyz file.
+  In this nested list the first element should be the atom_to_be_functionalized and 
+  the second element should be the bonded_atom. 
   
   **substituents_xyz/**  
   - contains .xyz files for substituents that will be tested  
-      * automatically_generated/: output of functionalized skeletons by generate_tetrahedron.py
+      * automatically_generated/: output of functionalized skeletons by generate_tetrahedron.py and attach_substituent.py.
       * manually_generated/: manually generated substituents that will be used for approach 1.
       * old/: contains substituents that became either obsolete or will be dealt with later.
       * visualizations/: contains .png files of the functionalizations made in generate_tetrahedron.py
   
-  **attach_substituent**  
+  **attach_substituent.py, run.sh and main_attach_substituent.py** 
+  - Class **Substituent** 
   - Load .xyz files and loads substituent in class object 
   - Create first coordination shell to find centroid vector of the whole group
   - Writes group name, central atom and centroid vector to .csv file
+  - Class **Complex**
+  - Load .xyz file to load substituent and skeleton in class 
+  - Generate a matrix of correctly rotated and translated substituent vectors
+  - Using the bond length between skeleton_bonded_atom and substituent_central_atom, 
+  generate these vectors and write functionalized skeleton to .xyz
+  - Takes system arguments in main.py and usage is shown in **run.sh**
    
   
-  **generate_tetrahedron.py, run.sh and main.py** 
+  **generate_tetrahedron.py, run.sh and main_generate_tetrahedron.py** 
   - Load .xyz files and loads complex in class object
   - Find centroid
   - Create and correctly rotate equilateral triangle
@@ -82,10 +93,12 @@ for automatic functionalization of complexes.
   **attach_substituent.py**
   - find centroid vector of substituent group (done)
   - write central atom and centroid vector to .csv (done)
-  - attach substituent to skeleton 
+  - attach substituent to skeleton (done)
   - Test test test
 ## Example usage
-  - ```./run.sh``` to functionalize a RuPNP skeleton where 4 H sites 
+  - ```bash generate_tetrahedron_folder/run.sh``` to functionalize a RuPNP skeleton where 4 H sites 
   will be substituted for methyl groups using generate_tetrahedron.py
+  - ```bash attach_substituent_folder/run.sh``` to functionalize a RuPNP skeleton where
+  6 sites will be functionalized with substituents
 ## Authors
 Adarsh Kalikadien & Vivek Sinha

@@ -167,6 +167,7 @@ class Complex:
         substituent_central_atom = substituent_vectors[self.substituent_central_atom_index, :].copy()
         # do translation after
         for i in range(n_atoms):
+            # ToDo: for O-CH3 do new_position_substituent - Oxygen, how to detect these cases?
             substituent_vectors[i, :] = substituent_vectors[i, :] + (new_position_substiuent - substituent_central_atom)
         return substituent_vectors
 
