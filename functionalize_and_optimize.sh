@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # redirect stdout/stderr to a file
-exec &> logfile.txt
+#exec &> logfile.txt
 
 echo ""
 echo "---------------------------------------------------------------------------------------------"
@@ -23,25 +23,29 @@ RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xa
 
 for skeleton in ${SKELETON_LIST}; do
 # loop over skeleton list and set index back to 1
-    SOURCE_FILE=/skeletons/${skeleton}
+    SOURCE_FILE=skeletons/${skeleton}
     TARGET_NAME=${skeleton}_func
     i=1
     echo "creating initial file"
     # functionalize and optimize initial functionalized version of skeleton
-    python attach_substituent_folder/main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+    python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
     # optimization
-    xtb substituents_xyz/automatically_generated/${TARGET_NAME}_${i} --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+    cd substituents_xyz/automatically_generated/
+    xtb ${TARGET_NAME}_${i} --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
     # clean up mess and move relevant file to correct folder
-    mv xtbop.xyz substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt
+    mv xtbop.xyz optimized_structures/${TARGET_NAME}_${i}_opt
     rm -f xtbrestart
+    cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i}
-        python attach_substituent_folder/main_attach_substituent.py substituents_xyz/automatically_generated/${TARGET_NAME}_${i}.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
-         # optimization
-        xtb substituents_xyz/automatically_generated/${TARGET_NAME}_$((i+1)) --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+        python3 main_attach_substituent.py substituents_xyz/automatically_generated/${TARGET_NAME}_${i}.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+        # optimization
+	cd substituents_xyz/automatically_generated
+        xtb ${TARGET_NAME}_$((i+1)) --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # clean up mess and move relevant file to correct folder
-        mv xtbop.xyz substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_$((i+1))_opt
+        mv xtbop.xyz optimized_structures/${TARGET_NAME}_$((i+1))_opt
         rm -f xtbrestart
+	cd -
         i=$((i+1))
         done
 done

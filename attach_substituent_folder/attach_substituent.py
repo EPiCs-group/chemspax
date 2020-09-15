@@ -18,7 +18,7 @@ from utilities import *
 
 class Substituent:
     def __init__(self, molecule, central_atom=0, bond_length=1.2):
-        folder = '../substituents_xyz/manually_generated/'
+        folder = 'substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.molecule = molecule
         self.path = folder + self.molecule + extension
@@ -85,7 +85,7 @@ class Complex:
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
-        substituent_folder = '../substituents_xyz/manually_generated/'
+        substituent_folder = 'substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.substituent_path = substituent_folder + self.substituent_molecule + extension
         self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
@@ -172,7 +172,7 @@ class Complex:
         return substituent_vectors
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
-        folder = '../substituents_xyz/automatically_generated/'
+        folder = 'substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension
 
