@@ -29,7 +29,7 @@ for skeleton in ${SKELETON_LIST}; do
     cd substituents_xyz/automatically_generated/
     xtb ${TARGET_NAME}_${i}.xyz --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
-    FUNCTIONALIZATION_LIST=$(sed '2;d' ${TARGET_NAME}_${i}.xyz)
+    FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
     sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
     # clean up mess and move relevant file to correct folder
     mv xtbopt.xyz optimized_structures/${TARGET_NAME}_${i}_opt.xyz
@@ -42,7 +42,7 @@ for skeleton in ${SKELETON_LIST}; do
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).xyz --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
-        FUNCTIONALIZATION_LIST=$(sed '2;d' ${TARGET_NAME}_$((i+1)).xyz)
+        FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
         sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
         # clean up mess and move relevant file to correct folder
         mv xtbopt.xyz optimized_structures/${TARGET_NAME}_$((i+1))_opt.xyz
@@ -74,6 +74,9 @@ for skeleton in ${SKELETON_LIST}; do
     # optimization
     cd substituents_xyz/automatically_generated/
     xtb ${TARGET_NAME}_${i}.xyz --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+    # write functionalization list to optimized file to be able to use that file as source for new functionalizations
+    FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
+    sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
     # clean up mess and move relevant file to correct folder
     mv xtbopt.xyz optimized_structures/${TARGET_NAME}_${i}_opt.xyz
     rm -f xtbrestart
@@ -84,6 +87,9 @@ for skeleton in ${SKELETON_LIST}; do
         # optimization
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).xyz --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+        # write functionalization list to optimized file to be able to use that file as source for new functionalizations
+        FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
+        sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
         # clean up mess and move relevant file to correct folder
         mv xtbopt.xyz optimized_structures/${TARGET_NAME}_$((i+1))_opt.xyz
         rm -f xtbrestart
