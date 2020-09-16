@@ -92,5 +92,5 @@ modules.xml
 test.xyz
 substituents_xyz/test.xyz
 __pycache__/
-
+logfile.txt
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
