@@ -7,6 +7,7 @@ import ase.io as io
 from ase.visualize import view
 import ase.build
 import numpy as np
+from molSimplify.Classes.mol3D import*
 
 
 def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
@@ -92,6 +93,28 @@ def convert_list_of_string_to_np_array(array_string):
     """
     array_string = str(array_string).replace('[', '').replace(']', '').replace(' ', ', ').replace("'", '').split(', ')
     return np.array([float(x) for x in list(array_string)])
+
+
+def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_substituent_index,
+                      skeleton_bonded_atom_index, length, ff_method='uff'):
+    """
+
+    :param source_xyz_filename:
+    :param target_xyz_filename:
+    :param central_atom_substituent_index:
+    :param skeleton_bonded_atom_index:
+    :param length:
+    :param ff_method:
+    :return: .xyz file where the submolecule is translated along the bond axis
+        connecting it to an anchor atom. Performs force field optimization
+        after, freezing the moved bond length.
+    """
+    # load file in molsimplify mol3D class
+    complex = mol3D()
+    complex.readfromxyz(source_xyz_filename)
+    # do bond centric manipulation and force field optimization
+    complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, length, ff_method)
+    complex.writexyz(target_xyz_filename)
 
 
 if __name__ == '__main__':
