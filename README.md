@@ -1,8 +1,8 @@
-# correct_rotation_substituent
+# auto_func
 
-correct_rotation_substituent should be used to correctly functionalize TM complexes.
+auto_func should be used to correctly functionalize TM complexes.
 Two approaches were considered (currently for tetrahedral substituents only): 
-  1) From a library of existing substituents (with 1 lone pair of electrons) construct the 
+  1) From a library of existing substituents (with a lone pair of electrons) construct the 
   centroid vector and align it with the site to be functionalized on the skeleton and then attach it.
   See attach_substituent.py.
   2) The user inputs an atom to be functionalized on a skeleton complex, 
@@ -97,13 +97,29 @@ for automatic functionalization of complexes.
   - Test test test
 
 ## Installation
-`git clone <link to this repo>`
+Python 3.6.0 or higher is required. 
 
-`cd <name of this repo>`
+
+`git clone https://github.com/EPiCs-group/auto_func`
+
+`cd auto_func`
 
 `pip install -r requirements.txt` to install all required packages.
 It is recommended to use a virtual environment since an old version of pandas is used. 
-
+  
+  A virtual environment can be created using 
+  
+  `python3 -m venv /path/to/new/virtual/environment`
+   
+   If you're using Anaconda: 
+  
+  `conda create -n yourenvname python=x.x anaconda`
+  
+  `source activate yourenvname`
+  
+  More information on virtual environments can be found at the
+  [venv homepage](https://docs.python.org/3/library/venv.html) or 
+  [this Anaconda cheatsheet](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
 ## Instructions
 An example .xyz file of a skeleton in skeletons/ looks like this: 
 ![example](images/example_functionalization_list.jpg)
