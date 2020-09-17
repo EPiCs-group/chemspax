@@ -85,16 +85,107 @@ for automatic functionalization of complexes.
   - convert .xyz to .gjf (done)  
   - make generate_tetrahedron usable with system arguments (done)
   - add bonded_atom and atom_to_be_functionalized to comment line of .xyz file (done)
-  - make bash script that is able to use python file and deliver intermediates 
-  and final version of functionalized & optimized complex 
-  using generate_tetrahedron.py (partly done, optimization can be added) 
   - Test test test
   
   **attach_substituent.py**
   - find centroid vector of substituent group (done)
   - write central atom and centroid vector to .csv (done)
   - attach substituent to skeleton (done)
+  - make bash script that is able to use python file and deliver intermediates 
+  and final version of functionalized & optimized complex (done)
+  - Solve problem with steric hindrance when placing substituents
   - Test test test
+
+## Installation
+`git clone <link to this repo>`
+
+`cd <name of this repo>`
+
+`pip install -r requirements.txt` to install all required packages.
+It is recommended to use a virtual environment since an old version of pandas is used. 
+
+## Instructions
+An example .xyz file of a skeleton in skeletons/ looks like this: 
+![example](images/example_functionalization_list.jpg)
+  
+Make sure to put no spaces in this functionalization_list since 
+sys.argv() is used in the main.py files, each space is thus interpreted as a new argument
+to the function. Also note that index 0 is the **first atom in the list**.
+In the example figure above, the index of Ru == 0.  
+  
+In the functionalization_list each list is a functionalization. 
+The first item of each list is the atom_to_be_functionalized (the atom that will be removed).
+![example](images/example_atom_to_be_functionalized.jpg)
+  
+  The second item of each list is the bonded_atom, this is the 
+  atom that is bonded to the atom_to_be_functionalized and thus the 
+  skeleton atom that will be bonded to the substituent. 
+  
+  ![example](images/example_bonded_atom.jpg)
+  
+  
+  With these instructions the user should be able to 
+  write the functionalization_list of the skeletons correctly 
+  in skeletons/ (**note: no newline at the end of the file!**).
+  For the 2 different approaches of functionalization an 
+  explanation should be given on how to proceed.
+  
+  **generate_tetrahedron.py**
+  
+  **Note: Make sure to check the relative path on line 124 
+  is correctly set, relatively to your working directory.**
+  
+To functionalize a skeleton using this approach, now only the bond lengths
+between bonded_atom and central_atom of substituent and 
+surrounding atoms of the substituent with central_atom of substituent is needed.
+The main_generate_tetrahedron.py takes input values as follows:
+  
+  1) path_to_source_file
+  2) target_name (**Note: name only, the file will always be placed in 
+  substituents_xyz/automatically_generated with extension .xyz**)      
+  3) bond length of new central atom of substituent with bonded_atom
+  4) actual new central atom of substituent 
+  5) bond length of new central atom of substituent with first surrounding
+  substituent atom
+  6) actual first surrounding substituent atom
+  7) same as 5) for second surrounding substituent atom
+  8) same as 6) for second surrounding substituent atom
+  9) same as 5) for third surrounding substituent atom
+  10) same as 6) for third surrounding substituent atom
+  
+  Where each input value is given as a space delimited system argument.
+  The user can modify the example of generate_tetrahedron_folder/run.sh
+  to their needs or use generate_tetrahedron.py directly.
+  
+  **attach_substituent.py**
+  
+  **Note: Make sure to check the relative path on line 175, 88, 66 
+  and 21 are correctly set, relatively to your working directory.**
+  
+  The user can upload manually generated substituents 
+  to substituents_xyz/manually_generated/ or use the pre-made substituents
+  contained in that folder. Then the Substituent.write_central_atom_and_centroid_to_csv() 
+  function of attach_substituent.py should be used to generate a .csv database
+  of the central atom and centroid vector per substituent as these will
+  be used to align the substituent with the skeleton. An example of 
+  this .csv database is shown below:
+  ![example](images/example_csv_database.jpg)
+  
+  
+  Like in generate_tetrahedron.py the Complex.generate_substituent_and_write_xyz()
+  function is used to functionalize a skeleton. The main_attach_substituent.py takes the following
+  input:
+  1) path_to_source_file
+  2) target_name (**Note: name only, the file will always be placed in 
+  substituents_xyz/automatically_generated with extension .xyz**)
+  3) name of substituent group (same as key in .csv database)
+  4) relative path to .csv database file
+  5) bond length between central atom of the substituent and bonded_atom of skeleton 
+  
+  Where each input value is given as a space delimited system argument.
+  The user can modify the example of attach_substituent_folder/run.sh
+  to their needs or use attach_substituent.py directly.
+  
 ## Example usage
   - ```bash generate_tetrahedron_folder/run.sh``` to functionalize a RuPNP skeleton where 4 H sites 
   will be substituted for methyl groups using generate_tetrahedron.py

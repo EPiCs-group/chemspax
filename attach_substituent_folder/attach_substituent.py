@@ -18,7 +18,7 @@ from utilities import *
 
 class Substituent:
     def __init__(self, molecule, central_atom=0, bond_length=1.2):
-        folder = 'substituents_xyz/manually_generated/'
+        folder = '../substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.molecule = molecule
         self.path = folder + self.molecule + extension
