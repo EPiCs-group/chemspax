@@ -207,7 +207,7 @@ class Complex:
         # filename stays the same, central atom is placed at index of skeleton_atom_to_be_functionalized so use this
         # index for group that will be moved and skeleton_bonded_atom as anchor
         optimize_new_bond(target_path, target_path, self.skeleton_atom_to_be_functionalized_index,
-                          self.skeleton_bonded_atom_index, length_skeleton_bonded_substituent_central)
+                          self.skeleton_bonded_atom_index, float(length_skeleton_bonded_substituent_central), 'uff')
         # insert functionalization list again on comment line (molSimplify inserted runtime info on this line)
         with open(target_path) as f:
             lines = f.readlines()
