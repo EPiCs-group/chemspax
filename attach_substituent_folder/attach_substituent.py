@@ -206,10 +206,11 @@ class Complex:
         # optimize bond with newly substituted group
         # filename stays the same, central atom is placed at index of skeleton_atom_to_be_functionalized so use this
         # index for group that will be moved and skeleton_bonded_atom as anchor
-        # list of atoms to be freezed
-        freeze_list = list(range(len(self.skeleton_xyz)))
+        # distance matrix of atoms to be freezed
+        # freeze_list = list(range(len(self.skeleton_xyz)))
+        distance_matrix = calculate_distance_matrix(self.skeleton_xyz)
         optimize_new_bond(target_path, target_path, self.skeleton_atom_to_be_functionalized_index,
-                          self.skeleton_bonded_atom_index, freeze_list,
+                          self.skeleton_bonded_atom_index, distance_matrix,
                           float(length_skeleton_bonded_substituent_central), 'uff')
         # insert functionalization list again on comment line (molSimplify inserted runtime info on this line)
         with open(target_path) as f:
@@ -230,11 +231,11 @@ if __name__ == "__main__":
     # ethyl has central atom index=4 and needs to be done separately
     # ethyl = Substituent('CH2CH3', 4, 2.0)
     # ethyl.write_central_atom_and_centroid_to_csv('manually')
-    if os.path.exists('../substituents_xyz/automatically_generated/something.xyz'):
-        os.remove('../substituents_xyz/automatically_generated/something.xyz')
+    # if os.path.exists('../substituents_xyz/automatically_generated/something.xyz'):
+    #     os.remove('../substituents_xyz/automatically_generated/something.xyz')
     some_complex = Complex('../skeletons/RuPNP_iPr_skl.xyz', 'CCl2F',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    some_complex.generate_substituent_and_write_xyz('something', 1.54)
-    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'CCl2F',
-                           '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
+    # some_complex.generate_substituent_and_write_xyz('something', 1.54)
+    # other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'CCl2F',
+    #                        '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    # other_complex.generate_substituent_and_write_xyz('something_1', 1.54)

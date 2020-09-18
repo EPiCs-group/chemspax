@@ -10,6 +10,17 @@ import numpy as np
 from molSimplify.Classes.mol3D import*
 
 
+def distance(a, b):
+    """Calculate euclidian distance between 2 points
+
+    :param a:
+    :param b:
+    :return:
+    """
+    d = a - b
+    return np.sqrt((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2)
+
+
 def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
     """Visualize an .xyz file, number_atoms at top of .xyz needs to be correct!
 
@@ -95,8 +106,23 @@ def convert_list_of_string_to_np_array(array_string):
     return np.array([float(x) for x in list(array_string)])
 
 
+def calculate_distance_matrix(molecule_xyz_dataframe):
+    xyz_matrix = np.array(molecule_xyz_dataframe)[:, 1:4]
+    num_rows, num_columns = xyz_matrix.shape
+    distance_matrix = np.zeros((num_rows, 3))  # atom 1 index, atom 2 index, distance
+    for i in range(num_rows):
+        j = i+1
+        print(i, j)
+        if j == num_rows:
+            # doesn't really matter as long as we have a i, j and distance to constrain
+            j = num_rows - 1
+        d = distance(xyz_matrix[i, :], xyz_matrix[j, :])
+        distance_matrix[i, :] = i, j, d
+    return distance_matrix
+
+
 def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_substituent_index,
-                      skeleton_bonded_atom_index, constraints_list, length, ff_method='uff'):
+                      skeleton_bonded_atom_index, distance_matrix, length, ff_method='uff'):
     """
 
     :param source_xyz_filename:
@@ -113,7 +139,7 @@ def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_sub
     complex = mol3D()
     complex.readfromxyz(source_xyz_filename)
     # do bond centric manipulation and force field optimization
-    complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, constraints_list, length, ff_method)
+    complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, distance_matrix, length, ff_method)
     complex.writexyz(target_xyz_filename)
 
 
