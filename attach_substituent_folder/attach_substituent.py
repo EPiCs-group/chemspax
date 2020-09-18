@@ -206,8 +206,11 @@ class Complex:
         # optimize bond with newly substituted group
         # filename stays the same, central atom is placed at index of skeleton_atom_to_be_functionalized so use this
         # index for group that will be moved and skeleton_bonded_atom as anchor
+        # list of atoms to be freezed
+        freeze_list = list(range(len(self.skeleton_xyz)))
         optimize_new_bond(target_path, target_path, self.skeleton_atom_to_be_functionalized_index,
-                          self.skeleton_bonded_atom_index, float(length_skeleton_bonded_substituent_central), 'uff')
+                          self.skeleton_bonded_atom_index, freeze_list,
+                          float(length_skeleton_bonded_substituent_central), 'uff')
         # insert functionalization list again on comment line (molSimplify inserted runtime info on this line)
         with open(target_path) as f:
             lines = f.readlines()

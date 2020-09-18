@@ -96,7 +96,7 @@ def convert_list_of_string_to_np_array(array_string):
 
 
 def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_substituent_index,
-                      skeleton_bonded_atom_index, length, ff_method='uff'):
+                      skeleton_bonded_atom_index, constraints_list, length, ff_method='uff'):
     """
 
     :param source_xyz_filename:
@@ -113,7 +113,7 @@ def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_sub
     complex = mol3D()
     complex.readfromxyz(source_xyz_filename)
     # do bond centric manipulation and force field optimization
-    complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, length, ff_method)
+    complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, constraints_list, length, ff_method)
     complex.writexyz(target_xyz_filename)
 
 
