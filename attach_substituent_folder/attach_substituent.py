@@ -208,7 +208,7 @@ class Complex:
         # index for group that will be moved and skeleton_bonded_atom as anchor
         # distance matrix of atoms to be freezed
         # freeze_list = list(range(len(self.skeleton_xyz)))
-        distance_matrix = calculate_distance_matrix(self.skeleton_xyz)
+        distance_matrix = calculate_distance_matrix(skeleton_new_data)
         optimize_new_bond(target_path, target_path, self.skeleton_atom_to_be_functionalized_index,
                           self.skeleton_bonded_atom_index, distance_matrix,
                           float(length_skeleton_bonded_substituent_central), 'uff')

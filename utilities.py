@@ -107,14 +107,18 @@ def convert_list_of_string_to_np_array(array_string):
 
 
 def calculate_distance_matrix(molecule_xyz_dataframe):
+    """Constructs a distance matrix that can be used to constrain molecules in molsimplify
+
+    :param molecule_xyz_dataframe:
+    :return:
+    """
     xyz_matrix = np.array(molecule_xyz_dataframe)[:, 1:4]
     num_rows, num_columns = xyz_matrix.shape
     distance_matrix = np.zeros((num_rows, 3))  # atom 1 index, atom 2 index, distance
     for i in range(num_rows):
         j = i+1
-        print(i, j)
         if j == num_rows:
-            # doesn't really matter as long as we have a i, j and distance to constrain
+            # doesn't really matter as long as we have a i, j and distances to constrain
             j = num_rows - 1
         d = distance(xyz_matrix[i, :], xyz_matrix[j, :])
         distance_matrix[i, :] = i, j, d

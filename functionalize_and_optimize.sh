@@ -22,7 +22,7 @@ for skeleton in ${SKELETON_LIST}; do
     SOURCE_FILE=skeletons/${skeleton}
     TARGET_NAME=${skeleton}_func
     i=1
-    echo "creating initial file of" ${skeleton}
+    echo "creating initial file of" ${skeleton} ${STARTING_C_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
     python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
 #    # optimization
