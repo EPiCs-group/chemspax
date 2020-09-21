@@ -22,12 +22,12 @@ for skeleton in ${SKELETON_LIST}; do
     SOURCE_FILE=skeletons/${skeleton}
     TARGET_NAME=${skeleton}_func
     i=1
-    echo "creating initial file of" ${skeleton}
+    echo "creating initial file of" ${skeleton} ${STARTING_C_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
     python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
     # optimization
     cd substituents_xyz/automatically_generated/
-    xtb --input xtb.inp ${TARGET_NAME}_${i}.xyz --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+    xtb --input xtb.inp ${TARGET_NAME}_${i}.xyz --cma --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
     FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
     sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
@@ -40,7 +40,7 @@ for skeleton in ${SKELETON_LIST}; do
         python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
         # optimization
 	    cd substituents_xyz/automatically_generated
-        xtb --input xtb.inp ${TARGET_NAME}_$((i+1)).xyz --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+        xtb --input xtb.inp ${TARGET_NAME}_$((i+1)).xyz --cma --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
         FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
         sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz

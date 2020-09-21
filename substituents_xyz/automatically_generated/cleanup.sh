@@ -7,5 +7,6 @@ rm -f wbo
 rm -f wbo
 rm -f xtb.out
 rm -f xtbopt.log
+rm -f .xtboptok
 cd optimized_structures/
 rm -f *.xyz

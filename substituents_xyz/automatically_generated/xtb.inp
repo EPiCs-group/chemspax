@@ -1,0 +1,9 @@
+$wall
+   potential=logfermi
+   sphere: auto, all
+$constrain
+   force constant=0.9
+   elements: C,H,N,O,Cl,I,Br,F,Ru,P
+$fix
+   atoms: 1-74 
+$end
