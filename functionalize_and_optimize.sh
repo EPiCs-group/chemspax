@@ -17,6 +17,9 @@ RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xa
 # C-C bond length = 1.54 A
 # https://phys.org/news/2018-03-carbon-carbon-bond-length.html
 
+# activate option to use backslash options in echo function
+shopt -s xpg_echo
+
 for skeleton in ${SKELETON_LIST}; do
 # loop over skeleton list and set index back to 1
     SOURCE_FILE=skeletons/${skeleton}
@@ -25,9 +28,12 @@ for skeleton in ${SKELETON_LIST}; do
     echo "creating initial file of" ${skeleton} ${STARTING_C_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
     python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+    # find n_skeleton_atoms to fix in xtb.inp
+    N_SKELETON_ATOMS=$(sed '1q;d' ${SOURCE_FILE}.xyz)
     # optimization
     cd substituents_xyz/automatically_generated/
-    xtb --input xtb.inp ${TARGET_NAME}_${i}.xyz --cma --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+    echo "\$wall\n   potential=logfermi\n   sphere: auto, all\n\$constrain\n   force constant=0.9\n   elements: C,H,N,O,Cl,I,Br,F,Ru,P\n\$fix\n   atoms: 1-${N_SKELETON_ATOMS}\n\$end" > xtb.inp
+    xtb --input xtb.inp ${TARGET_NAME}_${i}.xyz --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
     FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
     sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
@@ -40,7 +46,7 @@ for skeleton in ${SKELETON_LIST}; do
         python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
         # optimization
 	    cd substituents_xyz/automatically_generated
-        xtb --input xtb.inp ${TARGET_NAME}_$((i+1)).xyz --cma --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+        xtb --input xtb.inp ${TARGET_NAME}_$((i+1)).xyz --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
         FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
         sed -i '2s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.xyz
