@@ -209,8 +209,11 @@ class Complex:
         # distance matrix of atoms to be freezed
         # freeze_list = list(range(len(self.skeleton_xyz)))
         distance_matrix = calculate_distance_matrix(skeleton_new_data)
+        substituent_distance_matrix = calculate_distance_matrix(substituents_new_data)
+        substituent_distance_matrix[:, 0] = substituent_distance_matrix[:, 0] + len(skeleton_new_data)
+        substituent_distance_matrix[:, 1] = substituent_distance_matrix[:, 1] + len(skeleton_new_data)
         optimize_new_bond(target_path, target_path, self.skeleton_atom_to_be_functionalized_index,
-                          self.skeleton_bonded_atom_index, distance_matrix,
+                          self.skeleton_bonded_atom_index, distance_matrix, substituent_distance_matrix,
                           float(length_skeleton_bonded_substituent_central), 'uff')
         # insert functionalization list again on comment line (molSimplify inserted runtime info on this line)
         with open(target_path) as f:

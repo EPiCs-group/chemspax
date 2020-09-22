@@ -126,7 +126,7 @@ def calculate_distance_matrix(molecule_xyz_dataframe):
 
 
 def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_substituent_index,
-                      skeleton_bonded_atom_index, distance_matrix, length, ff_method='uff'):
+                      skeleton_bonded_atom_index, distance_matrix, distance_matrix2, length, ff_method='uff'):
     """
 
     :param source_xyz_filename:
@@ -142,8 +142,17 @@ def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_sub
     # load file in molsimplify mol3D class
     complex = mol3D()
     complex.readfromxyz(source_xyz_filename)
+    original_distance = []
+    for i in distance_matrix2[:, 0]:
+    # move new substituent really far away
+        original_distance.append(find_distance(source_xyz_filename, int(i), skeleton_bonded_atom_index))
+        complex.BCM(int(i), skeleton_bonded_atom_index, 8)
     # do bond centric manipulation and force field optimization
     complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, distance_matrix, length, ff_method)
+    # put new substituent back in original location
+    for i in distance_matrix2[:, 0]:
+        real_index = int(i) - len(distance_matrix)
+        complex.BCM(int(i), skeleton_bonded_atom_index, original_distance[real_index])
     complex.writexyz(target_xyz_filename)
 
 
