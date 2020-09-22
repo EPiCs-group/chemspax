@@ -8,5 +8,7 @@ rm -f wbo
 rm -f xtb.out
 rm -f xtbopt.log
 rm -f .xtboptok
+rm -f xtb.inp
+rm -f .sccnotconverged
 cd optimized_structures/
 rm -f *.xyz
