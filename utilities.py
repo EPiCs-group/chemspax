@@ -112,6 +112,9 @@ def calculate_distance_matrix(molecule_xyz_dataframe):
     :param molecule_xyz_dataframe:
     :return:
     """
+    # returned_distance matrix[:, 0] = atom 1 idx
+    # distance_matrix[:, 1] = atom 2 idx
+    # distance_matrix[:, 2] = distance between atom 1 and atom 2
     xyz_matrix = np.array(molecule_xyz_dataframe)[:, 1:4]
     num_rows, num_columns = xyz_matrix.shape
     distance_matrix = np.zeros((num_rows, 3))  # atom 1 index, atom 2 index, distance
@@ -139,14 +142,17 @@ def optimize_new_bond(source_xyz_filename, target_xyz_filename, central_atom_sub
         connecting it to an anchor atom. Performs force field optimization
         after, freezing the moved bond length.
     """
+    # distance matrix 2 is distance matrix of substituent group with indices in new file 
+
     # load file in molsimplify mol3D class
     complex = mol3D()
     complex.readfromxyz(source_xyz_filename)
     original_distance = []
     for i in distance_matrix2[:, 0]:
-    # move new substituent really far away
-        original_distance.append(find_distance(source_xyz_filename, int(i), skeleton_bonded_atom_index))
-        complex.BCM(int(i), skeleton_bonded_atom_index, 8)
+    # optimize new bond at correct distance
+        real_distance = find_distance(source_xyz_filename, int(i), skeleton_bonded_atom_index)
+        original_distance.append(real_distance)
+        complex.BCM_opt(int(i), skeleton_bonded_atom_index, distance_matrix, real_distance, ff_method)
     # do bond centric manipulation and force field optimization
     complex.BCM_opt(central_atom_substituent_index, skeleton_bonded_atom_index, distance_matrix, length, ff_method)
     # put new substituent back in original location
