@@ -9,16 +9,6 @@ import ase.build
 import numpy as np
 
 
-def distance(a, b):
-    """Calculate euclidian distance between 2 points
-    :param a:
-    :param b:
-    :return:
-    """
-    d = a - b
-    return np.sqrt((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2)
-
-
 def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
     """Visualize an .xyz file, number_atoms at top of .xyz needs to be correct!
 
@@ -102,15 +92,6 @@ def convert_list_of_string_to_np_array(array_string):
     """
     array_string = str(array_string).replace('[', '').replace(']', '').replace(' ', ', ').replace("'", '').split(', ')
     return np.array([float(x) for x in list(array_string)])
-
-
-def generate_random_rotation_matrix():
-    """https://math.stackexchange.com/questions/442418/random-generation-of-rotation-matrices
-
-    :return: uniformly random rotation matrix
-    """
-    q, r = np.linalg.qr(np.random.rand(3, 3))
-    return q
 
 
 if __name__ == '__main__':
