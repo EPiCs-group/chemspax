@@ -13,7 +13,8 @@ SKELETON_LIST=$(cd skeletons && ls | cut -d '.' -f 1)
 STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n1 -e | cut -d '.' -f 1)
 # select 5 random substituents with C as central atom
 RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n5 -e | cut -d '.' -f 1)
-
+echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
+echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/ssubstituents.txt
 # C-C bond length = 1.54 A
 # https://phys.org/news/2018-03-carbon-carbon-bond-length.html
 
