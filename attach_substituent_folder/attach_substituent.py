@@ -6,6 +6,7 @@
 import os
 import sys
 import ast
+import glob
 import numpy as np
 import pandas as pd
 sys.path.append("..")
@@ -44,10 +45,12 @@ class Substituent:
             if ((d[0]) ** 2 + (d[1]) ** 2 + (
                     d[2]) ** 2) < r_critical**2 and i != self.central_atom_index:
                 coordination.append([np.linalg.norm(d), current_atom[0], current_atom[1], current_atom[2]])
-        # sort by norm(d) to find the 3 shortest bonds at bottom of array
+        # sort by norm(d) to find the 3 shortest bonds at top of array
         coordination = np.array(coordination)
-        coordination = coordination[coordination[:, -1].argsort()]
-        edges = coordination[-3:, 1:4]
+        # sort in ascending order, first column is the distance
+        coordination = coordination[coordination[:, 0].argsort()]
+        # find only the xyz coordinates of shortest bonds
+        edges = coordination[0:3, 1:4]
         # scale bonds such that an hypothetical symmetrical molecule is created say C-X' C-Y' C-Z'
         for i in range(np.shape(edges)[0]):
             scale_vector(self.central_atom, (edges[i, :]-self.central_atom), self.bond_length)
@@ -178,6 +181,8 @@ class Complex:
         # print(distance_to_substituent_central_atom)
         amount_substituents = len(substituent_atoms_xyz)
         amount_skeleton_atoms = len(self.skeleton_xyz)
+        # ToDo: with this approach you're only looping over the atoms once
+        # ToDo: if the same molecule causes a problem you'll never revisit it  REDUNDANT FUNCTION
         for substituent_index in range(amount_substituents):
             # length in which we want to conduct search
             bond_length = distance_to_substituent_central_atom[substituent_index]
@@ -185,6 +190,7 @@ class Complex:
             for atom_index in range(amount_skeleton_atoms):
                 d = current_atom - input_dataframe.iloc[atom_index]
                 # if coordinates are within radius there is a interference
+                # if ((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2) < bond_length ** 2:
                 if ((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2) < bond_length ** 2:
                     # randomly rotate the substituent
                     rotation_matrix = generate_random_rotation_matrix()
@@ -235,9 +241,10 @@ class Complex:
         remove_last_line(target_path)
 
 if __name__ == "__main__":
-    # os.remove('substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    # for file in glob.glob('substituents_xyz/manually_generated/*.xyz'):
-    #     atom = Substituent(file[36:-4], 0, 2.0)
+    # os.remove('../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    # for file in glob.glob('../substituents_xyz/manually_generated/*.xyz'):
+    #     print(file)
+    #     atom = Substituent(file[39:-4], 0, 2.0)
     #     atom.write_central_atom_and_centroid_to_csv('manually')
     # ethyl has central atom index=4 and needs to be done separately
     # ethyl = Substituent('CH2CH3', 4, 2.0)
