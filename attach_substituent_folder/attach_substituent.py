@@ -49,10 +49,12 @@ class Substituent:
             if ((d[0]) ** 2 + (d[1]) ** 2 + (
                     d[2]) ** 2) < r_critical**2 and i != self.central_atom_index:
                 coordination.append([np.linalg.norm(d), current_atom[0], current_atom[1], current_atom[2]])
-        # sort by norm(d) to find the 3 shortest bonds at bottom of array
+        # sort by norm(d) to find the 3 shortest bonds at top of array
         coordination = np.array(coordination)
-        coordination = coordination[coordination[:, -1].argsort()]
-        edges = coordination[-3:, 1:4]
+        # sort in ascending order, first column is the distance
+        coordination = coordination[coordination[:, 0].argsort()]
+        # find only the xyz coordinates of shortest bonds
+        edges = coordination[0:3, 1:4]
         # scale bonds such that an hypothetical symmetrical molecule is created say C-X' C-Y' C-Z'
         for i in range(np.shape(edges)[0]):
             scale_vector(self.central_atom, (edges[i, :]-self.central_atom), self.bond_length)
