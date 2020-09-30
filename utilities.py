@@ -7,6 +7,9 @@ import ase.io as io
 from ase.visualize import view
 import ase.build
 import numpy as np
+import pandas as pd
+from openbabel import openbabel
+from openbabel import pybel
 
 
 def distance(a, b):
@@ -108,11 +111,46 @@ def generate_random_rotation_matrix():
     return q
 
 
+def read_connectivity_from_mol_file(source_file, n_atoms):
+    # https://chem.libretexts.org/Courses/University_of_Arkansas_Little_Rock/ChemInformatics_(2017)%3A_Chem_4399%2F%2F5399/2.2%3A_Chemical_Representations_on_Computer%3A_Part_II/2.2.2%3A_Anatomy_of_a_MOL_file
+    skip_rows = n_atoms + 4  # title line, whiteline, comment line, n_atoms & n_bonds line = 4 lines to skip
+    connectivity = pd.read_table(source_file, skiprows=skip_rows, delim_whitespace=True, header=None)
+    # drop last 'M END' line
+    connectivity = connectivity.drop([len(connectivity) - 1])
+    return connectivity
+
+
+def convert_xyz_2_mol_file(source_file):
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("xyz", "mol")
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, source_file)
+    target_filename = source_file[:-4] + '.mol'
+    obConversion.WriteFile(mol, target_filename)
+
+
+def convert_mol_2_xyz_file(source_file):
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("mol", "xyz")
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, source_file)
+    target_filename = source_file[:-4] + '.xyz'
+    obConversion.WriteFile(mol, target_filename)
+    # mol = pybel.Molecule(pybel.readfile('mol', source_file))
+    # mol_output = pybel.Outputfile('xyz', "something")
+    # mol_output.write(mol)
+
+    # mol = pybel.readfile('mol', source_file)
+    # mol.write('xyz', 'moh')
+
+
 if __name__ == '__main__':
     # molec = 'H2O'
     # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
     # visualize_xyz_file('substituents_xyz/automatically_generated/something.xyz', True, False)
-    visualize_xyz_file('skeletons/RuPNP_iPr_skl.xyz', False, False)
+    # visualize_xyz_file('skeletons/RuPNP_iPr_skl.xyz', False, False)
     # print(convert_list_of_string_to_np_array(['[-0.33332174004836124 0.9428131403470853 0.0]']))
     # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
     # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
+    # print(read_connectivity_from_mol_file('random.mol', 98))
+    convert_mol_2_xyz_file('random.mol')

@@ -79,11 +79,12 @@ class Complex:
     def __init__(self, source_data, substituent_to_be_attached, path_to_database):
         # skeleton data
         self.skeleton_path = source_data
+        # for the first usage this is purely the skeleton, for recursive usage it's skeleton + prev. functionalization
         self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
-        substituent_folder = 'substituents_xyz/manually_generated/'
+        substituent_folder = '../substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.substituent_path = substituent_folder + self.substituent_molecule + extension
         self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
@@ -170,8 +171,10 @@ class Complex:
         return substituent_vectors
 
     def scan_and_translate_substituent(self, input_dataframe):
+        functionalized_skeleton_substituent_central_atom_index = len(input_dataframe) \
+                                                                 + int(self.substituent_central_atom_index)
         substituent_central_atom_xyz = np.array(
-            input_dataframe.iloc[self.skeleton_atom_to_be_functionalized_index].values)
+            input_dataframe.iloc[functionalized_skeleton_substituent_central_atom_index].values)
         substituent_atoms_xyz = np.array(input_dataframe.iloc[len(self.skeleton_xyz):].values)
 
         # find distances of substituent atoms to central atom of substituent group
@@ -205,8 +208,52 @@ class Complex:
 
         return input_dataframe
 
+    def write_connectivity_in_file(self, target_path, new_connectivity_data):
+        # ToDo: not readable by avogadro, error with indentation in file maybe?
+        # convert connectivity data to ints
+        new_connectivity_data = new_connectivity_data.astype(int)
+
+
+        # save first part of file to write later
+        lines = open(target_path).readlines()
+        n_atoms = len(self.skeleton_xyz) - 1 + len(self.substituent_xyz)
+        n_atoms_and_comments = n_atoms + 4
+
+        first_part = lines[:n_atoms_and_comments]
+
+        # read data and skip first 4 lines
+        all_data = pd.read_table(target_path, skiprows=4, delim_whitespace=True, header=None)
+        # fill NaN with space
+        all_data = all_data.fillna('')
+        # save ending line to write at end of file
+        end_line = all_data.iloc[[-1]]
+
+        # outdated
+        # drop all connectivity data in original file
+        # molecule_data = all_data.drop(all_data.index[n_atoms:len(all_data)])
+        # molecule_data.insert(0, 16, '')
+        # convert values after atom to int
+        # convert_dict = {4: int, 5: int, 6: int, 7: int, 8: int, 9: int, 10: int,
+        #                 11: int, 12: int, 13: int, 14: int, 15: int}
+        # molecule_data = molecule_data.astype(convert_dict)
+
+        # concat data to get it in .mol format
+        # mol_file_data = pd.concat([molecule_data, new_connectivity_data, end_line])
+        # mol_file_data = pd.concat([new_connectivity_data, end_line])
+
+        # write new .mol file correctly
+        os.remove(target_path)  # delete original file to prevent errors
+        with open(target_path, 'w') as wr:
+            wr.writelines(first_part)
+
+        # new_connectivity_data.to_csv(target_path, sep='  ', header=False, index=False, mode='a')
+        f = open(target_path, 'ab')  # open file in binary to be able to append with np.savetxt
+        np.savetxt(f, new_connectivity_data, delimiter='  ', fmt='%d')  # pd doesn't support '  ' as delimiter
+        f.close()
+        end_line.to_csv(target_path, sep=' ', header=False, index=False, mode='a')
+
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
-        folder = 'substituents_xyz/automatically_generated/'
+        folder = '../substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension
 
@@ -214,12 +261,13 @@ class Complex:
         substituent_vectors = self.generate_substituent_group_vector(float(length_skeleton_bonded_substituent_central))
         substituents_new_data = self.substituent_xyz.copy()  # always copy a df to modify it!
         substituents_new_data.loc[:, ['x', 'y', 'z']] = substituent_vectors
-        # replace skeleton_atom_to_be_functionalized with central atom of substituent group
+        # remove skeleton_atom_to_be_functionalized and place substituent data at end of file
         skeleton_new_data = self.skeleton_xyz.copy()
-        skeleton_new_data.loc[self.skeleton_atom_to_be_functionalized_index, :] = \
-            substituents_new_data.loc[self.substituent_central_atom_index, :]
-        # remove central atom from dataframe of substituent group
-        substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
+        skeleton_new_data = skeleton_new_data.drop([self.skeleton_atom_to_be_functionalized_index])
+        # skeleton_new_data.loc[self.skeleton_atom_to_be_functionalized_index, :] = \
+        #     substituents_new_data.loc[self.substituent_central_atom_index, :]
+        # # remove central atom from dataframe of substituent group
+        # substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
         # concat both dataframes
         write_data = pd.concat([skeleton_new_data, substituents_new_data])
         write_data = write_data.astype({'x': float, 'y': float, 'z': float})  # correct types in df
@@ -227,7 +275,7 @@ class Complex:
         # increase n_atoms of source file accordingly
         with open(self.skeleton_path) as f:
             n_atoms = int(f.readline())
-        n_atoms += len(substituents_new_data)
+        n_atoms += len(substituents_new_data) - 1  # atom_to_be_functionalized is dropped so 1 less atom to count
         # write to file
         with open(target_path, 'w') as wr:
             wr.write(str(n_atoms) + '\n')
@@ -239,6 +287,71 @@ class Complex:
         write_data.to_csv(target_path, sep=' ', header=False, mode='a')
         # remove last whiteline generated by pandas' to_csv function
         remove_last_line(target_path)
+
+        # fix bug with bonds being formed & weirdly broken
+        # remember, indexing in .mol files starts from 1 for some reason...
+
+        # # convert skeleton to .mol
+        # convert_xyz_2_mol_file(self.skeleton_path)
+        # # read connectivity of skeleton
+        # skeleton_connectivity = read_connectivity_from_mol_file(self.skeleton_path[:-4]+'.mol', len(self.skeleton_xyz))
+        # # skeleton_connectivity = skeleton_connectivity.drop([self.skeleton_atom_to_be_functionalized_index])
+        # skeleton_connectivity = skeleton_connectivity.astype(int)
+        # # substituent is pasted below skeleton data so index of central atom += len(original skeleton)
+        # new_substituent_central_atom_index = self.substituent_central_atom_index + len(self.skeleton_xyz)
+        #
+        # # print(skeleton_connectivity[0])
+        #
+        # # drop bonds with atom_to_be_functionalized
+        # skeleton_connectivity = skeleton_connectivity[skeleton_connectivity[0] != self.skeleton_atom_to_be_functionalized_index+1]
+        # skeleton_connectivity = skeleton_connectivity[skeleton_connectivity[1] != self.skeleton_atom_to_be_functionalized_index+1]
+        #
+        # # replace atom_to_be_functionalized with substituent central atom
+        # # skeleton_connectivity[0] = skeleton_connectivity[0].apply(lambda
+        # #                                                               x: new_substituent_central_atom_index if x == self.skeleton_atom_to_be_functionalized_index + 1 else x)
+        # # skeleton_connectivity[1] = skeleton_connectivity[1].apply(lambda
+        # #                                                               x: new_substituent_central_atom_index if x == self.skeleton_atom_to_be_functionalized_index + 1 else x)
+        #
+        # # drop weird boundary condition where bond is formed between substituent_central_atom and atom_to_be_functionalized+2
+        # # skeleton_connectivity = skeleton_connectivity[(skeleton_connectivity[0]<self.skeleton_atom_to_be_functionalized_index+1)&(skeleton_connectivity[1]<new_substituent_central_atom_index)]
+        # # skeleton_connectivity = skeleton_connectivity[(skeleton_connectivity[1]<self.skeleton_atom_to_be_functionalized_index)&(skeleton_connectivity[0]<new_substituent_central_atom_index)]
+        #
+        # # since atom_to_be_functionalized is dropped the indices of atoms below that need to be decreased by 1
+        # skeleton_connectivity[0] = skeleton_connectivity[0].apply(lambda x: x-1 if x > self.skeleton_atom_to_be_functionalized_index+1 else x)
+        # skeleton_connectivity[1] = skeleton_connectivity[1].apply(lambda x: x-1 if x > self.skeleton_atom_to_be_functionalized_index+1 else x)
+        #
+        # # print(skeleton_connectivity.loc[:, 0]>=self.skeleton_atom_to_be_functionalized_index
+        # # print(skeleton_connectivity[skeleton_connectivity[0]>=self.skeleton_atom_to_be_functionalized_index][0])
+        # # skeleton_connectivity[skeleton_connectivity[0]>=self.skeleton_atom_to_be_functionalized_index][0] = skeleton_connectivity[skeleton_connectivity[0]>=self.skeleton_atom_to_be_functionalized_index][0] - 1
+        # # skeleton_connectivity[skeleton_connectivity[1]>=self.skeleton_atom_to_be_functionalized_index][1] = skeleton_connectivity[skeleton_connectivity[1]>=self.skeleton_atom_to_be_functionalized_index][1] - 1
+        # # skeleton_connectivity.loc[self.skeleton_atom_to_be_functionalized_index:, [0, 1]] = skeleton_connectivity.loc[self.skeleton_atom_to_be_functionalized_index:, [0, 1]] - 1
+        #
+        # # append new bond between substituent_central_atom and skeleton_bonded_atom
+        # new_bond = pd.DataFrame({0: [new_substituent_central_atom_index], 1: [self.skeleton_bonded_atom_index+1], 2: [1],
+        #                          3: [0], 4: [0], 5: [0], 6: [0]})
+        # skeleton_connectivity = skeleton_connectivity.append(new_bond)
+        # skeleton_connectivity = skeleton_connectivity.astype(int)
+        # # convert substituent to .mol
+        # convert_xyz_2_mol_file(self.substituent_path)
+        # # read connectivity of substituent
+        # substituent_connectivity = read_connectivity_from_mol_file(self.substituent_path[:-4]+'.mol', len(self.substituent_xyz))
+        # substituent_connectivity = substituent_connectivity.astype(int)
+        # # make indices correct, originally from substituent file indices start from 0, now: 0 + len(skeleton)
+        # # for initial case, for recursive case: 0 + len(skeleton) + len(substituent)
+        # substituent_connectivity[0] = substituent_connectivity[0] + len(skeleton_new_data)
+        # substituent_connectivity[1] = substituent_connectivity[1] + len(skeleton_new_data)
+        # # concat connectivities
+        # total_connectivities = pd.concat([skeleton_connectivity, substituent_connectivity])
+
+        # convert functionalized skeleton to .mol
+        # convert_xyz_2_mol_file(target_path)
+        # write connectivities in functionalized skeleton .mol file
+        # self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
+        # convert .mol file back to xyz file
+        # convert_mol_2_xyz_file(target_path[:-4]+'.mol')  # functionalization list is written correctly by obabel? :)
+        # remove last white line
+        # remove_last_line(target_path)
+
 
 if __name__ == "__main__":
     # os.remove('../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
@@ -254,9 +367,13 @@ if __name__ == "__main__":
     for item in folder:
         if item.endswith(".xyz"):
             os.remove(os.path.join(folder_name, item))
+        elif item.endswith(".mol"):
+            os.remove(os.path.join(folder_name, item))
+
     some_complex = Complex('../skeletons/RuPNP_aromatic_tBu.xyz', 'CCCl3CCl3CCl3',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('something', 1.54)
+    # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
     other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'CCCl3CCl3CCl3',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
