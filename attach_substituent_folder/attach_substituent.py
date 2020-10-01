@@ -218,13 +218,12 @@ class Complex:
         n_atoms_and_comments = n_atoms + 4
 
         first_part = lines[:n_atoms_and_comments]
+        # ToDO: bugfix this for all cases
         first_part[3] = print_mol_counts_block(n_atoms, len(new_connectivity_data), 0)  # make counts block correct
         # read data and skip first 4 lines
         all_data = pd.read_table(target_path, skiprows=4, delim_whitespace=True, header=None)
-        # fill NaN with space
-        all_data = all_data.fillna('')
-        # save ending line to write at end of file
-        end_line = all_data.iloc[[-1]]
+        # fill NaN with space & save ending line to write at end of file
+        end_line = all_data.fillna('').iloc[[-1]]
 
         # write new .mol file correctly
         os.remove(target_path)  # delete original file to prevent errors
@@ -234,6 +233,20 @@ class Complex:
         f = open(target_path, 'ab')  # open file in binary to be able to append with np.savetxt
         np.savetxt(f, new_connectivity_data, delimiter='  ', fmt='%d')  # pd doesn't support '  ' as delimiter :(
         f.close()
+
+        # add correct spacing at beginning of connectivity table
+        f = open(target_path, 'r')
+        lines = f.readlines()
+        connectivity_lines_only = lines[n_atoms_and_comments:]
+        newlines = []
+        for line in connectivity_lines_only:
+            line = print_correct_connectivity_line(line)
+            newlines.append(line)
+        wr = open(target_path, 'w')
+        lines_above_connectivity_lines = lines[:n_atoms_and_comments]
+        wr.writelines(lines_above_connectivity_lines + newlines)
+        wr.close()
+
         end_line.to_csv(target_path, sep=' ', header=False, index=False, mode='a')
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
@@ -353,3 +366,9 @@ if __name__ == "__main__":
     other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'CCCl3CCl3CCl3',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
+    some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3CCl3',
+                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)
+    other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'CCCl3CCl3CCl3',
+                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    other_other_complex.generate_substituent_and_write_xyz('something_3', 1.54)

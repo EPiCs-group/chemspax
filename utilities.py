@@ -111,11 +111,28 @@ def generate_random_rotation_matrix():
 
 
 def read_connectivity_from_mol_file(source_file, n_atoms):
+    # ToDO: delimiter is not always a space if index1=56 and index2=103 there is no space
     # https://chem.libretexts.org/Courses/University_of_Arkansas_Little_Rock/ChemInformatics_(2017)%3A_Chem_4399%2F%2F5399/2.2%3A_Chemical_Representations_on_Computer%3A_Part_II/2.2.2%3A_Anatomy_of_a_MOL_file
     skip_rows = n_atoms + 4  # title line, whiteline, comment line, n_atoms & n_bonds line = 4 lines to skip
     connectivity = pd.read_table(source_file, skiprows=skip_rows, delim_whitespace=True, header=None)
+
+    # print(connectivity.loc[connectivity[0] == 56103]) #= int(connectivity[0])[3:]
     # drop last 'M END' line
     connectivity = connectivity.drop([len(connectivity) - 1])
+
+    connectivity = connectivity.fillna(0)
+    connectivity = connectivity.astype(int)
+
+    # if there is no space between idx1 and idx2 the numbers still need to be separated
+    # this happens if idx2 > 99, for example: 56 103 --> 56103 or if idx1 and idx2 are > 99 for ex: 100 100 --> 100100
+    for i in range(len(connectivity)):
+        current_row = connectivity.loc[i, [0]]
+        if current_row[0] > 1100:  # 1 100 is the lowest set of integers for which this problem will occur
+            row_string = str(current_row[0]).strip()
+            if len(row_string) == 5:
+                connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), 1
+            elif len(row_string) == 6:
+                connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), 1
     return connectivity
 
 
@@ -135,18 +152,57 @@ def convert_mol_2_xyz_file(source_file):
     obConversion.ReadFile(mol, source_file)
     target_filename = source_file[:-4] + '.xyz'
     obConversion.WriteFile(mol, target_filename)
-    # mol = pybel.Molecule(pybel.readfile('mol', source_file))
-    # mol_output = pybel.Outputfile('xyz', "something")
-    # mol_output.write(mol)
-
-    # mol = pybel.readfile('mol', source_file)
-    # mol.write('xyz', 'moh')
 
 
 def print_mol_counts_block(n_atoms, n_bonds, chiral=0):
+    # ToDo: fix how this works if n_atoms or n_bonds > 99 and has 3 numbers
     line = ' ' + str(n_atoms) + str(n_bonds) + '  ' + '0' + '  ' + '0' + '  ' + str(chiral) + '  ' + '0' + '  ' + '0' \
            + '  ' + '0' + '  ' + '0' + '  ' + '0999' + ' ' + 'V2000' + '\n'
     return line
+
+
+def print_correct_connectivity_line(line):
+    line_list = line.split('  ')
+    to_return = ['  ' for i in range(16)]  # initialize empty list with 2 spaces as separator
+
+    # 6 cases, either idx 1 is 1 10 100 or idx is 1 10 100
+    atom_index_1 = line_list[0]
+    if len(atom_index_1) == 3:
+        to_return[0] = atom_index_1[0]
+        to_return[1] = atom_index_1[1]
+        to_return[2] = atom_index_1[2]
+    elif len(atom_index_1) == 2:
+        to_return[0] = ' '
+        to_return[1] = atom_index_1[0]
+        to_return[2] = atom_index_1[1]
+    elif len(atom_index_1) == 1:
+        to_return[0] = ' '
+        to_return[1] = ' '
+        to_return[2] = atom_index_1
+
+    atom_index_2 = line_list[1]
+    if len(atom_index_2) == 3:
+        to_return[3] = atom_index_2[0]
+        to_return[4] = atom_index_2[1]
+        to_return[5] = atom_index_2[2]
+    elif len(atom_index_2) == 2:
+        to_return[3] = ' '
+        to_return[4] = atom_index_2[0]
+        to_return[5] = atom_index_2[1]
+    elif len(atom_index_2) == 1:
+        to_return[3] = ' '
+        to_return[4] = ' '
+        to_return[5] = atom_index_2
+
+    # the rest of the line is static with 2 spaces as separator
+    to_return[7] = line_list[2]
+    to_return[9] = line_list[3]
+    to_return[11] = line_list[4]
+    to_return[13] = line_list[5]
+    to_return[15] = line_list[6]
+
+    to_return = ''.join([str(elem) for elem in to_return])  # turn list into string
+    return to_return
 
 
 if __name__ == '__main__':
@@ -158,5 +214,7 @@ if __name__ == '__main__':
     # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
     # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
     # print(read_connectivity_from_mol_file('random.mol', 98))
-    convert_mol_2_xyz_file('random.mol')
+    # convert_mol_2_xyz_file('random.mol')
+    # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))
+    print_correct_connectivity_line('120  113  1  0  0  0  0')
