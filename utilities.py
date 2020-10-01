@@ -9,7 +9,6 @@ import ase.build
 import numpy as np
 import pandas as pd
 from openbabel import openbabel
-from openbabel import pybel
 
 
 def distance(a, b):
@@ -144,6 +143,12 @@ def convert_mol_2_xyz_file(source_file):
     # mol.write('xyz', 'moh')
 
 
+def print_mol_counts_block(n_atoms, n_bonds, chiral=0):
+    line = ' ' + str(n_atoms) + str(n_bonds) + '  ' + '0' + '  ' + '0' + '  ' + str(chiral) + '  ' + '0' + '  ' + '0' \
+           + '  ' + '0' + '  ' + '0' + '  ' + '0999' + ' ' + 'V2000' + '\n'
+    return line
+
+
 if __name__ == '__main__':
     # molec = 'H2O'
     # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
@@ -154,3 +159,4 @@ if __name__ == '__main__':
     # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
     # print(read_connectivity_from_mol_file('random.mol', 98))
     convert_mol_2_xyz_file('random.mol')
+    # print(print_mol_counts_block(15, 15, 0))
