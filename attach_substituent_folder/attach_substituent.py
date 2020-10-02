@@ -337,9 +337,9 @@ class Complex:
         # write connectivities in functionalized skeleton .mol file
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
         # convert .mol file back to xyz file
-        # convert_mol_2_xyz_file(target_path[:-4]+'.mol')  # functionalization list is written correctly by obabel? :)
+        convert_mol_2_xyz_file(target_path[:-4]+'.mol')  # functionalization list is written correctly by obabel? :)
         # remove last white line
-        # remove_last_line(target_path)
+        remove_last_line(target_path)
 
 
 if __name__ == "__main__":
