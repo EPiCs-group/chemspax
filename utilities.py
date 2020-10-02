@@ -130,10 +130,10 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
         if current_row[0] > 1100:  # 1 100 is the lowest set of integers for which this problem will occur
             row_string = str(current_row[0]).strip()
             if len(row_string) == 5:
-                connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), int(connectivity.loc[i, [2]].
+                connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), int(connectivity.loc[i, [1]].
                                                                                                values)
             elif len(row_string) == 6:
-                connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), int(connectivity.loc[i, [2]].
+                connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), int(connectivity.loc[i, [1]].
                                                                                                values)
     return connectivity
 

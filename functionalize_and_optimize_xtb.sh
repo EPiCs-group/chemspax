@@ -33,35 +33,33 @@ for skeleton in ${SKELETON_LIST}; do
 #    N_SKELETON_ATOMS=$(sed '1q;d' ${SOURCE_FILE}.xyz)
     # optimization
     cd substituents_xyz/automatically_generated/
-    obminimize -ff Uff ${TARGET_NAME}_${i}.mol
 #    echo "\$wall\n   potential=logfermi\n   sphere: auto, all\n\$constrain\n   force constant=0.9\n   elements: C,H,N,O,Cl,I,Br,F,Ru,P\n\$fix\n   atoms: 1-${N_SKELETON_ATOMS}\n\$end" > xtb.inp
-#    xtb ${TARGET_NAME}_${i}.mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+    xtb ${TARGET_NAME}_${i}.mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
-    FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
-    sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_${i}.mol
+    FUNCTIONALIZATION_LIST=$(sed '1q;d' ${TARGET_NAME}_${i}.mol)
+    sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.mol
     # convert mol file to xyz file to use as next input
-#    babel xtbopt.mol -O xtbopt.xyz
+    babel xtbopt.mol -O xtbopt.xyz
     # clean up mess and move relevant file to correct folder
-#    mv xtbopt.mol optimized_structures/${TARGET_NAME}_${i}_opt.mol
-#    mv xtbopt.xyz optimized_structures/${TARGET_NAME}_${i}_opt.xyz
-#    rm -f xtbrestart
+    mv xtbopt.mol optimized_structures/${TARGET_NAME}_${i}_opt.mol
+    mv xtbopt.xyz optimized_structures/${TARGET_NAME}_${i}_opt.xyz
+    rm -f xtbrestart
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
-        python3 main_attach_substituent.py substituents_xyz/automatically_generated/${TARGET_NAME}_${i}.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+        python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
         # optimization
 	    cd substituents_xyz/automatically_generated
-	    obminimize -ff Uff ${TARGET_NAME}_$((i+1)).mol
-#        xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
+        xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
-        FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
-        sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_$((i+1)).mol
+        FUNCTIONALIZATION_LIST=$(sed '1q;d' ${TARGET_NAME}_$((i+1)).mol)
+        sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.mol
         # convert mol file to xyz file to use as next input
-#        babel xtbopt.mol -O xtbopt.xyz
+        babel xtbopt.mol -O xtbopt.xyz
         # clean up mess and move relevant file to correct folder
-#        mv xtbopt.mol optimized_structures/${TARGET_NAME}_$((i+1))_opt.mol
-#        mv xtbopt.xyz optimized_structures/${TARGET_NAME}_$((i+1))_opt.xyz
-#        rm -f xtbrestart
+        mv xtbopt.mol optimized_structures/${TARGET_NAME}_$((i+1))_opt.mol
+        mv xtbopt.xyz optimized_structures/${TARGET_NAME}_$((i+1))_opt.xyz
+        rm -f xtbrestart
 	    cd -
         i=$((i+1))
         done
