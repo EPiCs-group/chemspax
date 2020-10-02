@@ -130,9 +130,11 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
         if current_row[0] > 1100:  # 1 100 is the lowest set of integers for which this problem will occur
             row_string = str(current_row[0]).strip()
             if len(row_string) == 5:
-                connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), 1
+                connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), int(connectivity.loc[i, [2]].
+                                                                                               values)
             elif len(row_string) == 6:
-                connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), 1
+                connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), int(connectivity.loc[i, [2]].
+                                                                                               values)
     return connectivity
 
 
@@ -154,11 +156,29 @@ def convert_mol_2_xyz_file(source_file):
     obConversion.WriteFile(mol, target_filename)
 
 
-def print_mol_counts_block(n_atoms, n_bonds, chiral=0):
-    # ToDo: fix how this works if n_atoms or n_bonds > 99 and has 3 numbers
-    line = ' ' + str(n_atoms) + str(n_bonds) + '  ' + '0' + '  ' + '0' + '  ' + str(chiral) + '  ' + '0' + '  ' + '0' \
-           + '  ' + '0' + '  ' + '0' + '  ' + '0999' + ' ' + 'V2000' + '\n'
-    return line
+def print_mol_counts_block(old_string, n_atoms, n_bonds):
+    n_atoms = str(n_atoms)
+    n_bonds = str(n_bonds)
+    static_part = old_string[6:]
+
+    # the first 6 places are reserved for n_atoms and n_bonds, these need to be formattted correctly
+    if len(n_atoms) == 1:
+        new_string = '  ' + n_atoms
+    elif len(n_atoms) == 2:
+        new_string = ' ' + n_atoms
+    else:
+        new_string = n_atoms
+
+    if len(n_bonds) == 1:
+        new_string += '  ' + n_bonds
+    elif len(n_bonds) == 2:
+        new_string += ' ' + n_bonds
+    else:
+        new_string += n_bonds
+    # the rest of the string stays the same and can be added back
+    new_string += static_part
+
+    return new_string
 
 
 def print_correct_connectivity_line(line):

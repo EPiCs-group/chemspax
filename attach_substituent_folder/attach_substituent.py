@@ -219,7 +219,7 @@ class Complex:
 
         first_part = lines[:n_atoms_and_comments]
         # ToDO: bugfix this for all cases
-        first_part[3] = print_mol_counts_block(n_atoms, len(new_connectivity_data), 0)  # make counts block correct
+        first_part[3] = print_mol_counts_block(first_part[3], n_atoms, len(new_connectivity_data))  # correct counts
         # read data and skip first 4 lines
         all_data = pd.read_table(target_path, skiprows=4, delim_whitespace=True, header=None)
         # fill NaN with space & save ending line to write at end of file
