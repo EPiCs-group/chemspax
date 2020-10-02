@@ -247,7 +247,9 @@ class Complex:
         wr.writelines(lines_above_connectivity_lines + newlines)
         wr.close()
 
-        end_line.to_csv(target_path, sep=' ', header=False, index=False, mode='a')
+        f = open(target_path, 'ab')  # open file in binary to be able to append with np.savetxt
+        np.savetxt(f, end_line, delimiter='  ', fmt="%s")  # pd doesn't support '  ' as delimiter :(
+        f.close()
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
         folder = 'substituents_xyz/automatically_generated/'
