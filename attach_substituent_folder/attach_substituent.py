@@ -337,7 +337,14 @@ class Complex:
         # write connectivities in functionalized skeleton .mol file
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
         # convert .mol file back to xyz file
-        convert_mol_2_xyz_file(target_path[:-4]+'.mol')  # functionalization list is written correctly by obabel? :)
+        convert_mol_2_xyz_file(target_path[:-4]+'.mol')
+        # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
+        f = open(target_path)
+        lines = f.readlines()
+        lines[1] = str(self.functionalization_site_list) + '\n'
+        wr = open(target_path, 'w')
+        wr.writelines(lines)
+        wr.close()
         # remove last white line
         remove_last_line(target_path)
 

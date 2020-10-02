@@ -48,7 +48,7 @@ for skeleton in ${SKELETON_LIST}; do
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
-        python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+        python3 main_attach_substituent.py substituents_xyz/automatically_generated/${TARGET_NAME}_${i}.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
         # optimization
 	    cd substituents_xyz/automatically_generated
 	    obminimize -ff Uff ${TARGET_NAME}_$((i+1)).mol
