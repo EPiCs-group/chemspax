@@ -261,15 +261,28 @@ class Complex:
         # remove skeleton_atom_to_be_functionalized and place substituent data at end of file
         skeleton_new_data = self.skeleton_xyz.copy()
         skeleton_new_data = skeleton_new_data.drop([self.skeleton_atom_to_be_functionalized_index])
-        # since atom_to_be_functionalized is dropped indices in functionalization list need to shift
-        self.functionalization_site_list = [[x-1 for x in y if x > self.skeleton_atom_to_be_functionalized_index]
-                                            for y in self.functionalization_site_list]
 
         # old method: write substituent central atom at atom_to_be_functinoalized and paste rest of sub. to bottom
         # skeleton_new_data.loc[self.skeleton_atom_to_be_functionalized_index, :] = \
         #     substituents_new_data.loc[self.substituent_central_atom_index, :]
         # # remove central atom from dataframe of substituent group
         # substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
+
+        # since atom_to_be_functionalized is dropped indices in functionalization list need to shift
+        # ToDO: seems to be flaky and returning an empty list in some cases, lacks else case
+        # self.functionalization_site_list = [[x-1 for x in y if x > self.skeleton_atom_to_be_functionalized_index]
+        #                                     for y in self.functionalization_site_list]
+        # make nested list as big as functionalization list
+        new_functionalization_list = [[] for i in range(len(self.functionalization_site_list))]
+        for i in range(len(self.functionalization_site_list)):
+            some_list = self.functionalization_site_list[i]
+            for j in range(len(some_list)):
+                item = some_list[j]
+                # shift is only needed if item contains index larger than atom to be functionalized
+                item = item - 1 if item > self.skeleton_atom_to_be_functionalized_index else item
+                some_list[j] = item
+            new_functionalization_list[i] = some_list
+        self.functionalization_site_list = new_functionalization_list
 
         # concat both dataframes
         write_data = pd.concat([skeleton_new_data, substituents_new_data])
@@ -334,27 +347,27 @@ class Complex:
 
         # convert functionalized skeleton to .mol
         convert_xyz_2_mol_file(target_path)
-        # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
-        f = open(target_path[:-4]+'.mol')
-        lines = f.readlines()
-        lines[0] = str(self.functionalization_site_list) + '\n'
-        wr = open(target_path[:-4]+'.mol', 'w')
-        wr.writelines(lines)
-        wr.close()
+        # # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
+        # f = open(target_path[:-4]+'.mol')
+        # lines = f.readlines()
+        # lines[0] = str(self.functionalization_site_list) + '\n'
+        # wr = open(target_path[:-4]+'.mol', 'w')
+        # wr.writelines(lines)
+        # wr.close()
         # write connectivities in functionalized skeleton .mol file
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
 
         # convert .mol file back to xyz file
-        convert_mol_2_xyz_file(target_path[:-4]+'.mol')
-        # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
-        f = open(target_path)
-        lines = f.readlines()
-        lines[1] = str(self.functionalization_site_list) + '\n'
-        wr = open(target_path, 'w')
-        wr.writelines(lines)
-        wr.close()
-        # remove last white line
-        remove_last_line(target_path)
+        # convert_mol_2_xyz_file(target_path[:-4]+'.mol')
+        # # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
+        # f = open(target_path)
+        # lines = f.readlines()
+        # lines[1] = str(self.functionalization_site_list) + '\n'
+        # wr = open(target_path, 'w')
+        # wr.writelines(lines)
+        # wr.close()
+        # # remove last white line
+        # remove_last_line(target_path)
 
 
 if __name__ == "__main__":
