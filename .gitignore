@@ -98,4 +98,5 @@ logfile.txt
 skeletons/*.mol
 substituents_xyz/automatically_generated/*.xyz
 substituents_xyz/automatically_generated/*.mol
+temp_skeletons_file
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all

@@ -22,7 +22,7 @@ shopt -s xpg_echo
 
 # write skeletons to temp_file to iterate over them
 cd skeletons
-ls -ltr *.xyz | awk '{print $10}' > ../temp_file
+ls -ltr *.xyz | awk '{print $10}' > ../temp_skeletons_file
 N=$(wc -l temp_file | cut -d' ' -f1)
 cd /home/akalikadien/auto_func
 
