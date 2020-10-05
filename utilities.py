@@ -112,12 +112,16 @@ def generate_random_rotation_matrix():
 
 
 def read_connectivity_from_mol_file(source_file, n_atoms):
-    # ToDO: delimiter is not always a space if index1=56 and index2=103 there is no space
+    """Reads connectivity from a .mol file, each number in .mol file has 3 allocated spaces and the file looks like:
+    idx1 idx2 bond_type bond_stereochemistry 0 0 0
+    :param source_file:
+    :param n_atoms:
+    :return: connectivity block from .mol file except 'M  END' line
+    """
     # https://chem.libretexts.org/Courses/University_of_Arkansas_Little_Rock/ChemInformatics_(2017)%3A_Chem_4399%2F%2F5399/2.2%3A_Chemical_Representations_on_Computer%3A_Part_II/2.2.2%3A_Anatomy_of_a_MOL_file
     skip_rows = n_atoms + 4  # title line, whiteline, comment line, n_atoms & n_bonds line = 4 lines to skip
     connectivity = pd.read_table(source_file, skiprows=skip_rows, delim_whitespace=True, header=None)
 
-    # print(connectivity.loc[connectivity[0] == 56103]) #= int(connectivity[0])[3:]
     # drop last 'M END' line
     connectivity = connectivity.drop([len(connectivity) - 1])
 
@@ -140,6 +144,11 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
 
 
 def convert_xyz_2_mol_file(source_file):
+    """Converts .xyz to .mol file with the same filename
+
+    :param source_file:
+    :return: .mol file with same filename as .xyz file
+    """
     obConversion = openbabel.OBConversion()
     obConversion.SetInAndOutFormats("xyz", "mol")
     mol = openbabel.OBMol()
@@ -149,6 +158,11 @@ def convert_xyz_2_mol_file(source_file):
 
 
 def convert_mol_2_xyz_file(source_file):
+    """Converts .mol to .xyz file with the same filename
+
+        :param source_file:
+        :return: .xyz file with same filename as .mol file
+    """
     obConversion = openbabel.OBConversion()
     obConversion.SetInAndOutFormats("mol", "xyz")
     mol = openbabel.OBMol()
@@ -158,6 +172,13 @@ def convert_mol_2_xyz_file(source_file):
 
 
 def print_mol_counts_block(old_string, n_atoms, n_bonds):
+    """The counts block in a .mol file is corrected based on bonds and atoms given
+
+    :param old_string:
+    :param n_atoms:
+    :param n_bonds:
+    :return: corrected counts block of .mol file
+    """
     n_atoms = str(n_atoms)
     n_bonds = str(n_bonds)
     static_part = old_string[6:]
@@ -183,6 +204,17 @@ def print_mol_counts_block(old_string, n_atoms, n_bonds):
 
 
 def print_correct_connectivity_line(line):
+    """A line delimited by 2 spaces is read and correctly formatted to correspond with the official .mol format.
+    Each number has 3 allocated spaces, as explained in the docstring of read_connectivity_from_mol_file there are 7
+    numbers. This means that the line is formatted as:
+    '...''...''...''...''...''...''...' the most right space is allocated to the first number and if the tens are
+    reached the middle space is allocated as well, the left space is allocated ones the hundreds are reached.
+    So the possibilities are (where \w == a whitespace):
+    '\w\w1' '\w10' '100'
+    Notice that this function currently only supports indexes that are < 1000.
+    :param line:
+    :return: correctly formatted line in connectivity block of .mol file
+    """
     line_list = line.split('  ')
     to_return = ['  ' for i in range(16)]  # initialize empty list with 2 spaces as separator
 
@@ -227,6 +259,12 @@ def print_correct_connectivity_line(line):
 
 
 def ff_optimize(source_file, ff_method='uff'):
+    """Uses openbabenl's ff optimization to locally optimize a molecule and write it back to the same file
+
+    :param source_file:
+    :param ff_method:
+    :return: optimized .mol file with the same filename
+    """
     obconversion = openbabel.OBConversion()
     obconversion.SetInFormat('mol')
     mol = openbabel.OBMol()

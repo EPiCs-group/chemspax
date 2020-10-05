@@ -106,8 +106,6 @@ class Complex:
         with open(self.skeleton_path) as f:
             lines = f.readlines()
             self.functionalization_site_list = lines[1]
-            # print(self.functionalization_site_list)
-            # f.close()
         # convert list from string to integer
         self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)
         if len(self.functionalization_site_list) != 0:
@@ -150,7 +148,6 @@ class Complex:
             rotation_matrix = np.eye(3) + v_x + v_xsq * (1 / (1 + c))
         else:
             rotation_matrix = np.eye(3)
-            # raise RotationMatrixError
 
         n_atoms, n_columns = len(self.substituent_xyz), len(self.substituent_xyz.columns)  # atoms in substituent group
         substituent_vectors = np.array(self.substituent_xyz.loc[:, ['x', 'y', 'z']].values)  # xyz only
@@ -169,44 +166,6 @@ class Complex:
             # ToDo: for O-CH3 do new_position_substituent - Oxygen, how to detect these cases?
             substituent_vectors[i, :] = substituent_vectors[i, :] + (new_position_substiuent - substituent_central_atom)
         return substituent_vectors
-
-    def scan_and_translate_substituent(self, input_dataframe):
-        functionalized_skeleton_substituent_central_atom_index = len(input_dataframe) \
-                                                                 + int(self.substituent_central_atom_index)
-        substituent_central_atom_xyz = np.array(
-            input_dataframe.iloc[functionalized_skeleton_substituent_central_atom_index].values)
-        substituent_atoms_xyz = np.array(input_dataframe.iloc[len(self.skeleton_xyz):].values)
-
-        # find distances of substituent atoms to central atom of substituent group
-        distance_to_substituent_central_atom = []
-        for atom_xyz in substituent_atoms_xyz:
-            distance_to_substituent_central_atom.append(distance(atom_xyz, substituent_central_atom_xyz))
-        # print(distance_to_substituent_central_atom)
-        amount_substituents = len(substituent_atoms_xyz)
-        amount_skeleton_atoms = len(self.skeleton_xyz)
-        # ToDo: with this approach you're only looping over the atoms once
-        # ToDo: if the same molecule causes a problem you'll never revisit it  REDUNDANT FUNCTION
-        for substituent_index in range(amount_substituents):
-            # length in which we want to conduct search
-            bond_length = distance_to_substituent_central_atom[substituent_index]
-            current_atom = substituent_atoms_xyz[substituent_index, :]
-            for atom_index in range(amount_skeleton_atoms):
-                d = current_atom - input_dataframe.iloc[atom_index]
-                # if coordinates are within radius there is a interference
-                # if ((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2) < bond_length ** 2:
-                if ((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2) < bond_length ** 2:
-                    # randomly rotate the substituent
-                    rotation_matrix = generate_random_rotation_matrix()
-                    # substituent index != index of substituent in input_dataframe, skeleton is concatenated to that so
-                    # real index = substituent_index+len(skeleton)
-                    input_dataframe.iloc[substituent_index + amount_skeleton_atoms] = \
-                        np.dot(rotation_matrix, input_dataframe.iloc[substituent_index + amount_skeleton_atoms].T)
-
-                    # flip substituent 180 dgs
-                    # input_dataframe.iloc[substituent_index+amount_skeleton_atoms] = \
-                    #     input_dataframe.iloc[substituent_index+amount_skeleton_atoms] * -1
-
-        return input_dataframe
 
     def write_connectivity_in_file(self, target_path, new_connectivity_data):
         # convert connectivity data to ints
@@ -230,11 +189,12 @@ class Complex:
         with open(target_path, 'w') as wr:
             wr.writelines(first_part)
 
+        # connectivity is separated by 2 spaces, but this is not correct for the official .mol format
         f = open(target_path, 'ab')  # open file in binary to be able to append with np.savetxt
         np.savetxt(f, new_connectivity_data, delimiter='  ', fmt='%d')  # pd doesn't support '  ' as delimiter :(
         f.close()
 
-        # add correct spacing at beginning of connectivity table
+        # add correct spacing of connectivity table for official .mol format, each number has 3 allocated spaces
         f = open(target_path, 'r')
         lines = f.readlines()
         connectivity_lines_only = lines[n_atoms_and_comments:]
@@ -270,11 +230,7 @@ class Complex:
         # # remove central atom from dataframe of substituent group
         # substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
 
-        # since atom_to_be_functionalized is dropped indices in functionalization list need to shift
-        # ToDO: seems to be flaky and returning an empty list in some cases, lacks else case
-        # self.functionalization_site_list = [[x-1 for x in y if x > self.skeleton_atom_to_be_functionalized_index]
-        #                                     for y in self.functionalization_site_list]
-
+        # since atom_to_be_functionalized is dropped, indices in functionalization list need to shift
         # make nested list as big as functionalization list
         new_functionalization_list = [[] for i in range(len(self.functionalization_site_list))]
         for i in range(len(self.functionalization_site_list)):
@@ -287,7 +243,7 @@ class Complex:
             new_functionalization_list[i] = some_list
         self.functionalization_site_list = new_functionalization_list
 
-        # concat both dataframes
+        # concat both dataframes and write to file
         write_data = pd.concat([skeleton_new_data, substituents_new_data])
         write_data = write_data.astype({'x': float, 'y': float, 'z': float})  # correct types in df
         write_data = write_data.set_index('atom')
@@ -299,10 +255,6 @@ class Complex:
         with open(target_path, 'w') as wr:
             wr.write(str(n_atoms) + '\n')
             wr.write(str(self.functionalization_site_list) + '\n')
-
-        # ToDo: rotate/translate substituents until no steric hindrance appears?
-        # self.scan_and_translate_substituent(write_data)
-
         write_data.to_csv(target_path, sep=' ', header=False, mode='a')
         # remove last whiteline generated by pandas' to_csv function
         remove_last_line(target_path)
@@ -314,7 +266,6 @@ class Complex:
         convert_xyz_2_mol_file(self.skeleton_path)
         # read connectivity of skeleton
         skeleton_connectivity = read_connectivity_from_mol_file(self.skeleton_path[:-4]+'.mol', len(self.skeleton_xyz))
-        # skeleton_connectivity = skeleton_connectivity.drop([self.skeleton_atom_to_be_functionalized_index])
         skeleton_connectivity = skeleton_connectivity.astype(int)
         # substituent is pasted below skeleton data so index of central atom += len(original skeleton)
         new_substituent_central_atom_index = self.substituent_central_atom_index + len(self.skeleton_xyz)
@@ -336,6 +287,7 @@ class Complex:
                                  2: [1], 3: [0], 4: [0], 5: [0], 6: [0]})
         skeleton_connectivity = skeleton_connectivity.append(new_bond)
         skeleton_connectivity = skeleton_connectivity.astype(int)
+
         # convert substituent to .mol
         convert_xyz_2_mol_file(self.substituent_path)
         # read connectivity of substituent
@@ -349,28 +301,13 @@ class Complex:
         total_connectivities = pd.concat([skeleton_connectivity, substituent_connectivity])
 
         # convert functionalized skeleton to .mol
+        # ToDo: C-O 13 and 14 are triple bonded, manually fix or does xtb/gaussian do that?
         convert_xyz_2_mol_file(target_path)
-        # # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
-        # f = open(target_path[:-4]+'.mol')
-        # lines = f.readlines()
-        # lines[0] = str(self.functionalization_site_list) + '\n'
-        # wr = open(target_path[:-4]+'.mol', 'w')
-        # wr.writelines(lines)
-        # wr.close()
-        # write connectivities in functionalized skeleton .mol file
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
-
-        #optimize .mol file
+        # optimize .mol file
         ff_optimize(target_path[:-4]+'.mol', 'uff')
         # convert .mol file back to xyz file
         convert_mol_2_xyz_file(target_path[:-4]+'.mol')
-        # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
-        f = open(target_path)
-        lines = f.readlines()
-        lines[1] = str(self.functionalization_site_list) + '\n'
-        wr = open(target_path, 'w')
-        wr.writelines(lines)
-        wr.close()
         # remove last white line
         remove_last_line(target_path)
 
