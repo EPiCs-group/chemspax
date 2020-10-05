@@ -8,7 +8,6 @@ echo "Looks like you want to add some substituents to a metal-ligand complex & o
 echo "---------------------------------------------------------------------------------------------"
 
 functionalize_skeletons_C_substituents (){
-SKELETON_LIST=$(cd skeletons && ls | cut -d '.' -f 1)
 # select 1 random substituent with C as central atom as starting point
 STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n1 -e | cut -d '.' -f 1)
 # select 5 random substituents with C as central atom
@@ -21,8 +20,15 @@ echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substi
 # activate option to use backslash options in echo function
 shopt -s xpg_echo
 
-for skeleton in ${SKELETON_LIST}; do
+# write skeletons to temp_file to iterate over them
+cd skeletons
+ls -ltr *.xyz | awk '{print $10}' > ../temp_file
+N=$(wc -l temp_file | cut -d' ' -f1)
+cd /home/akalikadien/auto_func
+
+for j in $(seq 1 ${N}); do
 # loop over skeleton list and set index back to 1
+    skeleton=$(head -$j temp_file | tail -1 | cut -d'.' -f1)
     SOURCE_FILE=skeletons/${skeleton}
     TARGET_NAME=${skeleton}_func
     i=1
@@ -36,7 +42,7 @@ for skeleton in ${SKELETON_LIST}; do
 #    echo "\$wall\n   potential=logfermi\n   sphere: auto, all\n\$constrain\n   force constant=0.9\n   elements: C,H,N,O,Cl,I,Br,F,Ru,P\n\$fix\n   atoms: 1-${N_SKELETON_ATOMS}\n\$end" > xtb.inp
     xtb ${TARGET_NAME}_${i}.mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
-    FUNCTIONALIZATION_LIST=$(sed '1q;d' ${TARGET_NAME}_${i}.mol)
+    FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
     sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.mol
     # convert mol file to xyz file to use as next input
     babel xtbopt.mol -O xtbopt.xyz
@@ -52,7 +58,7 @@ for skeleton in ${SKELETON_LIST}; do
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
-        FUNCTIONALIZATION_LIST=$(sed '1q;d' ${TARGET_NAME}_$((i+1)).mol)
+        FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
         sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' xtbopt.mol
         # convert mol file to xyz file to use as next input
         babel xtbopt.mol -O xtbopt.xyz

@@ -9,6 +9,7 @@ import ase.build
 import numpy as np
 import pandas as pd
 from openbabel import openbabel
+from openbabel import pybel
 
 
 def distance(a, b):
@@ -225,6 +226,31 @@ def print_correct_connectivity_line(line):
     return to_return
 
 
+def ff_optimize(source_file, ff_method='uff'):
+    obconversion = openbabel.OBConversion()
+    obconversion.SetInFormat('mol')
+    mol = openbabel.OBMol()
+    obconversion.ReadFile(mol, source_file)
+
+    # old fashioned method: setup forcefield and do optimization. More customizable
+    # forcefield = openbabel.OBForceField.FindForceField(ff_method)
+    # s = forcefield.Setup(mol)
+    # if s is not True:
+    #     print('forcefield setup failed.')
+    #     exit()
+    # else:
+    #     forcefield.SteepestDescent(500)
+    #     forcefield.GetCoordinates(mol)
+    # obconversion.WriteFile(mol, source_file)
+
+    # modern method: use pybel's Molecule class and let it do the ff opt, it is already implemented.
+    mol = pybel.Molecule(mol)
+    mol.localopt(ff_method, 1000)
+    mol.write('mol', filename=source_file, overwrite=True)
+
+
+
+
 if __name__ == '__main__':
     # molec = 'H2O'
     # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
@@ -237,4 +263,5 @@ if __name__ == '__main__':
     # convert_mol_2_xyz_file('random.mol')
     # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))
-    print_correct_connectivity_line('120  113  1  0  0  0  0')
+    # print_correct_connectivity_line('120  113  1  0  0  0  0')
+    ff_optimize('substituents_xyz/automatically_generated/something.mol', 'uff')

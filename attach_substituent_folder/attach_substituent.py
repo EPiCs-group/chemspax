@@ -274,6 +274,7 @@ class Complex:
         # ToDO: seems to be flaky and returning an empty list in some cases, lacks else case
         # self.functionalization_site_list = [[x-1 for x in y if x > self.skeleton_atom_to_be_functionalized_index]
         #                                     for y in self.functionalization_site_list]
+
         # make nested list as big as functionalization list
         new_functionalization_list = [[] for i in range(len(self.functionalization_site_list))]
         for i in range(len(self.functionalization_site_list)):
@@ -359,6 +360,8 @@ class Complex:
         # write connectivities in functionalized skeleton .mol file
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
 
+        #optimize .mol file
+        ff_optimize(target_path[:-4]+'.mol', 'uff')
         # convert .mol file back to xyz file
         convert_mol_2_xyz_file(target_path[:-4]+'.mol')
         # functionalization list is written correctly by obabel 3.1.1, not 2.4.1 (linux)
