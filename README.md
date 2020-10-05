@@ -24,7 +24,9 @@ for automatic functionalization of complexes.
   **substituents_xyz/**  
   - contains .xyz files for substituents that will be tested  
       * automatically_generated/: output of functionalized skeletons by generate_tetrahedron.py and attach_substituent.py.
-      * manually_generated/: manually generated substituents that will be used for approach 1.
+      * manually_generated/: manually generated substituents that will be used for approach 1. These substituents should
+      be an .xyz file with a free bonding site on the central atom of the substituent. 
+      So if you want to attach a methyl group; make a CH4 .xyz file, remove one H and put the .xyz file in this folder.
       * old/: contains substituents that became either obsolete or will be dealt with later.
       * visualizations/: contains .png files of the functionalizations made in generate_tetrahedron.py
   
@@ -65,20 +67,6 @@ for automatic functionalization of complexes.
   **gjf_to_xyz.py and gjf_to_xyz.sh**
   - Run gjf_to_xyz.py to convert all .gjf files in current path to .xyz files
   
- ### Explanation of generating a tetrahedron 
-  Given a vector (v), say a H-C bond length where C is to be functionalized and converted into a tetrahedral group.
-  This code generates the tetrahedral functionalization.
-
-  Explanation: If one edge of a tetrahedral is determined already, one only needs to place an equilateral triangle such that
-  the centroid of the triangle is at a distance of b/3 where b is the bond length from C to be functionalized.
-  Another challenge is to oreate the triangle such that the normal vector n of the triangle has a 0 (or 180 degrees) angle
-  with the edge of the tetrahedral which is given. That is n.v = |n||v|.
-  This achieved via a rotation matrix which rotates the equilateral triangle.
-  The equilateral triangle is pre-defined with origin as center and all edges are in the XY plane (z = 0) the normal vector
-  n is set to be 0,0,1.
-  **The final distances seem to have an error 0.1 probably from the errors in arccos and arctan calculations**
-  **or there is some silly mistake somewhere if the edge of equilateral triangle is a then a = 2sqrt(2/3)b **
-
 ## ToDo  
   **generate_tetrahedron.py**
   - Use ASE to visualize created substituents (done, but make pictures better?)
@@ -93,30 +81,62 @@ for automatic functionalization of complexes.
   - attach substituent to skeleton (done)
   - make bash script that is able to use python file and deliver intermediates 
   and final version of functionalized & optimized complex (done)
-  - Solve problem with steric hindrance when placing substituents
+  - Solve problem with steric hindrance when placing substituents (done)
   - Test test test
 
 ## Installation
 Python 3.6.0 or higher is required. 
 
+```
+git clone https://github.com/EPiCs-group/auto_func
 
-`git clone https://github.com/EPiCs-group/auto_func`
+cd auto_func
 
-`cd auto_func`
+pip install -r requirements.txt  #to install all required packages.
+``` 
 
-`pip install -r requirements.txt` to install all required packages.
 It is recommended to use a virtual environment since an old version of pandas is used. 
   
   A virtual environment can be created using 
-  
-  `python3 -m venv /path/to/new/virtual/environment`
+  ```
+  python3 -m venv /path/to/new/virtual/environment
+  ```
+   It is recommended to use Anaconda:  
+     Download the latest installer from 
+     [Anaconda's website](https://www.anaconda.com/products/individual).    
+     For example: 
+   ``` 
+   wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
+   ```
    
-   If you're using Anaconda: 
+   Then run the installation script with: 
+   ```
+     bash Anaconda3-2020.07-Linux-x86_64.sh  
+   ```
+   The installation is pretty self explanatory, afterwards create a virtual environment and activate it:
+        
+  ```
+  conda create -n auto_func python=3.7`
   
-  `conda create -n yourenvname python=x.x anaconda`
+  conda activate auto_func
+  ```
   
-  `source activate yourenvname`
-  
+   Before installing the required packages, it is necessary to build OpenBabel with 
+   Python bindings. The procedure is explained in OpenBabel's 
+   [installation guide](https://openbabel.org/wiki/Install_(source_code)#Installing_locally_without_root_access).  
+   Perform this compilation in a separate folder to prevent errors.  
+   **Note:  In order to install the python bindings the user needs to run:**  
+   ```
+   cmake ../ob-src -DCMAKE_INSTALL_PREFIX=/home/noel/tree -DPYTHON_BINDINGS=ON 2>&1 | tee cmake.out
+   ```  
+   **in step B3.**  
+   
+   After OpenBabel is compiled succesfully the packages can be downloaded from the conda-forge channel
+   using the requirements.txt file, in the auto_func folder run:
+   ```
+   conda install -c conda-forge --file requirements.txt
+   ```  
+   
   More information on virtual environments can be found at the
   [venv homepage](https://docs.python.org/3/library/venv.html) or 
   [this Anaconda cheatsheet](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
