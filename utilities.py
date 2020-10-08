@@ -287,6 +287,12 @@ def ff_optimize(source_file, ff_method='uff'):
     mol.write('mol', filename=source_file, overwrite=True)
 
 
+def xyz_2_smiles(file_name: str) -> str:
+    # https://www.kaggle.com/roccomeli/easy-xyz-to-smiles-conversion
+    mol = next(pybel.readfile("xyz", file_name))
+    smi = mol.write(format="smi")
+
+    return smi.split()[0].strip()
 
 
 if __name__ == '__main__':
@@ -302,4 +308,5 @@ if __name__ == '__main__':
     # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))
     # print_correct_connectivity_line('120  113  1  0  0  0  0')
-    ff_optimize('substituents_xyz/automatically_generated/something.mol', 'uff')
+    # ff_optimize('substituents_xyz/automatically_generated/something.mol', 'uff')
+    print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))

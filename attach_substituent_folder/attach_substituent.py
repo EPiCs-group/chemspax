@@ -25,6 +25,8 @@ class Substituent:
         self.path = folder + self.molecule + extension
         self.bond_length = bond_length  # bond_length for the newly formed bond
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True, names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+        if len(self.data_matrix) == 0:
+            raise ValueError('Substituent .xyz is empty')
         self.central_atom_index = central_atom
         self.central_atom = self.data_matrix.loc[self.central_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of central atom
 
@@ -55,7 +57,7 @@ class Substituent:
         for i in range(np.shape(edges)[0]):
             scale_vector(self.central_atom, (edges[i, :]-self.central_atom), self.bond_length)
         # calculate centroid of this hypothetical molecule, which will be similar to real molecule
-        centroid = (edges[0, :]+edges[1, :]+edges[2, :])/3
+        centroid = np.sum(edges, axis=0)/edges.shape[0]  # sum over rows and divide by amount of atoms found
         # get correct orientation of total group s.t. the centroid vector is pointing towards the bond to be made
         centroid = (centroid - self.central_atom)/np.linalg.norm(centroid - self.central_atom)
         return np.array(centroid)
@@ -64,8 +66,12 @@ class Substituent:
         folder = '../substituents_xyz/'
         filename = 'central_atom_centroid_database.csv'
         path_to_file = folder + manually_or_automatically_generated + '_generated/' + filename
-        centroid = self.first_coordination()
-        write_data = pd.DataFrame([[self.molecule, self.central_atom_index, centroid]],
+        # if there is only 1 atom to be attached there's no need to calculate a centroid, position atom == centroid
+        if len(self.data_matrix) != 1:
+            centroid = self.first_coordination()
+        else:
+            centroid = np.array(self.central_atom.values)
+        write_data = pd.DataFrame([[self.molecule, int(self.central_atom_index), centroid]],
                                   columns=["group_to_be_attached", "central_atom_index", "centroid"])\
             .set_index("group_to_be_attached")
 
@@ -82,13 +88,17 @@ class Complex:
         # for the first usage this is purely the skeleton, for recursive usage it's skeleton + prev. functionalization
         self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+        if len(self.skeleton_xyz) == 0:
+            raise ValueError('Skeleton .xyz is empty')
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
-        substituent_folder = 'substituents_xyz/manually_generated/'
+        substituent_folder = '../substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.substituent_path = substituent_folder + self.substituent_molecule + extension
         self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+        if len(self.substituent_xyz) == 0:
+            raise ValueError('Substituent .xyz is empty')
         self.database_df = pd.read_csv(path_to_database, delimiter=',')
                                        # ,converters={'centroid': convert_list_of_string_to_np_array})
         try:
@@ -212,7 +222,7 @@ class Complex:
         f.close()
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
-        folder = 'substituents_xyz/automatically_generated/'
+        folder = '../substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension
 
@@ -318,9 +328,6 @@ if __name__ == "__main__":
     #     print(file)
     #     atom = Substituent(file[39:-4], 0, 2.0)
     #     atom.write_central_atom_and_centroid_to_csv('manually')
-    # ethyl has central atom index=4 and needs to be done separately
-    # ethyl = Substituent('CH2CH3', 4, 2.0)
-    # ethyl.write_central_atom_and_centroid_to_csv('manually')
     folder_name = '../substituents_xyz/automatically_generated/'
     folder = os.listdir('../substituents_xyz/automatically_generated/')
     for item in folder:
@@ -329,16 +336,16 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('../skeletons/RuPNP_aromatic_tBu.xyz', 'CCCl3CCl3CCl3',
+    some_complex = Complex('../skeletons_temp/RuPNP_aromatic_tBu.xyz', 'CH2OH',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('something', 1.54)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'CCCl3CCl3CCl3',
+    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'F',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
-    some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3CCl3',
+    some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'Br',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)
-    other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'CCCl3CCl3CCl3',
+    other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'PH3',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_other_complex.generate_substituent_and_write_xyz('something_3', 1.54)
