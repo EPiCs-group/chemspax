@@ -51,6 +51,8 @@ for j in $(seq 1 ${N}); do
     # clean up mess and move relevant file to correct folder
     mv xtbopt.mol optimized_structures/${TARGET_NAME}_${i}_opt.mol
     mv xtbopt.xyz optimized_structures/${TARGET_NAME}_${i}_opt.xyz
+    mv xtb.out optimized_structures/${TARGET_NAME}_${i}_opt_xtb.out
+    mv xtbopt.log optimized_structures/${TARGET_NAME}_${i}_opt_xtbopt.log
     rm -f xtbrestart
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
@@ -67,6 +69,8 @@ for j in $(seq 1 ${N}); do
         # clean up mess and move relevant file to correct folder
         mv xtbopt.mol optimized_structures/${TARGET_NAME}_$((i+1))_opt.mol
         mv xtbopt.xyz optimized_structures/${TARGET_NAME}_$((i+1))_opt.xyz
+        mv xtb.out optimized_structures/${TARGET_NAME}_$((i+1))_opt_xtb.out
+        mv xtbopt.log optimized_structures/${TARGET_NAME}_$((i+1))_opt_xtbopt.log
         rm -f xtbrestart
 	    cd -
         i=$((i+1))
