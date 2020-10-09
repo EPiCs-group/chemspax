@@ -241,6 +241,9 @@ class Complex:
         # substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
 
         # since atom_to_be_functionalized is dropped, indices in functionalization list need to shift
+        # shift bonded_atom first
+        self.skeleton_bonded_atom_index = self.skeleton_bonded_atom_index - 1 if self.skeleton_bonded_atom_index > self\
+            .skeleton_atom_to_be_functionalized_index else self.skeleton_bonded_atom_index
         # make nested list as big as functionalization list
         new_functionalization_list = [[] for i in range(len(self.functionalization_site_list))]
         for i in range(len(self.functionalization_site_list)):
@@ -336,7 +339,7 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('../skeletons/RuPNP-H.xyz', 'F',
+    some_complex = Complex('../skeletons/RuPNP-H_PH3.xyz', 'F',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('something', 1.54)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
