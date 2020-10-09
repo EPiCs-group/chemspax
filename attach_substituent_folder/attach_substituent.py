@@ -92,7 +92,7 @@ class Complex:
             raise ValueError('Skeleton .xyz is empty')
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
-        substituent_folder = '../substituents_xyz/manually_generated/'
+        substituent_folder = 'substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.substituent_path = substituent_folder + self.substituent_molecule + extension
         self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
@@ -222,7 +222,7 @@ class Complex:
         f.close()
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
-        folder = '../substituents_xyz/automatically_generated/'
+        folder = 'substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension
 
@@ -336,16 +336,16 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('../skeletons_temp/RuPNP_aromatic_tBu.xyz', 'CH2OH',
+    some_complex = Complex('../skeletons_temp/RuPNP_aromatic_tBu.xyz', 'OH',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('something', 1.54)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'F',
+    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'NO2',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
-    some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'Br',
+    some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)
-    other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'PH3',
+    other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'CH4N2OH',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_other_complex.generate_substituent_and_write_xyz('something_3', 1.54)
