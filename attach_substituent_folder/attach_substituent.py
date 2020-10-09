@@ -336,16 +336,16 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('../skeletons_temp/RuPNP_aromatic_tBu.xyz', 'OH',
+    some_complex = Complex('../skeletons/RuPNP-H.xyz', 'F',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('something', 1.54)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'NO2',
+    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'F',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
-    some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',
-                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)
-    other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'CH4N2OH',
-                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    other_other_complex.generate_substituent_and_write_xyz('something_3', 1.54)
+    # some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',
+    #                         '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    # some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)
+    # other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'CH4N2OH',
+    #                         '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    # other_other_complex.generate_substituent_and_write_xyz('something_3', 1.54)

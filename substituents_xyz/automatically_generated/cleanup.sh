@@ -13,3 +13,5 @@ rm -f *.txt
 cd optimized_structures/
 rm -f *.xyz
 rm -f *.mol
+rm -f *.out
+rm -f *.log
