@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # redirect stdout/stderr to a file
-#exec &> logfile.txt
+# exec &> logfile.txt
 
 echo ""
 echo "---------------------------------------------------------------------------------------------"
@@ -11,8 +11,10 @@ echo "--------------------------------------------------------------------------
 functionalize_skeletons_C_substituents (){
 # select 1 random substituent with C as central atom as starting point
 STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n1 -e | cut -d '.' -f 1)
+#STARTING_C_SUBSTITUENT="F"
 # select 5 random substituents with C as central atom
 RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n5 -e | cut -d '.' -f 1)
+#RANDOM_C_SUBSTITUENTS="F"
 echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
 echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substituents.txt
 # C-C bond length = 1.54 A
