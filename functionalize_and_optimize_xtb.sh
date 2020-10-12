@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # redirect stdout/stderr to a file
 # exec &> logfile.txt
+# This script runs the python file and a
 
 echo ""
 echo "---------------------------------------------------------------------------------------------"
@@ -37,7 +38,7 @@ for j in $(seq 1 ${N}); do
     i=1
     echo "creating initial file of" ${skeleton} ${STARTING_C_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
-    python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+    python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 True
 
     # optimization
     cd substituents_xyz/automatically_generated/
@@ -57,7 +58,7 @@ for j in $(seq 1 ${N}); do
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
-        python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54
+        python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 True
         # optimization
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
@@ -107,7 +108,7 @@ for j in $(seq 1 ${N}); do
     i=1
     echo "creating initial file of" ${skeleton} ${STARTING_P_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
-    python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_P_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87
+    python3 main_attach_substituent.py ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_P_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 True
 
     # optimization
     cd substituents_xyz/automatically_generated/
@@ -125,7 +126,7 @@ for j in $(seq 1 ${N}); do
     cd -
         for sub in ${RANDOM_P_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
-        python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87
+        python3 main_attach_substituent.py substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 False
         # optimization
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out

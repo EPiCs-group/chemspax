@@ -19,7 +19,7 @@ from utilities import *
 
 class Substituent:
     def __init__(self, molecule, central_atom=0, bond_length=1.2):
-        folder = '../substituents_xyz/manually_generated/'
+        folder = 'substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.molecule = molecule
         self.path = folder + self.molecule + extension
@@ -63,7 +63,7 @@ class Substituent:
         return np.array(centroid)
 
     def write_central_atom_and_centroid_to_csv(self, manually_or_automatically_generated):
-        folder = '../substituents_xyz/'
+        folder = 'substituents_xyz/'
         filename = 'central_atom_centroid_database.csv'
         path_to_file = folder + manually_or_automatically_generated + '_generated/' + filename
         # if there is only 1 atom to be attached there's no need to calculate a centroid, position atom == centroid
@@ -221,7 +221,8 @@ class Complex:
         np.savetxt(f, end_line, delimiter='  ', fmt="%s")  # pd doesn't support '  ' as delimiter :(
         f.close()
 
-    def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54):
+    def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54,
+                                           use_xtb_script_after=True):
         folder = 'substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension
@@ -276,7 +277,7 @@ class Complex:
         # remember, indexing in .mol files starts from 1 for some reason...
 
         # convert skeleton to .mol
-        convert_xyz_2_mol_file(self.skeleton_path)
+        # convert_xyz_2_mol_file(self.skeleton_path)
         # read connectivity of skeleton
         skeleton_connectivity = read_connectivity_from_mol_file(self.skeleton_path[:-4]+'.mol', len(self.skeleton_xyz))
         skeleton_connectivity = skeleton_connectivity.astype(int)
@@ -319,10 +320,13 @@ class Complex:
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
         # optimize .mol file
         ff_optimize(target_path[:-4]+'.mol', 'uff')
-        # convert .mol file back to xyz file
-        convert_mol_2_xyz_file(target_path[:-4]+'.mol')
-        # remove last white line
-        remove_last_line(target_path)
+        if not use_xtb_script_after:
+            # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz
+            # set to True if the xtb bash script will be used
+            # convert .mol file back to xyz file
+            convert_mol_2_xyz_file(target_path[:-4]+'.mol')
+            # remove last white line
+            remove_last_line(target_path)
 
 
 if __name__ == "__main__":

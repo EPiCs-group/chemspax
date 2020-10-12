@@ -200,11 +200,15 @@ The main_generate_tetrahedron.py takes input values as follows:
   
   The user can upload manually generated substituents 
   to substituents_xyz/manually_generated/ or use the pre-made substituents
-  contained in that folder. Then the Substituent.write_central_atom_and_centroid_to_csv() 
-  function of attach_substituent.py should be used to generate a .csv database
+  contained in that folder. Then the data_preparation.py script can be run 
+  to generate a .csv database
   of the central atom and centroid vector per substituent as these will
-  be used to align the substituent with the skeleton. An example of 
-  this .csv database is shown below:
+  be used to align the substituent with the skeleton. This also generates .mol files
+  for the skeleton and substituents since these are used for their connectivity data.
+  **data_preparation.py assumes that the central atom of the substituent is the first atom in the 
+  .xyz file of the substituent! Change this if it's necessary.**
+  An example of 
+  the .csv database is shown below:
   ![example](images/example_csv_database.jpg)
   
   
@@ -217,6 +221,9 @@ The main_generate_tetrahedron.py takes input values as follows:
   3) name of substituent group (same as key in .csv database)
   4) relative path to .csv database file
   5) bond length between central atom of the substituent and bonded_atom of skeleton 
+  6) whether the user wants to use the python script with the xtb bash script, in the 
+  xtb bash script the conversion of the optimized .mol file to .xyz file doesn't happen in python.
+  If this is set to false only ff optimization will be done and the python script will handle file conversions.
   
   Where each input value is given as a space delimited system argument.
   The user can modify the example of attach_substituent_folder/run.sh

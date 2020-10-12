@@ -93,9 +93,6 @@ test.xyz
 substituents_xyz/test.xyz
 __pycache__/
 logfile.txt
-*.mol
-# *.xyz
-skeletons/*.mol
 substituents_xyz/automatically_generated/*.xyz
 substituents_xyz/automatically_generated/*.mol
 substituents_xyz/automatically_generated/*.txt
