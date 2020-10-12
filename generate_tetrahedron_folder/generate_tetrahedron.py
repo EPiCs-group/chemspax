@@ -27,6 +27,8 @@ class Complex:
         self.recursive_or_initial = recursive_or_intial
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+        if len(self.data_matrix) == 0:
+            raise ValueError('skeleton .xyz is empty')
 
         if self.recursive_or_initial.lower() == 'initial':
             self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)

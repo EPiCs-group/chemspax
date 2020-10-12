@@ -276,8 +276,10 @@ class Complex:
         # fix bug with bonds being formed & weirdly broken
         # remember, indexing in .mol files starts from 1 for some reason...
 
-        # convert skeleton to .mol
-        # convert_xyz_2_mol_file(self.skeleton_path)
+        # convert skeleton to .mol if .mol file doesn't exist
+        if not glob.glob(self.skeleton_path[:-4]+'.mol'):
+            convert_xyz_2_mol_file(self.skeleton_path)
+
         # read connectivity of skeleton
         skeleton_connectivity = read_connectivity_from_mol_file(self.skeleton_path[:-4]+'.mol', len(self.skeleton_xyz))
         skeleton_connectivity = skeleton_connectivity.astype(int)
@@ -302,8 +304,10 @@ class Complex:
         skeleton_connectivity = skeleton_connectivity.append(new_bond)
         skeleton_connectivity = skeleton_connectivity.astype(int)
 
-        # convert substituent to .mol
-        convert_xyz_2_mol_file(self.substituent_path)
+        # convert substituent to .mol if .mol file doesn't exist
+        if not glob.glob(self.substituent_path[:-4]+'.mol'):
+            convert_xyz_2_mol_file(self.substituent_path)
+
         # read connectivity of substituent
         substituent_connectivity = read_connectivity_from_mol_file(self.substituent_path[:-4]+'.mol', len(self.substituent_xyz))
         substituent_connectivity = substituent_connectivity.astype(int)
