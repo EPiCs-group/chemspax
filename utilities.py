@@ -258,11 +258,12 @@ def print_correct_connectivity_line(line):
     return to_return
 
 
-def ff_optimize(source_file, ff_method='uff'):
+def ff_optimize(source_file, ff_method='uff', list_of_indices_to_freeze=None):
     """Uses openbabenl's ff optimization to locally optimize a molecule and write it back to the same file
 
     :param source_file:
     :param ff_method:
+    :param list_of_indices_to_freeze:
     :return: optimized .mol file with the same filename
     """
     obconversion = openbabel.OBConversion()
@@ -271,20 +272,26 @@ def ff_optimize(source_file, ff_method='uff'):
     obconversion.ReadFile(mol, source_file)
 
     # old fashioned method: setup forcefield and do optimization. More customizable
-    # forcefield = openbabel.OBForceField.FindForceField(ff_method)
-    # s = forcefield.Setup(mol)
-    # if s is not True:
-    #     print('forcefield setup failed.')
-    #     exit()
-    # else:
-    #     forcefield.SteepestDescent(500)
-    #     forcefield.GetCoordinates(mol)
-    # obconversion.WriteFile(mol, source_file)
+    constr = openbabel.OBFFConstraints()
+    # freeze skeleton atoms
+    if list_of_indices_to_freeze is not None:
+        for idx in list_of_indices_to_freeze:
+            constr.AddAtomConstraint(idx + 1)
+
+    forcefield = openbabel.OBForceField.FindForceField(ff_method)
+    s = forcefield.Setup(mol, constr)
+    if s is not True:
+        print('forcefield setup failed.')
+        exit()
+    else:
+        forcefield.SteepestDescent(1000)
+        forcefield.GetCoordinates(mol)
+    obconversion.WriteFile(mol, source_file)
 
     # modern method: use pybel's Molecule class and let it do the ff opt, it is already implemented.
-    mol = pybel.Molecule(mol)
-    mol.localopt(ff_method, 1000)
-    mol.write('mol', filename=source_file, overwrite=True)
+    # mol = pybel.Molecule(mol)
+    # mol.localopt(ff_method, 1000)
+    # mol.write('mol', filename=source_file, overwrite=True)
 
 
 def xyz_2_smiles(file_name: str) -> str:

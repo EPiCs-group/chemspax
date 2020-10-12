@@ -323,10 +323,24 @@ class Complex:
         convert_xyz_2_mol_file(target_path)
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
         # optimize .mol file
-        ff_optimize(target_path[:-4]+'.mol', 'uff')
+        indices_to_freeze = None
+        # since self.skeleton changes because of recursive functionalizations, the original skeleton atoms need to be
+        # freezed before ff optimization to try to improve calculation efficiency
+        original_skeleton_name = target_filename[:-7]
+        # in functionalize_and_optimize scripts name after uff is skeleton + _func_i
+        # and in xtb skeleton + _func + _i + _opt
+        if use_xtb_script_after:
+            original_skeleton_name = target_filename[:-11]
+        for skeleton in glob.glob('skeletons/*.xyz'):
+            if skeleton[10:-4] == original_skeleton_name:
+                # read indices of original skeleton file and turn into list
+                n_atoms_original_skeleton = int(open(skeleton).readline())
+                indices_to_freeze = [i for i in range(n_atoms_original_skeleton)]
+        ff_optimize(target_path[:-4]+'.mol', 'uff', indices_to_freeze)
+
+        # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz
+        # set to True if the xtb bash script will be used
         if not use_xtb_script_after:
-            # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz
-            # set to True if the xtb bash script will be used
             # convert .mol file back to xyz file
             convert_mol_2_xyz_file(target_path[:-4]+'.mol')
             # remove last white line
@@ -349,11 +363,11 @@ if __name__ == "__main__":
 
     some_complex = Complex('../skeletons/RuPNP-H_PH3.xyz', 'F',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    some_complex.generate_substituent_and_write_xyz('something', 1.54)
+    some_complex.generate_substituent_and_write_xyz('RuPNP-H_PH3_func_1', 1.54, False)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('../substituents_xyz/automatically_generated/something.xyz', 'F',
+    other_complex = Complex('../substituents_xyz/automatically_generated/RuPNP-H_PH3_func_1.xyz', 'F',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    other_complex.generate_substituent_and_write_xyz('something_1', 1.54)
+    other_complex.generate_substituent_and_write_xyz('RuPNP-H_PH3_func_2', 1.54, False)
     # some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',
     #                         '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     # some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)

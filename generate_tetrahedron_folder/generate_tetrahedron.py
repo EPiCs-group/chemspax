@@ -18,8 +18,6 @@ from exceptions import *
 from utilities import *
 
 
-
-
 class Complex:
     def __init__(self, path_to_source_data, functionalization_site_list=None, recursive_or_intial='recursive'):
         self.path = path_to_source_data
