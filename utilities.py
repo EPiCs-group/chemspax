@@ -12,6 +12,12 @@ from openbabel import openbabel
 from openbabel import pybel
 
 
+# reduce warnings from openbabel
+ob_log_handler = openbabel.OBMessageHandler()
+ob_log_handler.SetOutputLevel(0)
+openbabel.obErrorLog.SetOutputLevel(0)
+
+
 def distance(a, b):
     d = a - b
     return np.sqrt((d[0]) ** 2 + (d[1]) ** 2 + (d[2]) ** 2)
@@ -276,6 +282,7 @@ def ff_optimize(source_file, ff_method='uff', list_of_indices_to_freeze=None):
     # freeze skeleton atoms
     if list_of_indices_to_freeze is not None:
         for idx in list_of_indices_to_freeze:
+            # indexing of atoms starts from 1 in openbabel
             constr.AddAtomConstraint(idx + 1)
 
     forcefield = openbabel.OBForceField.FindForceField(ff_method)

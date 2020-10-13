@@ -327,6 +327,7 @@ class Complex:
         # since self.skeleton changes because of recursive functionalizations, the original skeleton atoms need to be
         # freezed before ff optimization to try to improve calculation efficiency
         original_skeleton_name = target_filename[:-7]
+        n_iteration = int(target_filename[-1])
         # in functionalize_and_optimize scripts name after uff is skeleton + _func_i
         # and in xtb skeleton + _func + _i + _opt
         if use_xtb_script_after:
@@ -334,7 +335,8 @@ class Complex:
         for skeleton in glob.glob('skeletons/*.xyz'):
             if skeleton[10:-4] == original_skeleton_name:
                 # read indices of original skeleton file and turn into list
-                n_atoms_original_skeleton = int(open(skeleton).readline())
+                # each iteration 1 atom_to_be_functionalized is removed, so 1 less atom to freeze
+                n_atoms_original_skeleton = int(open(skeleton).readline()) - n_iteration
                 indices_to_freeze = [i for i in range(n_atoms_original_skeleton)]
         ff_optimize(target_path[:-4]+'.mol', 'uff', indices_to_freeze)
 
