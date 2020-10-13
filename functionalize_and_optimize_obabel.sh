@@ -25,8 +25,15 @@ echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substi
 # activate option to use backslash options in echo function
 shopt -s xpg_echo
 
-for skeleton in ${SKELETON_LIST}; do
+# write skeletons to temp file to iterate over them
+cd skeletons
+ls -ltr *.xyz | awk '{print $10}' > ../temp_skeletons_file
+cd -
+N=$(wc -l temp_skeletons_file | cut -d' ' -f1)
+
+for j in $(seq 1 ${N}); do
 # loop over skeleton list and set index back to 1
+    skeleton=$(head -${j} temp_skeletons_file | tail -1 | cut -d'.' -f1)
     SOURCE_FILE=skeletons/${skeleton}
     TARGET_NAME=${skeleton}_func
     i=1
@@ -51,6 +58,8 @@ for skeleton in ${SKELETON_LIST}; do
         i=$((i+1))
         done
 done
+# remove temp file with skeleton names
+rm -f temp_skeletons_file
 }
 
 functionalize_skeletons_P_substituents (){

@@ -327,7 +327,7 @@ class Complex:
         # since self.skeleton changes because of recursive functionalizations, the original skeleton atoms need to be
         # freezed before ff optimization to try to improve calculation efficiency
         original_skeleton_name = target_filename[:-7]
-        n_iteration = int(target_filename[-1])
+        n_iteration = int(target_filename.split('_')[-1])
         # in functionalize_and_optimize scripts name after uff is skeleton + _func_i
         # and in xtb skeleton + _func + _i + _opt
         if use_xtb_script_after:
