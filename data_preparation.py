@@ -27,6 +27,7 @@ def prepare_data():
         atom = Substituent(file[36:-4], 0, 2.0)
         atom.write_central_atom_and_centroid_to_csv('manually')
 
+    # ToDo: compress these 4 functions into one
     # convert substituents .xyz files to .mol files
     for file in glob.glob(substituent_folder + '*.xyz'):
         # conversion is only necessary if the .mol file doesn't exist
@@ -39,6 +40,17 @@ def prepare_data():
         if not glob.glob(file[:-4]+'.mol'):
             convert_xyz_2_mol_file(file)
 
+    # convert substituents .mol file to .xyz files
+    for file in glob.glob(substituent_folder + '*.mol'):
+        # conversion is only necessary if the .xyz file doesn't exist
+        if not glob.glob(file[:-4]+'.xyz'):
+            convert_mol_2_xyz_file(file)
+
+    # convert substituents .mol file to .xyz files
+    for file in glob.glob(skeleton_folder + '*.mol'):
+        # conversion is only necessary if the .xyz file doesn't exist
+        if not glob.glob(file[:-4] + '.xyz'):
+            convert_mol_2_xyz_file(file)
 
 if __name__ == '__main__':
     prepare_data()

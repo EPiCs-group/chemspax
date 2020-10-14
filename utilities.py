@@ -126,26 +126,42 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
     """
     # https://chem.libretexts.org/Courses/University_of_Arkansas_Little_Rock/ChemInformatics_(2017)%3A_Chem_4399%2F%2F5399/2.2%3A_Chemical_Representations_on_Computer%3A_Part_II/2.2.2%3A_Anatomy_of_a_MOL_file
     skip_rows = n_atoms + 4  # title line, whiteline, comment line, n_atoms & n_bonds line = 4 lines to skip
-    connectivity = pd.read_table(source_file, skiprows=skip_rows, delim_whitespace=True, header=None)
+    connectivity_data = open(source_file).readlines()[skip_rows:-1]
 
-    # drop last 'M END' line
-    connectivity = connectivity.drop([len(connectivity) - 1])
+    connectivity_list = []
+    for line in connectivity_data:
+        idx1 = int(line[:3].replace(' ', ''))
+        idx2 = int(line[3:6].replace(' ', ''))
+        bond = int(line[6:9].replace(' ', ''))
+        stereochem = int(line[9:12].replace(' ', ''))
+        other_info = int(line[12:15].replace(' ', ''))
+        other_info2 = int(line[15:18].replace(' ', ''))
+        other_info3 = int(line[18:21].replace(' ', ''))
+        # print([idx1, idx2, bond, stereochem, other_info, other_info2, other_info3])
+        connectivity_list.append([idx1, idx2, bond, stereochem, other_info, other_info2, other_info3])
+    connectivity = pd.DataFrame(connectivity_list, columns=[0, 1, 2, 3, 4, 5, 6])
 
-    connectivity = connectivity.fillna(0)
-    connectivity = connectivity.astype(int)
-
-    # if there is no space between idx1 and idx2 the numbers still need to be separated
-    # this happens if idx2 > 99, for example: 56 103 --> 56103 or if idx1 and idx2 are > 99 for ex: 100 100 --> 100100
-    for i in range(len(connectivity)):
-        current_row = connectivity.loc[i, [0]]
-        if current_row[0] > 1100:  # 1 100 is the lowest set of integers for which this problem will occur
-            row_string = str(current_row[0]).strip()
-            if len(row_string) == 5:
-                connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), int(connectivity.loc[i, [1]].
-                                                                                               values)
-            elif len(row_string) == 6:
-                connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), int(connectivity.loc[i, [1]].
-                                                                                               values)
+    # old approach
+    # connectivity = pd.read_table(source_file, skiprows=skip_rows, delim_whitespace=True, header=None)
+    #
+    # # drop last 'M END' line
+    # connectivity = connectivity.drop([len(connectivity) - 1])
+    #
+    # connectivity = connectivity.fillna(0)
+    # connectivity = connectivity.astype(int)
+    # #
+    # # if there is no space between idx1 and idx2 the numbers still need to be separated
+    # # this happens if idx2 > 99, for example: 56 103 --> 56103 or if idx1 and idx2 are > 99 for ex: 100 100 --> 100100
+    # for i in range(len(connectivity)):
+    #     current_row = connectivity.loc[i, [0]]
+    #     if current_row[0] > 1100:  # 1 100 is the lowest set of integers for which this problem will occur
+    #         row_string = str(current_row[0]).strip()
+    #         if len(row_string) == 5:
+    #             connectivity.loc[i, [0, 1, 2]] = int(row_string[:2]), int(row_string[2:]), int(connectivity.loc[i, [1]].
+    #                                                                                            values)
+    #         elif len(row_string) == 6:
+    #             connectivity.loc[i, [0, 1, 2]] = int(row_string[:3]), int(row_string[3:]), int(connectivity.loc[i, [1]].
+    #                                                                                            values)
     return connectivity
 
 
@@ -317,7 +333,7 @@ if __name__ == '__main__':
     # print(convert_list_of_string_to_np_array(['[-0.33332174004836124 0.9428131403470853 0.0]']))
     # print(read_central_atom_index('substituents_xyz/automatically_generated/CH4.xyz'))
     # print(find_distance('substituents_xyz/automatically_generated/CH4.xyz', 2, 3)==1.7473026804689453)
-    # print(read_connectivity_from_mol_file('random.mol', 98))
+    # print(read_connectivity_from_mol_file('substituents_xyz/manually_generated/F.mol', 1))
     # convert_mol_2_xyz_file('random.mol')
     # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))

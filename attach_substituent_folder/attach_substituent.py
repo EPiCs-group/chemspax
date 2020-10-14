@@ -341,12 +341,13 @@ class Complex:
         ff_optimize(target_path[:-4]+'.mol', 'uff', indices_to_freeze)
 
         # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz
+        # REDUNDANT
         # set to True if the xtb bash script will be used
-        if not use_xtb_script_after:
-            # convert .mol file back to xyz file
-            convert_mol_2_xyz_file(target_path[:-4]+'.mol')
-            # remove last white line
-            remove_last_line(target_path)
+        # if not use_xtb_script_after:
+        #     # convert .mol file back to xyz file
+        #     convert_mol_2_xyz_file(target_path[:-4]+'.mol')
+        #     # remove last white line
+        #     remove_last_line(target_path)
 
 
 if __name__ == "__main__":
