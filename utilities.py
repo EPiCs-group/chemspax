@@ -42,17 +42,6 @@ def visualize_xyz_file(filename, save_picture=False, manually_generated=True):
         return
 
 
-def read_central_atom_index(filename):
-    """Read second line of a .xyz file to get the central atom index
-
-    :param filename:
-    :return: index of central atom
-    """
-    with open(filename) as f:
-        next(f)
-        return int(next(f))
-
-
 def find_distance(filename, index_of_atom_1, index_of_atom_2):
     """Find distance between two atoms based on their index in .xyz file
 
@@ -129,6 +118,7 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
     connectivity_data = open(source_file).readlines()[skip_rows:-1]
 
     connectivity_list = []
+    # each item has 3 spaces, based on this the item can be loaded in a dataframe
     for line in connectivity_data:
         idx1 = int(line[:3].replace(' ', ''))
         idx2 = int(line[3:6].replace(' ', ''))
@@ -201,6 +191,12 @@ def print_mol_counts_block(old_string, n_atoms, n_bonds):
     :param n_bonds:
     :return: corrected counts block of .mol file
     """
+    n_atoms = int(n_atoms)
+    n_bonds = int(n_bonds)
+
+    if (n_bonds or n_atoms) > 999:
+        raise ValueError('n_atoms or n_bonds can not have more than 3 digits')
+
     n_atoms = str(n_atoms)
     n_bonds = str(n_bonds)
     static_part = old_string[6:]

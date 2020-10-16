@@ -187,7 +187,6 @@ class Complex:
         n_atoms_and_comments = n_atoms + 4
 
         first_part = lines[:n_atoms_and_comments]
-        # ToDO: bugfix this for all cases
         first_part[3] = print_mol_counts_block(first_part[3], n_atoms, len(new_connectivity_data))  # correct counts
         # read data and skip first 4 lines
         all_data = pd.read_table(target_path, skiprows=4, delim_whitespace=True, header=None)
@@ -199,7 +198,9 @@ class Complex:
         with open(target_path, 'w') as wr:
             wr.writelines(first_part)
 
-        # connectivity is separated by 2 spaces, but this is not correct for the official .mol format
+        # connectivity is separated by 2 spaces (I thought), but this is not correct for the official .mol format
+        # I couldn't find a way to directly write every digit in the correct format from dataframe to file
+        # so now the dataframe is first written and string formatting is done afterwards
         f = open(target_path, 'ab')  # open file in binary to be able to append with np.savetxt
         np.savetxt(f, new_connectivity_data, delimiter='  ', fmt='%d')  # pd doesn't support '  ' as delimiter :(
         f.close()
