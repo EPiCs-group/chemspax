@@ -334,5 +334,5 @@ if __name__ == '__main__':
     # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))
     # print_correct_connectivity_line('120  113  1  0  0  0  0')
-    # ff_optimize('substituents_xyz/automatically_generated/something.mol', 'uff')
-    print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))
+    ff_optimize('Ru(trop2dad)_sigma_func_13.mol', 'uff', None)
+    # print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))

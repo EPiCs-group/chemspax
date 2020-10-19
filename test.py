@@ -117,3 +117,13 @@ def test_print_mol_counts_block():
     assert mol_counts_block_triple_digits == '100100  0  0  1  0  0  0  0  0999 V2000'
     with pytest.raises(ValueError):
         print_mol_counts_block(old_mol_counts_block, 1000, 1000)
+
+
+def test_print_correct_connectivity_line():
+    old_connectivity_line_single_digits = '1  1  1  0  0  0  0'
+    new_connectivity_line_single_digits = print_correct_connectivity_line(old_connectivity_line_single_digits)
+    assert new_connectivity_line_single_digits == '  1  1  1  0  0  0  0'
+    old_connectivity_line_double_digits = '10  1  1  0  0  0  0'
+    new_connectivity_line_double_digits = print_correct_connectivity_line(old_connectivity_line_double_digits)
+    assert new_connectivity_line_double_digits == ' 10  1  1  0  0  0  0'
+

@@ -82,7 +82,11 @@ class Substituent:
 
 
 class Complex:
-    def __init__(self, source_data, substituent_to_be_attached, path_to_database):
+    def __init__(self, original_skeleton_name, source_data, substituent_to_be_attached, path_to_database):
+        # original skeleton data (so starting point of each functionalization)
+        skeleton_folder = 'skeletons/'
+        extension = '.xyz'
+        self.original_skeleton_path = skeleton_folder + original_skeleton_name +extension
         # skeleton data
         self.skeleton_path = source_data
         # for the first usage this is purely the skeleton, for recursive usage it's skeleton + prev. functionalization
@@ -324,21 +328,25 @@ class Complex:
         convert_xyz_2_mol_file(target_path)
         self.write_connectivity_in_file(target_path[:-4]+'.mol', total_connectivities)
         # optimize .mol file
-        indices_to_freeze = None
+        # indices_to_freeze = None
         # since self.skeleton changes because of recursive functionalizations, the original skeleton atoms need to be
         # freezed before ff optimization to try to improve calculation efficiency
-        original_skeleton_name = target_filename[:-7]
+        # original_skeleton_name = target_filename.split('_')[0]
         n_iteration = int(target_filename.split('_')[-1])
         # in functionalize_and_optimize scripts name after uff is skeleton + _func_i
         # and in xtb skeleton + _func + _i + _opt
-        if use_xtb_script_after:
-            original_skeleton_name = target_filename[:-11]
-        for skeleton in glob.glob('skeletons/*.xyz'):
-            if skeleton[10:-4] == original_skeleton_name:
+        # if use_xtb_script_after:
+        #     original_skeleton_name = target_filename[:-11]
+        # for skeleton in glob.glob('skeletons/*.xyz'):
+        #     if skeleton[10:-4] == original_skeleton_name:
                 # read indices of original skeleton file and turn into list
                 # each iteration 1 atom_to_be_functionalized is removed, so 1 less atom to freeze
-                n_atoms_original_skeleton = int(open(skeleton).readline()) - n_iteration
-                indices_to_freeze = [i for i in range(n_atoms_original_skeleton)]
+        n_atoms_original_skeleton = int(open(self.original_skeleton_path).readline()) - n_iteration
+        try:
+            indices_to_freeze = [i for i in range(n_atoms_original_skeleton)]
+        except:
+            print('No indices found to freeze')
+            indices_to_freeze = None
         ff_optimize(target_path[:-4]+'.mol', 'uff', indices_to_freeze)
 
         # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz
@@ -365,11 +373,11 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('../skeletons/RuPNP-H_PH3.xyz', 'F',
+    some_complex = Complex('RuPNP-H_PH3', '../skeletons/RuPNP-H_PH3.xyz', 'F',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     some_complex.generate_substituent_and_write_xyz('RuPNP-H_PH3_func_1', 1.54, False)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('../substituents_xyz/automatically_generated/RuPNP-H_PH3_func_1.xyz', 'F',
+    other_complex = Complex('RuPNP-H_PH3', '../substituents_xyz/automatically_generated/RuPNP-H_PH3_func_1.xyz', 'F',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     other_complex.generate_substituent_and_write_xyz('RuPNP-H_PH3_func_2', 1.54, False)
     # some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',

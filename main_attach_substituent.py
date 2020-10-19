@@ -8,14 +8,15 @@ import sys
 
 
 def main():
-    source_data = sys.argv[1]
-    target_file = sys.argv[2]
-    substituent_molecule = sys.argv[3]
-    path_to_database = sys.argv[4]
-    length_skeleton_bonded_atom_substituent_central_atom = sys.argv[5]
-    use_xtb_script_after = True if sys.argv[6].lower() == 'true' else False
+    original_skeleton_name = sys.argv[1]
+    source_data = sys.argv[2]
+    target_file = sys.argv[3]
+    substituent_molecule = sys.argv[4]
+    path_to_database = sys.argv[5]
+    length_skeleton_bonded_atom_substituent_central_atom = sys.argv[6]
+    use_xtb_script_after = True if sys.argv[7].lower() == 'true' else False
 
-    some_complex = Complex(source_data, substituent_molecule, path_to_database)
+    some_complex = Complex(original_skeleton_name, source_data, substituent_molecule, path_to_database)
     some_complex.generate_substituent_and_write_xyz(target_file, length_skeleton_bonded_atom_substituent_central_atom,
                                                     use_xtb_script_after)
 
