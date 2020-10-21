@@ -95,7 +95,7 @@ cd auto_func
 pip install -r requirements.txt  #to install all required packages.
 ``` 
 
-It is recommended to use a virtual environment since an old version of pandas is used. 
+It is recommended to use a virtual environment. 
   
   A virtual environment can be created using 
   ```

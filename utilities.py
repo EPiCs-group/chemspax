@@ -321,6 +321,25 @@ def xyz_2_smiles(file_name: str) -> str:
     return smi.split()[0].strip()
 
 
+def check_overlap(dataframe_xyz):
+    """Given a pandas dataframe, iterates over all the atoms and checks if they're overlapping
+
+    :param dataframe_xyz:
+    :return:
+    """
+    overlap = []
+    n_atoms = len(dataframe_xyz)
+    overlap_bool = False
+
+    for i in range(0, n_atoms):
+        current_atom = dataframe_xyz.iloc[i, :]
+        for j in range(i + 1, n_atoms):
+            if distance(current_atom, dataframe_xyz.iloc[j, :]) <= 0.8:
+                overlap.append([i + 1, j + 1])
+                overlap_bool = True
+    return overlap_bool, overlap
+
+
 if __name__ == '__main__':
     # molec = 'H2O'
     # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')
@@ -334,5 +353,5 @@ if __name__ == '__main__':
     # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))
     # print_correct_connectivity_line('120  113  1  0  0  0  0')
-    ff_optimize('Ru(trop2dad)_sigma_func_13.mol', 'uff', None)
+    ff_optimize('Ru(trop2dad)_sigma_func_14.mol', 'uff', None)
     # print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))

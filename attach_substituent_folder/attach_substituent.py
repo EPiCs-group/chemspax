@@ -266,6 +266,9 @@ class Complex:
         write_data = pd.concat([skeleton_new_data, substituents_new_data])
         write_data = write_data.astype({'x': float, 'y': float, 'z': float})  # correct types in df
         write_data = write_data.set_index('atom')
+        # # check if there is overlap between atoms and then ToDO: then what? Not necessary if ff_opt works
+        # is_there_overlap, overlapping_atoms = check_overlap(write_data)
+        # print(is_there_overlap, overlapping_atoms)
         # increase n_atoms of source file accordingly
         with open(self.skeleton_path) as f:
             n_atoms = int(f.readline())
@@ -347,6 +350,7 @@ class Complex:
         except:
             print('No indices found to freeze')
             indices_to_freeze = None
+        ff_optimize(target_path[:-4]+'.mol', 'gaff', indices_to_freeze)
         ff_optimize(target_path[:-4]+'.mol', 'uff', indices_to_freeze)
 
         # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz

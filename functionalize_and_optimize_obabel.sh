@@ -10,7 +10,6 @@ echo "Created by: Adarsh Kalikadien & Vivek Sinha"
 echo "---------------------------------------------------------------------------------------------"
 
 functionalize_skeletons_C_substituents (){
-SKELETON_LIST=$(cd skeletons && ls | cut -d '.' -f 1)
 # select 1 random substituent with C as central atom as starting point
 STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n1 -e | cut -d '.' -f 1)
 #STARTING_C_SUBSTITUENT="F"
