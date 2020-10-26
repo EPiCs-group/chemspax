@@ -87,6 +87,39 @@ def scale_vector(starting_point, vector, length):
     return starting_point + vector*length
 
 
+def get_bonded_atoms(source_mol_file, atom_index):
+    """Use openbabel's methods to find the coordinates of all atoms that are bonded to a given atom
+
+    :param source_mol_file:
+    :param atom_index:
+    :return: numpy array of atoms bonded to a given atom
+    """
+    # initalize openbabel classes
+    obconversion = openbabel.OBConversion()
+    # both xyz and mol can be used as input but mol contains an accurate graph representation
+    if source_mol_file[-4:] == '.mol':
+        obconversion.SetInFormat('mol')
+    elif source_mol_file[-4:] == '.xyz':
+        obconversion.SetInFormat('xyz')
+    else:
+        raise Exception('file type is incorrect, .mol and .xyz are supported, not', source_mol_file[-4:])
+    mol = openbabel.OBMol()
+    obconversion.ReadFile(mol, source_mol_file)
+
+    # make atom object for atom we want
+    atom = mol.GetAtom(atom_index + 1)  # for obmol get functions indexing starts from 1
+
+    coordinates_list = []
+    for neighbour_atom in openbabel.OBAtomAtomIter(atom):
+        # there's also a .GetCoordinate() function but it returns a SWIG object...
+        coordinates = [neighbour_atom.x(), neighbour_atom.y(), neighbour_atom.z()]
+        coordinates_list.append(coordinates)
+
+    coordinates_array = np.array([np.array(coords) for coords in coordinates_list])
+
+    return coordinates_array
+
+
 def convert_list_of_string_to_np_array(array_string):
     """Pandas is importing np arrays as strings, use this converter to convert the list of 1 string to a np.array
     https://stackoverflow.com/questions/42755214/how-to-keep-numpy-array-when-saving-pandas-dataframe-to-csv
@@ -353,5 +386,6 @@ if __name__ == '__main__':
     # convert_xyz_2_mol_file('substituents_xyz/automatically_generated/something_2.xyz')
     # print(print_mol_counts_block(15, 15, 0))
     # print_correct_connectivity_line('120  113  1  0  0  0  0')
-    ff_optimize('Ru(trop2dad)_sigma_func_14.mol', 'uff', None)
+    # ff_optimize('Ru(trop2dad)_sigma_func_14.mol', 'uff', None)
     # print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))
+    print(get_bonded_atoms('substituents_xyz/manually_generated/C6H6.mol', 0))

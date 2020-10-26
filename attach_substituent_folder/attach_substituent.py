@@ -37,22 +37,27 @@ class Substituent:
     def first_coordination(self):
         # find centroid around a central atom, it is assumed that central atom has 3 bonds
         # the atom can be symmetrical or asymmetrical, say: C-X C-Y C-Z and a free electron pair for bonding
-        amount_atoms = len(self.data_matrix.index)  # amount of rows in data_matrix
-        coordination = []
-        r_critical = 2.5  # circle radius in which we want to search (P-I has largest bond length)
-        for i in range(0, amount_atoms):
-            current_atom = self.data_matrix.loc[i, ['x', 'y', 'z']]
-            d = self.central_atom - current_atom
-            # if coordinates are within radius there is a bond
-            if ((d[0]) ** 2 + (d[1]) ** 2 + (
-                    d[2]) ** 2) < r_critical**2 and i != self.central_atom_index:
-                coordination.append([np.linalg.norm(d), current_atom[0], current_atom[1], current_atom[2]])
-        # sort by norm(d) to find the 3 shortest bonds at top of array
-        coordination = np.array(coordination)
-        # sort in ascending order, first column is the distance
-        coordination = coordination[coordination[:, 0].argsort()]
-        # find only the xyz coordinates of shortest bonds
-        edges = coordination[0:3, 1:4]
+
+        #OLD METHOD
+        # amount_atoms = len(self.data_matrix.index)  # amount of rows in data_matrix
+        # coordination = []
+        # r_critical = 2.5  # circle radius in which we want to search (P-I has largest bond length)
+        # for i in range(0, amount_atoms):
+        #     current_atom = self.data_matrix.loc[i, ['x', 'y', 'z']]
+        #     d = self.central_atom - current_atom
+        #     # if coordinates are within radius there is a bond
+        #     if ((d[0]) ** 2 + (d[1]) ** 2 + (
+        #             d[2]) ** 2) < r_critical**2 and i != self.central_atom_index:
+        #         coordination.append([np.linalg.norm(d), current_atom[0], current_atom[1], current_atom[2]])
+        # # sort by norm(d) to find the 3 shortest bonds at top of array
+        # coordination = np.array(coordination)
+        # # sort in ascending order, first column is the distance
+        # coordination = coordination[coordination[:, 0].argsort()]
+        # # find only the xyz coordinates of shortest bonds
+        # edges = coordination[0:3, 1:4]
+
+        # find atoms bonded to central atom of substituent, use mol file since graph representation is more accurate
+        edges = get_bonded_atoms(self.path[:-4]+'.mol', self.central_atom_index)
         # scale bonds such that an hypothetical symmetrical molecule is created say C-X' C-Y' C-Z'
         for i in range(np.shape(edges)[0]):
             scale_vector(self.central_atom, (edges[i, :]-self.central_atom), self.bond_length)
@@ -334,16 +339,11 @@ class Complex:
         # indices_to_freeze = None
         # since self.skeleton changes because of recursive functionalizations, the original skeleton atoms need to be
         # freezed before ff optimization to try to improve calculation efficiency
-        # original_skeleton_name = target_filename.split('_')[0]
-        n_iteration = int(target_filename.split('_')[-1])
+
         # in functionalize_and_optimize scripts name after uff is skeleton + _func_i
         # and in xtb skeleton + _func + _i + _opt
-        # if use_xtb_script_after:
-        #     original_skeleton_name = target_filename[:-11]
-        # for skeleton in glob.glob('skeletons/*.xyz'):
-        #     if skeleton[10:-4] == original_skeleton_name:
-                # read indices of original skeleton file and turn into list
-                # each iteration 1 atom_to_be_functionalized is removed, so 1 less atom to freeze
+        n_iteration = int(target_filename.split('_')[-1])
+
         n_atoms_original_skeleton = int(open(self.original_skeleton_path).readline()) - n_iteration
         try:
             indices_to_freeze = [i for i in range(n_atoms_original_skeleton)]
@@ -354,7 +354,7 @@ class Complex:
         ff_optimize(target_path[:-4]+'.mol', 'uff', indices_to_freeze)
 
         # conversion from .mol to .xyz is taken care of in xtb bash script: xtbopt.mol --> xtbopt.xyz
-        # REDUNDANT
+        # REDUNDANT: xyz conversion can be done in batch after all functionalizations are done
         # set to True if the xtb bash script will be used
         # if not use_xtb_script_after:
         #     # convert .mol file back to xyz file
@@ -369,6 +369,9 @@ if __name__ == "__main__":
     #     print(file)
     #     atom = Substituent(file[39:-4], 0, 2.0)
     #     atom.write_central_atom_and_centroid_to_csv('manually')
+    # phenyl = Substituent('C6H6', 0, 2.0)
+    # print(phenyl.first_coordination())
+    # phenyl.write_central_atom_and_centroid_to_csv('manually')
     folder_name = '../substituents_xyz/automatically_generated/'
     folder = os.listdir('../substituents_xyz/automatically_generated/')
     for item in folder:
@@ -377,13 +380,13 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('RuPNP-H_PH3', '../skeletons/RuPNP-H_PH3.xyz', 'F',
+    some_complex = Complex('SNS-pincer-H', '../skeletons_temp/SNS-pincer-H.xyz', 'C6H6',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    some_complex.generate_substituent_and_write_xyz('RuPNP-H_PH3_func_1', 1.54, False)
+    some_complex.generate_substituent_and_write_xyz('SNS-pincer-H_func_1', 1.54, False)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('RuPNP-H_PH3', '../substituents_xyz/automatically_generated/RuPNP-H_PH3_func_1.xyz', 'F',
+    other_complex = Complex('SNS-pincer-H', '../substituents_xyz/automatically_generated/SNS-pincer-H_func_1.xyz', 'CH2CH3CH3',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    other_complex.generate_substituent_and_write_xyz('RuPNP-H_PH3_func_2', 1.54, False)
+    other_complex.generate_substituent_and_write_xyz('SNS-pincer-H_func_2', 1.54, False)
     # some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',
     #                         '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     # some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)

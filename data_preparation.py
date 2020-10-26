@@ -21,12 +21,6 @@ def prepare_data():
     if glob.glob(csv_database_file):
         os.remove(csv_database_file)
 
-    # create csv database for all substituents
-    for file in glob.glob(substituent_folder + '*.xyz'):
-        # this assumes that the central atom of the substituent is the first atom in the file!
-        atom = Substituent(file[36:-4], 0, 2.0)
-        atom.write_central_atom_and_centroid_to_csv('manually')
-
     # ToDo: compress these 4 functions into one
     # convert substituents .xyz files to .mol files
     for file in glob.glob(substituent_folder + '*.xyz'):
@@ -51,6 +45,13 @@ def prepare_data():
         # conversion is only necessary if the .xyz file doesn't exist
         if not glob.glob(file[:-4] + '.xyz'):
             convert_mol_2_xyz_file(file)
+
+    # create csv database for all substituents
+    for file in glob.glob(substituent_folder + '*.xyz'):
+        # this assumes that the central atom of the substituent is the first atom in the file!
+        atom = Substituent(file[36:-4], 0, 2.0)
+        atom.write_central_atom_and_centroid_to_csv('manually')
+
 
 if __name__ == '__main__':
     prepare_data()
