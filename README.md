@@ -104,7 +104,16 @@ virtualenv auto_func  # create environment named auto_func
 source auto_func/bin/activate  # to activate environment
 pip install -r requirements.txt
   ```
-   Alternatively, Anaconda can be used to manage virtual environments:  
+  If a built-in virtual environment is used it is necessary to compile openbabel with python bindings from source:  
+  The procedure is explained in OpenBabel's 
+   [installation guide](https://openbabel.org/wiki/Install_(source_code)#Installing_locally_without_root_access).  
+   Perform this compilation in a separate folder to prevent errors.  
+   **Note:  In order to install the python bindings the user needs to run:**  
+cmake ../ob-src -DCMAKE_INSTALL_PREFIX=/home/noel/tree -DPYTHON_BINDINGS=ON 2>&1 | tee cmake.out
+ 
+   **in step B3.**  
+  
+   Alternatively, Anaconda can be used to manage virtual environments, **this doesn't require compilation from source of openbabel**:  
      Download the latest installer from 
      [Anaconda's website](https://www.anaconda.com/products/individual).    
      For example: 
@@ -116,30 +125,23 @@ pip install -r requirements.txt
    ```
      bash Anaconda3-2020.07-Linux-x86_64.sh  
    ```
-   The installation is pretty self explanatory, afterwards create a virtual environment and activate it:
+   The installation is pretty self explanatory, afterwards create a virtual environment and activate it.  
+The environment will be named 'auto_func', the conda_env.yml file can be changed if a different name is required. 
         
   ```
-  conda create -n auto_func python=3.7`
+  conda env create -f conda_env.yml
   
   conda activate auto_func
   ```
-   
-   This step has become redundant since the babel has been replaced with the obabel command
-   functionalize_and_optimize_xtb.sh in commit f70099ad38c9e5f301a221177b5802b596001c4f.  
-   ~~Before installing the required packages, it is necessary to build OpenBabel with
-   Python bindings. The procedure is explained in OpenBabel's 
-   [installation guide](https://openbabel.org/wiki/Install_(source_code)#Installing_locally_without_root_access).  
-   Perform this compilation in a separate folder to prevent errors.~~  
-   **~~Note:  In order to install the python bindings the user needs to run:~~**  
-~~cmake ../ob-src -DCMAKE_INSTALL_PREFIX=/home/noel/tree -DPYTHON_BINDINGS=ON 2>&1 | tee cmake.out~~
- 
-   **~~in step B3.~~**  
-   
-   After OpenBabel is compiled succesfully the packages can be downloaded from the conda-forge channel
-   using the requirements.txt file, in the auto_func folder run:
-   ```
-   conda install -c conda-forge --file requirements.txt
-   ```  
+  Check if the environment is installed correctly by running 
+  ```
+  conda env list
+  ```
+
+~~REDUNDANT~~   
+~~After OpenBabel is compiled succesfully the packages can be downloaded from the conda-forge channel
+using the requirements.txt file, in the auto_func folder run:
+conda install -c conda-forge --file requirements.txt~~
    
   More information on virtual environments can be found at the
   [venv homepage](https://docs.python.org/3/library/venv.html) or 
