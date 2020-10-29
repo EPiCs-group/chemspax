@@ -389,3 +389,5 @@ if __name__ == '__main__':
     # ff_optimize('Ru(trop2dad)_sigma_func_14.mol', 'uff', None)
     # print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))
     print(get_bonded_atoms('substituents_xyz/manually_generated/C6H6.mol', 0))
+    # xyz_coords_from_mol = pd.read_table('skeletons/PCP-cy.mol', skiprows=4, delim_whitespace=True)
+    # print(len(xyz_coords_from_mol.values[0]))

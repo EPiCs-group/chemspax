@@ -319,6 +319,7 @@ class Complex:
 
         # convert substituent to .mol if .mol file doesn't exist
         if not glob.glob(self.substituent_path[:-4]+'.mol'):
+            print('have you forgotten to run data_preparation.py? generating .mol for substituent...')
             convert_xyz_2_mol_file(self.substituent_path)
 
         # read connectivity of substituent
@@ -360,7 +361,7 @@ class Complex:
         #     # convert .mol file back to xyz file
         #     convert_mol_2_xyz_file(target_path[:-4]+'.mol')
         #     # remove last white line
-        #     remove_last_line(target_path)
+              # remove_last_line(target_path)
 
 
 if __name__ == "__main__":
@@ -380,16 +381,16 @@ if __name__ == "__main__":
         elif item.endswith(".mol"):
             os.remove(os.path.join(folder_name, item))
 
-    some_complex = Complex('SNS-pincer-H', '../skeletons_temp/SNS-pincer-H.xyz', 'C6H6',
+    some_complex = Complex('PCP-cy', '../skeletons/PCP-cy.xyz', 'CH3',
                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    some_complex.generate_substituent_and_write_xyz('SNS-pincer-H_func_1', 1.54, False)
+    some_complex.generate_substituent_and_write_xyz('PCP-cy_func_1', 1.54, False)
     # some_complex.write_connectivity_in_file('../substituents_xyz/automatically_generated/something.mol', 'moh')
-    other_complex = Complex('SNS-pincer-H', '../substituents_xyz/automatically_generated/SNS-pincer-H_func_1.xyz', 'CH2CH3CH3',
+    other_complex = Complex('PCP-cy', '../substituents_xyz/automatically_generated/PCP-cy_func_1.xyz', 'CH3',
                             '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    other_complex.generate_substituent_and_write_xyz('SNS-pincer-H_func_2', 1.54, False)
-    # some_other_complex = Complex('../substituents_xyz/automatically_generated/something_1.xyz', 'CCCl3CCl3OH',
-    #                         '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
-    # some_other_complex.generate_substituent_and_write_xyz('something_2', 1.54)
+    other_complex.generate_substituent_and_write_xyz('PCP-cy_func_2', 1.54, False)
+    some_other_complex = Complex('PCP-cy', '../substituents_xyz/automatically_generated/PCP-cy_func_2.xyz', 'CH3',
+                            '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+    some_other_complex.generate_substituent_and_write_xyz('PCP-cy_func_3', 1.54, False)
     # other_other_complex = Complex('../substituents_xyz/automatically_generated/something_2.xyz', 'CH4N2OH',
     #                         '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
     # other_other_complex.generate_substituent_and_write_xyz('something_3', 1.54)

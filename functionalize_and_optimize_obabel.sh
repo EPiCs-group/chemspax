@@ -26,7 +26,7 @@ shopt -s xpg_echo
 
 # write skeletons to temp file to iterate over them
 cd skeletons
-ls -ltr *.xyz | awk '{print $10}' > ../temp_skeletons_file
+ls *.xyz > ../temp_skeletons_file
 cd -
 N=$(wc -l temp_skeletons_file | cut -d' ' -f1)
 
