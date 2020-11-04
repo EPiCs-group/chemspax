@@ -120,6 +120,45 @@ def get_bonded_atoms(source_mol_file, atom_index):
     return coordinates_array
 
 
+def get_neighbour_bond_distance(source_mol_file, atom_index, search_this_atomic_num):
+    """Use Openbabel's meethods to find the distance of a specific atom to a given atom, the atoms should be bonded
+    and the atom should be searched by using it's atomic number
+
+    :param source_mol_file:
+    :param atom_index:
+    :param search_this_atomic_num:
+    :return: list of distance between indicated central atom and atoms that are bonded to it with given atomic number
+    """
+    atom_index = int(atom_index)
+    search_this_atomic_num = int(search_this_atomic_num)
+    # initalize openbabel classes
+    obconversion = openbabel.OBConversion()
+    # both xyz and mol can be used as input but mol contains an accurate graph representation
+    if source_mol_file[-4:] == '.mol':
+        obconversion.SetInFormat('mol')
+    elif source_mol_file[-4:] == '.xyz':
+        obconversion.SetInFormat('xyz')
+    else:
+        raise Exception('file type is incorrect, .mol and .xyz are supported, not', source_mol_file[-4:])
+
+    mol = openbabel.OBMol()
+    obconversion.ReadFile(mol, source_mol_file)
+
+    # make atom object for atom of whose bonds we want to look at
+    atom = mol.GetAtom(atom_index + 1)  # for obmol get functions indexing starts from 1
+
+    distance_list = []
+    for neighbour_atom in openbabel.OBAtomAtomIter(atom):
+        atomic_number = neighbour_atom.GetAtomicNum()
+        # change this atomic number to change the atom you're looking for
+        if atomic_number == search_this_atomic_num:
+            # if this is the atom we're looking for, append the distance
+            distance = neighbour_atom.GetDistance(atom)
+            distance_list.append(distance)
+
+    return distance_list
+
+
 def convert_list_of_string_to_np_array(array_string):
     """Pandas is importing np arrays as strings, use this converter to convert the list of 1 string to a np.array
     https://stackoverflow.com/questions/42755214/how-to-keep-numpy-array-when-saving-pandas-dataframe-to-csv
@@ -389,5 +428,6 @@ if __name__ == '__main__':
     # ff_optimize('Ru(trop2dad)_sigma_func_14.mol', 'uff', None)
     # print(xyz_2_smiles('skeletons/RuPNP_aromatic_tBu.xyz'))
     print(get_bonded_atoms('substituents_xyz/manually_generated/C6H6.mol', 0))
-    # xyz_coords_from_mol = pd.read_table('skeletons/PCP-cy.mol', skiprows=4, delim_whitespace=True)
-    # print(len(xyz_coords_from_mol.values[0]))
+    # xyz_coords_from_mol = pd.read_table('skeletons_temp/PCP-cy.mol', skiprows=4, delim_whitespace=True,
+    #                                     names=['x', 'y', 'z', 'atom', 0,1,2,3,4,5,6,7,8,9,10,11,12])
+    # print(xyz_coords_from_mol.loc[:, ['x', 'y', 'z']])
