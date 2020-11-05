@@ -121,8 +121,11 @@ def get_bonded_atoms(source_mol_file, atom_index):
 
 
 def get_neighbour_bond_distance(source_mol_file, atom_index, search_this_atomic_num):
-    """Use Openbabel's meethods to find the distance of a specific atom to a given atom, the atoms should be bonded
-    and the atom should be searched by using it's atomic number
+    """Use Openbabel's meethods to find the distance of a specific atom type to a given atom, the atoms should be bonded
+    and the specific atom type that is searched for should be searched by using it's atomic number.
+    This function is useful if the given atom has a known index in the molecule
+    if you don't know the index of the central atom use get_neighbour_distance_search.py or
+    get_neighbour_bond_distance_search()
 
     :param source_mol_file:
     :param atom_index:
@@ -155,6 +158,48 @@ def get_neighbour_bond_distance(source_mol_file, atom_index, search_this_atomic_
             # if this is the atom we're looking for, append the distance
             distance = neighbour_atom.GetDistance(atom)
             distance_list.append(distance)
+
+    return distance_list
+
+
+def get_neighbour_bond_distance_search(source_mol_file, central_atom_atomic_num, search_this_atomic_num):
+    """Use Openbabel's meethods to find the distance of a specific atom type to a given atom type, the atoms should be
+    bonded and the specific atom type that is searched for should be searched by using it's atomic number.
+    This function is useful if the given atom does not have a known index in the molecule,
+    if you know the index of the central atom use get_neighbour_distance.py or get_neighbour_bond_distance()
+
+    :param source_mol_file:
+    :param central_atom_atomic_num:
+    :param search_this_atomic_num:
+    :return: list of distance between a central atom with unknown index and atoms that are bonded to it
+    with given atomic number
+    """
+    central_atom_atomic_num = int(central_atom_atomic_num)
+    search_this_atomic_num = int(search_this_atomic_num)
+
+    # initalize openbabel classes
+    obconversion = openbabel.OBConversion()
+    # both xyz and mol can be used as input but mol contains an accurate graph representation
+    if source_mol_file[-4:] == '.mol':
+        obconversion.SetInFormat('mol')
+    elif source_mol_file[-4:] == '.xyz':
+        obconversion.SetInFormat('xyz')
+    else:
+        raise Exception('file type is incorrect, .mol and .xyz are supported, not', source_mol_file[-4:])
+
+    mol = openbabel.OBMol()
+    obconversion.ReadFile(mol, source_mol_file)
+
+    distance_list = []
+    # iterate over atoms in molecule to search the central atom
+    for atom in openbabel.OBMolAtomIter(mol):
+        atomic_number = atom.GetAtomicNum()
+        if atomic_number == central_atom_atomic_num:
+            for neighbour_atom in openbabel.OBAtomAtomIter(atom):
+                atomic_number = neighbour_atom.GetAtomicNum()
+                if atomic_number == search_this_atomic_num:
+                    distance = neighbour_atom.GetDistance(atom)
+                    distance_list.append(distance)
 
     return distance_list
 
