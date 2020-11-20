@@ -8,6 +8,7 @@ rm -f wbo
 rm -f xtb.out
 rm -f xtbopt.log
 rm -f .xtboptok
+rm -f gfnff_topo
 rm -f *.mol
 rm -f *.txt
 cd optimized_structures/

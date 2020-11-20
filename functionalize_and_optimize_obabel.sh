@@ -55,10 +55,10 @@ for j in $(seq 1 ${N}); do
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
         FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
         sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_$((i+1)).mol
-	    cd -
-        i=$((i+1))
         # write target filename and substituent to .csv file to track functionalizations
         echo ${TARGET_NAME}_$((i+1)),${sub} >> ${skeleton}_funcs_map.csv
+	    cd -
+        i=$((i+1))
         done
 done
 # remove temp file with skeleton names

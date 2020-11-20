@@ -16,8 +16,8 @@ STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | x
 # select 5 random substituents with C as central atom
 RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n5 -e | cut -d '.' -f 1)
 #RANDOM_C_SUBSTITUENTS="F"
-echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
-echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substituents.txt
+#echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
+#echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substituents.txt
 # C-C bond length = 1.54 A
 # https://phys.org/news/2018-03-carbon-carbon-bond-length.html
 
@@ -54,6 +54,8 @@ for j in $(seq 1 ${N}); do
     mv xtb.out optimized_structures/${TARGET_NAME}_opt_${i}_xtb.out
     mv xtbopt.log optimized_structures/${TARGET_NAME}_opt_${i}_xtbopt.log
     rm -f xtbrestart
+    # write target filename and substituent to .csv file to track functionalizations
+    echo ${TARGET_NAME}_opt_${i},${STARTING_C_SUBSTITUENT} > ${skeleton}_funcs_map.csv
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
@@ -72,6 +74,8 @@ for j in $(seq 1 ${N}); do
         mv xtb.out optimized_structures/${TARGET_NAME}_opt_$((i+1))_xtb.out
         mv xtbopt.log optimized_structures/${TARGET_NAME}_opt_$((i+1))_xtbopt.log
         rm -f xtbrestart
+        # write target filename and substituent to .csv file to track functionalizations
+        echo ${TARGET_NAME}_opt_$((i+1)),${sub} > ${skeleton}_funcs_map.csv
 	    cd -
         i=$((i+1))
         done
