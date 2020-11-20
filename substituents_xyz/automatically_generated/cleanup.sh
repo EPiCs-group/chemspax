@@ -11,6 +11,7 @@ rm -f .xtboptok
 rm -f gfnff_topo
 rm -f *.mol
 rm -f *.txt
+rm -f *.csv
 cd optimized_structures/
 rm -f *.xyz
 rm -f *.mol
