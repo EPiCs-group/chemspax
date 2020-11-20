@@ -8,7 +8,7 @@ echo "Looks like you want to add some substituents to a metal-ligand complex."
 echo "-------------------------------------------------------"
 
 
-SOURCE_FILE="../skeletons/RuPNP_Ph"
+SOURCE_FILE="../skeletons_temp/RuPNP_Ph"
 TARGET_FILE="../substituents_xyz/automatically_generated/RuPNP_Ph_CH3"
 
 rm ../substituents_xyz/automatically_generated/*.xyz

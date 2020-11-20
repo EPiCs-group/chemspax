@@ -16,8 +16,8 @@ STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | x
 # select 5 random substituents with C as central atom
 RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n5 -e | cut -d '.' -f 1)
 #RANDOM_C_SUBSTITUENTS="F"
-echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
-echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substituents.txt
+#echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
+#echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substituents.txt
 # C-C bond length = 1.54 A
 # https://phys.org/news/2018-03-carbon-carbon-bond-length.html
 
@@ -44,6 +44,8 @@ for j in $(seq 1 ${N}); do
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
     FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
     sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_${i}.mol
+    # write target filename and substituent to .csv file to track functionalizations
+    echo ${TARGET_NAME}_${i},${STARTING_C_SUBSTITUENT} > ${skeleton}_funcs_map.csv
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
@@ -55,6 +57,8 @@ for j in $(seq 1 ${N}); do
         sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_$((i+1)).mol
 	    cd -
         i=$((i+1))
+        # write target filename and substituent to .csv file to track functionalizations
+        echo ${TARGET_NAME}_$((i+1)),${sub} >> ${skeleton}_funcs_map.csv
         done
 done
 # remove temp file with skeleton names
