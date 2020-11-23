@@ -44,8 +44,9 @@ for j in $(seq 1 ${N}); do
     # write functionalization list to optimized file to be able to use that file as source for new functionalizations
     FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_${i}.xyz)
     sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_${i}.mol
-    # write target filename and substituent to .csv file to track functionalizations
-    echo ${TARGET_NAME}_${i},${STARTING_C_SUBSTITUENT} > ${skeleton}_funcs_map.csv
+    # write target filename, substituent, index and functional group to .csv file to track functionalizations
+    echo file_name,substituent,index,functional_group > ${skeleton}_funcs_map.csv
+    echo ${TARGET_NAME}_${i},${STARTING_C_SUBSTITUENT},X1,R1 >> ${skeleton}_funcs_map.csv
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
@@ -55,8 +56,23 @@ for j in $(seq 1 ${N}); do
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
         FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
         sed -i '1s/.*/'"${FUNCTIONALIZATION_LIST}"'/' ${TARGET_NAME}_$((i+1)).mol
-        # write target filename and substituent to .csv file to track functionalizations
-        echo ${TARGET_NAME}_$((i+1)),${sub} >> ${skeleton}_funcs_map.csv
+        # write target filename, substituent, index and functional group to .csv file to track functionalizations
+        # here it is assumed that every 5th functionalization until 20 is done on R1,R2,R3 and R4, the rest is on R0
+        if [ $((i+1)) -le 5 ]
+        then
+            echo ${TARGET_NAME}_$((i+1)),${sub},X$((i+1)),R1 >> ${skeleton}_funcs_map.csv
+        elif [ $((i+1)) -gt 5 ] && [ $((i+1)) -le 10 ]
+        then
+            echo ${TARGET_NAME}_$((i+1)),${sub},X$((i+1)),R2 >> ${skeleton}_funcs_map.csv
+        elif [ $((i+1)) -gt 10 ] && [ $((i+1)) -le 15 ]
+        then
+            echo ${TARGET_NAME}_$((i+1)),${sub},X$((i+1)),R3 >> ${skeleton}_funcs_map.csv
+        elif [ $((i+1)) -gt 15 ] && [ $((i+1)) -le 20 ]
+        then
+            echo ${TARGET_NAME}_$((i+1)),${sub},X$((i+1)),R4 >> ${skeleton}_funcs_map.csv
+        else
+            echo ${TARGET_NAME}_$((i+1)),${sub},X$((i+1)),R0 >> ${skeleton}_funcs_map.csv
+        fi
 	    cd -
         i=$((i+1))
         done
