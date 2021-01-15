@@ -28,7 +28,7 @@ for CSV_FILE in ${CSV_FILES}; do
 cp ${CSV_FILE} ${CSV_FILE}.bak
 N=`wc -l ${CSV_FILE} | cut -d' ' -f 1`
 # add the new column index
-INDEX_NAMES=`sed "$1q;d" ${CSV_FILE}`
+INDEX_NAMES=`sed "1q;d" ${CSV_FILE}`
 NEW_INDEX_NAMES=${INDEX_NAMES},${DATA_NAME}
 sed "1s/$INDEX_NAMES/$NEW_INDEX_NAMES/" ${CSV_FILE} > ${CSV_FILE}_new
 mv ${CSV_FILE}_new ${CSV_FILE}
