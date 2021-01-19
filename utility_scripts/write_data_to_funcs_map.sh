@@ -35,13 +35,20 @@ mv ${CSV_FILE}_new ${CSV_FILE}
     for i in `seq 1 ${N}`; do
     # first column of ${skeleton}_funcs_map.csv is the filename of the functionalization
     filename=`sed "${i}q;d" ${CSV_FILE} | cut -d',' -f 1`
-    # script supposes that everything is in its own separate directory
+    # script assumes that everything is in its own separate directory
     if [[ -d "${filename}" ]]
         then
         # put command to get the data in $DATA variable
-        DATA=`grep "Co" ${filename}/scr.complex/mullpop | awk -F '  +' '{print $10}'` # get spin density
-        #DATA=`calculate_rmsd ${filename}/xyzfile1 ${filename}/xyzfile2` # get RMSD
+        #DATA=`grep "Co" ${filename}/scr.complex/mullpop | awk -F '  +' '{print $10}'` # get spin density
+        #DATA=`calculate_rmsd --no-hydrogen ${filename}/coord_start.xyz ${filename}/xtbopt.xyz` # get RMSD
+        #DATA=`grep -w "${filename}" HOMO_LUMO_gap_perfect | cut -d',' -f 4` # get spin density field 2 for DFT alpha, field 3 for DFT beta, field 4 for xtb
+        DATA=`sed "1q;d" ${filename}/coord_start.xyz` # get n_atoms
         #DATA=`get_gaussian_info.py ${filename}/logfile ${filename}/${filename}.csv && sed "2q;d" ${filename}/${filename}.csv | cut -d',' -f 4` $ field 4 for E and field 10 for G from DFT .log
+        # make data empty if the xtb calculation has not converged
+        if [ -f "${filename}/NOT_CONVERGED" ]
+            then
+            DATA=""
+        fi
         # add new data on correct line
         OLD_LINE=`sed "${i}q;d" ${CSV_FILE}`
         NEW_LINE=${OLD_LINE},${DATA}
