@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # redirect stdout/stderr to a file
 # exec &> logfile.txt
+# With this script the user can do functionalizations and the functionalized structures will be optimized using
+# openbabel's FF methods
 # This script only runs the python file, ff optimization and file conversions are done in the python file
 
 echo ""

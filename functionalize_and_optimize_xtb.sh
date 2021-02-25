@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # redirect stdout/stderr to a file
 # exec &> logfile.txt
+# With this script the user can do functionalizations and the functionalized structures will be optimized using xTB
 # This script runs the python file and a
 
 echo ""
