@@ -6,6 +6,8 @@
 import pytest
 import os
 from utilities import *
+"""Some testing of the used utilities
+"""
 
 test_folder = 'tests/'
 

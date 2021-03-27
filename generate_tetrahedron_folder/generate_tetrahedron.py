@@ -3,10 +3,13 @@
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
-"""A different approach to the same problem: The use case would be given a C-H bond to be functionalized:
+"""OUTDATED and REDUNDANT approach for generating and/or placing tetrahedral substituents.
+
+Use the approach in generate_tetrahedron.py instead!
+
+A different approach to the same problem: The use case would be given a C-H bond to be functionalized:
 generate 3 atoms A,B,C such that H,A,B,C make a tetrahedron
 then H can be replaced/substituted by say another atoms Z (practical case would be C,N,P)
-in the end this code will also allow substitution by O-CH3 type groups
 """
 import numpy as np
 import pandas as pd

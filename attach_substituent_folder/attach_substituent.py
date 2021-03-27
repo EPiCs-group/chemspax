@@ -11,14 +11,29 @@ import numpy as np
 import pandas as pd
 sys.path.append("..")
 from utilities import *
+"""A substituent from the library can be attached to another molecule with the functions given in this file. 
+The substituent is seen as a 'rigid block' that is rotated and translated. After placement of a new substituent, the 
+new substituent is optimized with openbabel's FF methods. This is a constrained optimization since the skeleton 
+atoms will be frozen.
 
-'''class Substituent: Take ligands and find centroids that point in correct direction to be added to a skeleton
-   class Complex: Functionalize a skeleton with a substituent using the generated .csv database 
-'''
+This approach can be used in the functionalize_and_optimize_obabel.sh and functionalize_and_optimize_xtb.sh scripts.
+"""
 
 
 class Substituent:
     def __init__(self, molecule, central_atom=0, bond_length=1.2):
+        """Holds information about substituents, used to write the central atom and centroid vector to the .csv database
+        The information of the .csv database is then used to attach the substituents to a skeleton in
+        attach_substituent.py
+
+        :param molecule: path to substituent xyz file
+        :param central_atom: index of central atom
+        :param bond_length: bond length between new substituent and skeleton
+
+        Example of writing adding a CH3 entry to the .csv database (this is done in data_preparation.py):
+        >>> atom = Substituent(../CH3.xyz[36:-4], 0, 2.0)
+        >>> atom.write_central_atom_and_centroid_to_csv('manually')
+        """
         folder = 'substituents_xyz/manually_generated/'
         extension = '.xyz'
         self.molecule = molecule
@@ -31,12 +46,22 @@ class Substituent:
         self.central_atom = self.data_matrix.loc[self.central_atom_index, ['x', 'y', 'z']]  # get xyz coordinate of central atom
 
     def scale(self, vector, central_atom):
+        """Function used to scale a vector to the given input bond length
+
+        :param vector: vector to be scaled
+        :param central_atom: xyz coordinates of central atom
+        :return: scaled vector
+        """
         vector = vector/np.linalg.norm(vector)
         return central_atom + vector*self.bond_length  # length in angstrom
 
     def first_coordination(self):
-        # find centroid around a central atom, it is assumed that central atom has 3 bonds
-        # the atom can be symmetrical or asymmetrical, say: C-X C-Y C-Z and a free electron pair for bonding
+        """Find centroid around a central atom, it is assumed that central atom has 3 bonds
+        the atom can be symmetrical or asymmetrical, say: C-X C-Y C-Z and a free electron pair for bonding
+
+        :return: centroid vector of substituent group
+        """
+
 
         #OLD METHOD
         # amount_atoms = len(self.data_matrix.index)  # amount of rows in data_matrix
@@ -68,6 +93,12 @@ class Substituent:
         return np.array(centroid)
 
     def write_central_atom_and_centroid_to_csv(self, manually_or_automatically_generated):
+        """Write the central atom and centroid data of the substituent to the csv database
+
+        :param manually_or_automatically_generated: folder where substituent.xyz should be read from
+        :return: new entry to csv database with molecule name, index of central atom, centroid vector for the s
+        substituent
+        """
         folder = 'substituents_xyz/'
         filename = 'central_atom_centroid_database.csv'
         path_to_file = folder + manually_or_automatically_generated + '_generated/' + filename
@@ -88,6 +119,20 @@ class Substituent:
 
 class Complex:
     def __init__(self, original_skeleton_name, source_data, substituent_to_be_attached, path_to_database):
+        """Holds information about skeletons on which substituents will be placed,
+        used to attach substituents to the skeleton using information from the .csv database.
+
+        :param original_skeleton_name: name of the skeleton that needs to be functionalized
+        :param source_data: path to skeleton xyz file
+        :param substituent_to_be_attached: name of the substituent that will be attached
+        :param path_to_database: path to .csv database
+
+        Example of placing a CH3 substituent on a skeleton (this can be done in functionalize_and_optimize_obabel.sh and
+        functionalize_and_optimize_xtb.sh):
+        >>> some_complex = Complex('PCP-cy', '../skeletons/PCP-cy.xyz', 'CH3',
+                           '../substituents_xyz/manually_generated/central_atom_centroid_database.csv')
+        >>> some_complex.generate_substituent_and_write_xyz('PCP-cy_func_1', 1.54, False)
+        """
         # original skeleton data (so starting point of each functionalization)
         skeleton_folder = 'skeletons/'
         extension = '.xyz'
@@ -152,6 +197,11 @@ class Complex:
             self.bond_length)  # real bond between C-H in xyz plane
 
     def generate_substituent_group_vector(self, length_skeleton_bonded_substituent_central=1.54):
+        """Used to translate and rotate the substituent group for correct placement on the skeleton
+
+        :param length_skeleton_bonded_substituent_central: bond length between the substituent group and skeleton
+        :return: xyz matrix with correctly rotated and translated coordinates of substituent group's atoms
+        """
         normal_vector = self.substituent_centroid_vector
         # normal_vector = normal_vector / np.linalg.norm(normal_vector)  # vector is already unit vector (redundant)
 
@@ -187,6 +237,14 @@ class Complex:
         return substituent_vectors
 
     def write_connectivity_in_file(self, target_path, new_connectivity_data):
+        """Used to write given connectivity data to a MDL molfile. This necessary to add correct bonding information
+        from the input substituent and skeleton file to prevent weird bonds from being formed upon file conversions.
+        This assumes that the MDL molfile for substituents and skeletons are correct.
+
+        :param target_path: path to MDL molfile
+        :param new_connectivity_data: dataframe of new connectivity data
+        :return: same input MDL molfile but now with bonding information from given connectivity data
+        """
         # convert connectivity data to ints
         new_connectivity_data = new_connectivity_data.astype(int)
 
@@ -233,6 +291,16 @@ class Complex:
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54,
                                            use_xtb_script_after=True):
+        """Used to generate translated and rotated vectors for substituents and attaching them to the skeleton
+
+        :param target_filename: name of target xyz file that will be written
+        :param length_skeleton_bonded_substituent_central: bond length between the skeleton and substituent group
+        (does not really matter since force field optimization is used after placement of a new substituent)
+        :param use_xtb_script_after: REDUNDANT parameter, was used to enable xtb optimization after a functionalization.
+        This can still be done by uncommenting last part of this function if desired.
+        :return: xyz file of substituent attached to skeleton and FF optimized MDL molfile of substituent attached to
+        skeleton
+        """
         folder = 'substituents_xyz/automatically_generated/'
         extension = '.xyz'
         target_path = folder + target_filename + extension

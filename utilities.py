@@ -10,7 +10,8 @@ import numpy as np
 import pandas as pd
 from openbabel import openbabel
 from openbabel import pybel
-
+"""This file contains utilities used in attach_substituent.py
+"""
 
 # reduce warnings from openbabel
 ob_log_handler = openbabel.OBMessageHandler()

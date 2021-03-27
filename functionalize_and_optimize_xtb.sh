@@ -2,7 +2,8 @@
 # redirect stdout/stderr to a file
 # exec &> logfile.txt
 # With this script the user can do functionalizations and the functionalized structures will be optimized using xTB
-# This script runs the python file and a
+# This script only runs the attach_substituent.py file and xTB optimization, change the file accordingly to your needs
+# for GFN2-xTB: xtb ${TARGET_NAME}_${i}.mol --opt --chrg 0 --uhf 0 --gbsa thf > xtb.out
 
 echo ""
 echo "---------------------------------------------------------------------------------------------"

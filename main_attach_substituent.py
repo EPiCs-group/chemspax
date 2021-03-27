@@ -5,6 +5,8 @@
 #                                                     #
 from attach_substituent_folder.attach_substituent import Complex
 import sys
+"""Main class that takes command line arguments and passes them to attach_substituent.py's Complex class
+"""
 
 
 def main():
