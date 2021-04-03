@@ -1,6 +1,6 @@
-# auto_func
+# ChemSpaX
 
-auto_func should be used to correctly functionalize TM complexes.
+ChemSpaX should be used to correctly functionalize TM complexes.
 Two approaches were considered: 
   1) From a library of existing substituents (with a lone pair of electrons) construct the 
   centroid vector and align it with the site to be functionalized on the skeleton and then attach it.
@@ -10,18 +10,18 @@ Two approaches were considered:
   See generate_tetrahedron.py. **This approach is outdated and not maintained**
 
 ## Use case
-This code should be able to attach substituents given a functionalization site. In the end this allows
-for automatic functionalization of complexes.
+This code should be able to attach substituents to a structure (skeleton) given a functionalization site. In the end this allows
+for automatic functionalization of complexes and local chemical space exploration.
 
 
 ## Installation
-Python 3.6.0 or higher is required. 
+Python 3.6.0 or higher is recommended. 
 
 ```
-git clone https://github.com/EPiCs-group/auto_func
+git clone https://github.com/EPiCs-group/chemspax
 ``` 
 
-It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments, **this doesn't require compilation from source of openbabel**:  
+It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments, **this doesn't require compilation from source to install openbabel**:  
      Download the latest installer from 
      [Anaconda's website](https://www.anaconda.com/products/individual).    
      For example: 
@@ -34,106 +34,120 @@ It is recommended to use a virtual environment. Anaconda can be used to manage v
      bash Anaconda3-2020.07-Linux-x86_64.sh  
    ```
    The installation is pretty self explanatory, afterwards create a virtual environment and activate it.  
-The environment will be named 'auto_func', the conda_env.yml file can be changed if a different name is required. 
+The environment will be named 'chemspax', the conda_env.yml file can be changed if a different name is required. 
         
   ```
   conda env create -f conda_env.yml
   
-  conda activate auto_func
+  conda activate chemspax
   ```
   Check if the environment is installed correctly by running 
   ```
   conda env list
   ```
-
-~~REDUNDANT~~   
-~~After OpenBabel is compiled succesfully the packages can be downloaded from the conda-forge channel
-using the requirements.txt file, in the auto_func folder run:
-conda install -c conda-forge --file requirements.txt~~
    
   More information on virtual environments can be found at the
   [venv homepage](https://docs.python.org/3/library/venv.html) or 
   [this Anaconda cheatsheet](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
 ## Instructions
-An example .xyz file of a skeleton in skeletons/ looks like this: 
+First, we need to prepare the xyz file of the skeleton to which we want to attach a substituent.
+An example .xyz file of a skeleton in the skeletons/ folder looks like this: 
 ![example](images/example_functionalization_list.jpg)
-  
+    
+In the functionalization_list each list is a functionalization. In this example figure, 
+4 functionalizations are done.   
+The first item of each list (red circle) is the index of the atom_to_be_functionalized (the atom that will 
+be replaced by the substituent).  
 Make sure to put no spaces in this functionalization_list since 
 sys.argv() is used in the main.py files, each space is thus interpreted as a new argument
-to the function. Also note that index 0 is the **first atom in the list**.
+to the function. Also note that index 0 is the **first atom in the xyz file**.
 In the example figure above, the index of Ru == 0.  
-  
-In the functionalization_list each list is a functionalization. 
-The first item of each list is the atom_to_be_functionalized (the atom that will be removed).
 ![example](images/example_atom_to_be_functionalized.jpg)
   
-  The second item of each list is the bonded_atom, this is the 
-  atom that is bonded to the atom_to_be_functionalized and thus the 
-  skeleton atom that will be bonded to the substituent. 
+  The second item of each list (green circle) is the index of the bonded_atom, this is the 
+  skeleton's atom that will be bonded to the substituent. 
   
   ![example](images/example_bonded_atom.jpg)
   
   
   With these instructions the user should be able to 
-  write the functionalization_list of the skeletons correctly 
-  in skeletons/ (**note: no newline at the end of the file!**).
-  For the 2 different approaches of functionalization an 
-  explanation is given on how to proceed.
+  write the functionalization_list of the skeletons correctly to 
+  the skeleton's xyz file and this skeleton's xyz file should be 
+  moved to the  skeletons/ folder (**note: there should be no newline at the end of the xyz file!**).  
+  To attach a substituent to this skeleton, an 
+  explanation is given on how to proceed in 2 sections.
   
   **attach_substituent.py**
   
   **Note: Make sure to check the relative path on line 175, 88, 66 
-  and 21 are correctly set, relatively to your working directory. 
+  and 21 are correctly set if you want to use attach_substituent.py directly.   
    It is recommended to keep everything as default and use the 
   functionalize_and_optimize_obabel.sh or 
-  functionalize_and_optimize_xtb.sh scripts.**
+  functionalize_and_optimize_xtb.sh scripts instead, which will be explained.**
+  
+  #### 1 Choosing/adding a substituent
   
   The user can upload manually generated substituents 
   to substituents_xyz/manually_generated/ or use the pre-made substituents
-  contained in that folder. Then the data_preparation.py script can be run 
-  to generate a .csv database
-  of the central atom and centroid vector per substituent as these will
-  be used to align the substituent with the skeleton. This also generates .mol files
-  for the skeleton and substituents since these are used for their connectivity data.
-  **data_preparation.py assumes that the central atom of the substituent is the first atom in the 
-  .xyz file of the substituent and that the central atom of the substituent
-  has a free electron such that a bond can be formed! Change this if it's necessary.
-  I'll take the example of methyl (which is already in the substituents_xyz/manually_generated folder):
-  Take an xyz file for CH4, then remove one of the hydrogens and let the C (central atom of the
-  substituent) be the first atom in the xyz file. Save the xyz file in substituents_xyz/manually_generated and 
-  run data_preparation.py to be able to use this substituent for functionalizations.**  
+  contained in that folder.  
   
-  An example of the final .csv database is shown below:
+  ##### Use pre-made substituents
+  
+  * Move skeleton's xyz file to skeletons/ folder  
+  * Run data_preparation.py
+  
+  ##### Add new substituent
+  
+  I'll take the example of methyl (which is already in the substituents_xyz/manually_generated folder):  
+  * Take an xyz file for (optimized) CH4, then remove one of the hydrogens, this is where the substituent will form a bond with the skeleton.  
+  * Let the C (central atom of the
+  substituent) be the first atom in the xyz file. (by moving C to the third line of the xyz file) 
+  * Save the xyz file in substituents_xyz/manually_generated 
+  * Run data_preparation.py to be able to use this substituent for functionalizations.  
+  
+  data_preparation.py is used to add the central atom and centroid vector per substituent to a .csv file 
+  as these will be used to align the substituent with the skeleton. This script also generates .mol files
+  for the skeleton and substituents since these are used for their connectivity data.
+  **data_preparation.py assumes that the central atom of the substituent (C in the case of CH3) is the first atom in the 
+  .xyz file of the substituent and that the central atom of the substituent
+  has a free electron pair such that a bond can be formed!**  
+  
+  An example of the .csv file with information for each substituent 
+  as generated by data_preparation.py is shown below:
   ![example](images/example_csv_database.jpg)
   
   After correct preparation of the xyz/mol files for the skeleton and 
-  (new) substituents, the user can use the 
+  (new) substituents and running data_preparation.py as explained above, 
+  we can move on to the next step.  
+  #### 2 Attaching substituent(s) to skeleton(s) 
+  The user can use the 
   functionalize_and_optimize_obabel.sh or 
   functionalize_and_optimize_xtb.sh scripts to generate their functionalized complexes.
   In these scripts the $STARTING_C_SUBSTITUENT should be the first substituent to place on the skeleton, 
   the $RANDOM_C_SUBSTITUENTS should be a list of substituents that should be added after that. 
   The amount of substituents should match the amount of functionalization sites specified in the
   xyz file of the skeleton.  
-  For example, if the user would like to place 6 methyl groups on a skeleton and optimize each functionalization with
+  For example, if the user would like to place 4 methyl groups on a skeleton (as defined in the example skeleton xyz file in the pictures above)
+  and optimize each functionalization with
   FF, functionalize_and_optimize_obabel.sh needs to be edited to:
   
   ```
   # select 1 random substituent with C as central atom as starting point
-  #STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n1 -e | cut -d '.' -f 1)
   STARTING_C_SUBSTITUENT="CH3"
-  # select 5 random substituents with C as central atom
-  #RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n5 -e | cut -d '.' -f 1)
-  RANDOM_C_SUBSTITUENTS="CH3 CH3 CH3 CH3 CH3"
+  # select 3 random substituents with C as central atom
+  RANDOM_C_SUBSTITUENTS="CH3 CH3 CH3"
   ```
   After this edit the script can be run: 
   ```
   bash functionalize_and_optimize_obabel.sh C
   ```
   
-  This should generate 6 files in substituents_xyz/automatically_generated 
-  for each skeleton. This workflow is similar if the user would like to optimize 
-  every functionalized skeleton with xTB but then functionalize_and_optimize_xtb.sh 
-  should be edited and used.  
+  This should generate 4 xyz and 4 .mol files in substituents_xyz/automatically_generated,
+  one for each functionalized structure. The .mol files contain the correcly optimized functionalized structures.  
+  This workflow is similar if the user would like to optimize 
+  every functionalized skeleton with xTB, but then the functionalize_and_optimize_xtb.sh 
+  script should be edited and used.
+  #### Done
   
   More information for devs:  
   The Complex.generate_substituent_and_write_xyz()
@@ -145,7 +159,7 @@ The first item of each list is the atom_to_be_functionalized (the atom that will
   3) name of substituent group (same as key in .csv database)
   4) relative path to .csv database file
   5) bond length between central atom of the substituent and bonded_atom of skeleton 
-  6) whether the user wants to use the python script with the xtb bash script, in the 
+  6) (Not used currently) whether the user wants to use the python script with the xtb bash script, in the 
   xtb bash script the conversion of the optimized .mol file to .xyz file doesn't happen in python.
   If this is set to false only ff optimization will be done and the python script will handle file conversions.
   
@@ -160,7 +174,7 @@ The first item of each list is the atom_to_be_functionalized (the atom that will
   script is not actively used anymore, it is recommended to use the approach
   described under attach_substituent.py.**
   
-To functionalize a skeleton using this approach, now only the bond lengths
+To functionalize a skeleton using this approach, now the bond lengths
 between bonded_atom and central_atom of substituent and 
 surrounding atoms of the substituent with central_atom of substituent is needed.
 The main_generate_tetrahedron.py takes input values as follows:
@@ -190,74 +204,17 @@ The main_generate_tetrahedron.py takes input values as follows:
 
 ## Contents
   **skeletons/**
-  - contains .xyz files with skeletons of complexes to be functionalized. 
-  Currently a nested list (without spaces, otherwise sys.argv() will split the list into 2 arguments)
-  with functionalizations is needed on the comment line of the .xyz file.
-  In this nested list the first element should be the atom_to_be_functionalized and 
-  the second element should be the bonded_atom. 
+  - contains .xyz files of skeletons to be functionalized. 
   
   **substituents_xyz/**  
-  - contains .xyz files for substituents that will be tested  
-      * automatically_generated/: output of functionalized skeletons by generate_tetrahedron.py and attach_substituent.py.
-      * manually_generated/: manually generated substituents that will be used for approach 1. These substituents should
-      be an .xyz file with a free bonding site on the central atom of the substituent. 
-      So if you want to attach a methyl group; make a CH4 .xyz file, remove one H and put the .xyz file in this folder.
+  - contains .xyz files for substituents and functionalized skeletons  
+      * automatically_generated/: output of functionalized skeletons by attach_substituent.py. 
+      If functionalize_and_optimize_xtb.sh is used the xTB optimized structures are placed in the optimized_structures/ subfolder.
+      * manually_generated/: Substituents that will be attached to skeletons in attach_substituent.py.
       * old/: contains substituents that became either obsolete or will be dealt with later.
       * visualizations/: contains .png files of the functionalizations made in generate_tetrahedron.py
+    
   
-  **attach_substituent.py, run.sh and main_attach_substituent.py** 
-  - Class **Substituent** 
-  - Load .xyz files and loads substituent in class object 
-  - Create first coordination shell to find centroid vector of the whole group
-  - Writes group name, central atom and centroid vector to .csv file
-  - Class **Complex**
-  - Load .xyz file to load substituent and skeleton in class 
-  - Generate a matrix of correctly rotated and translated substituent vectors
-  - Using the bond length between skeleton_bonded_atom and substituent_central_atom, 
-  generate these vectors and write functionalized skeleton to .xyz
-  - Takes system arguments in main.py and usage is shown in **run.sh**
-   
-  
-  **generate_tetrahedron.py, run.sh and main_generate_tetrahedron.py** 
-  - Load .xyz files and loads complex in class object
-  - Find centroid
-  - Create and correctly rotate equilateral triangle
-  - Write final tetrahedron to .xyz file with 'initial' flag or 
-  creates tetrahedron around atom_to_be_functionalized with 'recursive flag' 
-  and appends new atoms to source .xyz file
-  - Takes system argument in main.py and usage is shown in **run.sh** 
-  
-  **utilities.py**
-  - Uses the ase module for certain utilities
-  - Find distances between atoms
-  - Visualize molecules
-  - Build molecules and write .xyz file from the ase g2 database
-  - Read comment line of .xyz files (obsolete, central atom indices used to be written to 
-  comment line of .xyz file but are now contained in a .csv file)
-  - Remove last line of files 
-  
-  **exceptions.py**
-  - Contains custom made exceptions that can be used for bugfixing
-  
-  **gjf_to_xyz.py and gjf_to_xyz.sh**
-  - Run gjf_to_xyz.py to convert all .gjf files in current path to .xyz files
-  
-## ToDo  
-  **generate_tetrahedron.py**
-  - Use ASE to visualize created substituents (done, but make pictures better?)
-  - convert .xyz to .gjf (done)  
-  - make generate_tetrahedron usable with system arguments (done)
-  - add bonded_atom and atom_to_be_functionalized to comment line of .xyz file (done)
-  - Test test test
-  
-  **attach_substituent.py**
-  - find centroid vector of substituent group (done)
-  - write central atom and centroid vector to .csv (done)
-  - attach substituent to skeleton (done)
-  - make bash script that is able to use python file and deliver intermediates 
-  and final version of functionalized & optimized complex (done)
-  - Solve problem with steric hindrance when placing substituents (done)
-  - Test test test
 
 ## Authors
 Adarsh Kalikadien & Vivek Sinha
