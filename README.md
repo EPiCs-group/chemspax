@@ -1,18 +1,14 @@
 # ChemSpaX
 
-ChemSpaX should be used to correctly functionalize TM complexes.
+ChemSpaX can be used for local chemical space exploration of any structure.
+This is done by placing substuents on a skeleton.
 Two approaches were considered: 
-  1) From a library of existing substituents (with a lone pair of electrons) construct the 
-  centroid vector and align it with the site to be functionalized on the skeleton and then attach it.
+  1) From a library of existing substituents choose a substituent and 
+  attach it the skeleton.
   See attach_substituent.py.
   2) The user inputs an atom to be functionalized on a skeleton complex, 
   then a tetrahedron is formed around this atom and this atom can be replaced. 
   See generate_tetrahedron.py. **This approach is outdated and not maintained**
-
-## Use case
-This code should be able to attach substituents to a structure (skeleton) given a functionalization site. In the end this allows
-for automatic functionalization of complexes and local chemical space exploration.
-
 
 ## Installation
 Python 3.6.0 or higher is recommended. 
