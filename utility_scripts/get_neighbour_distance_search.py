@@ -3,7 +3,7 @@
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
-"""This script was used on the Cartesius cluster to extract bond distances for given atoms, this functionality was
+"""This script uses openbabel dependency. It was used on the Cartesius cluster to extract bond distances for given atoms. This functionality is
 also incorporated as a function in utilities.py
 """
 from openbabel import openbabel
