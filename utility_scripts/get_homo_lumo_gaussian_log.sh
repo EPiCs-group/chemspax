@@ -1,6 +1,7 @@
 #!/bin/bash
 # script to get the homo and lumo from gaussian log files
 # made by Vivek Sinha
+# Filename should be provided as cmd input ($1)
 H=`awk '/Alpha  occ. eigenvalues/ {print $NF}' $1 | tail -1`
 L=`awk '/Alpha virt. eigenvalues/ {print $5}' $1 | head -1`
 if grep -q "Beta  occ. eigenvalues" $1
