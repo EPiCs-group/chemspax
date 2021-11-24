@@ -12,16 +12,26 @@ echo "Created by: Adarsh Kalikadien & Vivek Sinha"
 echo "---------------------------------------------------------------------------------------------"
 
 functionalize_skeletons_C_substituents (){
+# ------------------- edit this part -------------------------
+# define substituents that will be attached to the skeleton
+
 # select 1 random substituent with C as central atom as starting point
 STARTING_C_SUBSTITUENT=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n1 -e | cut -d '.' -f 1)
+# if you do not want a random substituent, comment the above line and uncomment the line below
 #STARTING_C_SUBSTITUENT="F"
+
 # select 5 random substituents with C as central atom
 RANDOM_C_SUBSTITUENTS=$(cd substituents_xyz/manually_generated/ && ls -d C* | xargs shuf -n5 -e | cut -d '.' -f 1)
+# if you do not want a random substituent, comment the above line and uncomment the line below
 #RANDOM_C_SUBSTITUENTS="F"
+
+# uncomment these lines to write the substituents to a substituents.txt file
+# currently disabled because there is an option to write target filename, substituent, index
+# and functional group to .csv file to track functionalizations (see the loop below)
 #echo ${STARTING_C_SUBSTITUENT} > substituents_xyz/automatically_generated/substituents.txt
 #echo ${RANDOM_C_SUBSTITUENTS} >> substituents_xyz/automatically_generated/substituents.txt
-# C-C bond length = 1.54 A
-# https://phys.org/news/2018-03-carbon-carbon-bond-length.html
+# ------------------------------------------------------------
+
 
 # activate option to use backslash options in echo function
 shopt -s xpg_echo
@@ -40,6 +50,8 @@ for j in $(seq 1 ${N}); do
     i=1
     echo "creating initial file of" ${skeleton} ${STARTING_C_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
+    # Use C-C bond length = 1.54 Angstrom for distance of new substituent group, FF optimization will fix this
+    # https://phys.org/news/2018-03-carbon-carbon-bond-length.html
     python3 main_attach_substituent.py ${skeleton} ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 False
     # optimization
     cd substituents_xyz/automatically_generated/
@@ -77,7 +89,10 @@ for j in $(seq 1 ${N}); do
         mv xtb.out optimized_structures/${TARGET_NAME}_opt_$((i+1))_xtb.out
         mv xtbopt.log optimized_structures/${TARGET_NAME}_opt_$((i+1))_xtbopt.log
         rm -f xtbrestart
+
+        # ------------------ edit this part (optional) ----------------
         # write target filename, substituent, index and functional group to .csv file to track functionalizations
+
         # here it is assumed that every 5th functionalization until 20 is done on R1,R2,R3 and R4, the rest is on R0
         if [ $((i+1)) -le 5 ]
         then

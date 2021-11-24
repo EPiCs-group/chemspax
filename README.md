@@ -17,7 +17,8 @@ Python 3.6.0 or higher is recommended.
 git clone https://github.com/EPiCs-group/chemspax
 ``` 
 
-It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments, **this doesn't require compilation from source to install openbabel**:  
+It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments (**using Anaconda allows the user to skip 
+compilation of openbabel from source**):  
      Download the latest installer from 
      [Anaconda's website](https://www.anaconda.com/products/individual).    
      For example: 
@@ -29,7 +30,8 @@ It is recommended to use a virtual environment. Anaconda can be used to manage v
    ```
      bash Anaconda3-2020.07-Linux-x86_64.sh  
    ```
-   The installation is pretty self explanatory, afterwards create a virtual environment and activate it.  
+   The installation is pretty self explanatory, afterwards the following commands can be used to 
+   create a virtual environment and activate it.  
 The environment will be named 'chemspax', the conda_env.yml file can be changed if a different name is required. 
         
   ```
@@ -50,12 +52,12 @@ First, we need to prepare the xyz file of the skeleton to which we want to attac
 An example .xyz file of a skeleton in the skeletons/ folder looks like this: 
 ![example](images/example_functionalization_list.jpg)
     
-In the functionalization_list each list is a functionalization. In this example figure, 
+In the functionalization_list each item is a functionalization. In the example figure shown below, 
 4 functionalizations are done.   
 The first item of each list (red circle) is the index of the atom_to_be_functionalized (the atom that will 
 be replaced by the substituent).  
-Make sure to put no spaces in this functionalization_list since 
-sys.argv() is used in the main.py files, each space is thus interpreted as a new argument
+Make sure to put no spaces in this functionalization_list. Since 
+`sys.argv()` is used in the main.py files, each space might be interpreted as a new argument
 to the function. Also note that index 0 is the **first atom in the xyz file**.
 In the example figure above, the index of Ru == 0.  
 ![example](images/example_atom_to_be_functionalized.jpg)
@@ -71,9 +73,9 @@ In the example figure above, the index of Ru == 0.
   the skeleton's xyz file and this skeleton's xyz file should be 
   moved to the  skeletons/ folder (**note: there should be no newline at the end of the xyz file!**).  
   To attach a substituent to this skeleton, an 
-  explanation is given on how to proceed in 2 sections.
+  explanation is given on how to proceed with the next 2 steps.
   
-  **attach_substituent.py**
+  ###attach_substituent.py
   
   **Note: Make sure to check the relative path on line 175, 88, 66 
   and 21 are correctly set if you want to use attach_substituent.py directly.   
@@ -81,7 +83,7 @@ In the example figure above, the index of Ru == 0.
   functionalize_and_optimize_obabel.sh or 
   functionalize_and_optimize_xtb.sh scripts instead, which will be explained.**
   
-  #### 1 Choosing/adding a substituent
+  #### 1 Choosing from library/adding a substituent to library
   
   The user can upload manually generated substituents 
   to substituents_xyz/manually_generated/ or use the pre-made substituents
@@ -91,22 +93,24 @@ In the example figure above, the index of Ru == 0.
   
   * Move skeleton's xyz file to skeletons/ folder  
   * Run data_preparation.py
+  * Go to step 2
   
-  ##### Add new substituent
+  ##### (optional) Add new substituent
   
   I'll take the example of methyl (which is already in the substituents_xyz/manually_generated folder):  
   * Take an xyz file for (optimized) CH4, then remove one of the hydrogens, this is where the substituent will form a bond with the skeleton.  
   * Let the C (central atom of the
-  substituent) be the first atom in the xyz file. (by moving C to the third line of the xyz file) 
+  substituent) be the first atom in the list of atoms in the xyz file. (by moving C to the third line of the xyz file) 
   * Save the xyz file in substituents_xyz/manually_generated 
-  * Run data_preparation.py to be able to use this substituent for functionalizations.  
+  * Run data_preparation.py to be able to use this substituent for functionalizations
+  * Go to step 2
   
   data_preparation.py is used to add the central atom and centroid vector per substituent to a .csv file 
-  as these will be used to align the substituent with the skeleton. This script also generates .mol files
-  for the skeleton and substituents since these are used for their connectivity data.
+  as these will be used to align the substituent with the skeleton. This script also manages to conversion between .mol and .xyz files.
+  Note that it is recommended to provide .mol files when available, since these provide correct connectivity data for a structure.
   **data_preparation.py assumes that the central atom of the substituent (C in the case of CH3) is the first atom in the 
   .xyz file of the substituent and that the central atom of the substituent
-  has a free electron pair such that a bond can be formed!**  
+  has a free electron pair such that a new bond can be formed!**  
   
   An example of the .csv file with information for each substituent 
   as generated by data_preparation.py is shown below:
@@ -138,7 +142,11 @@ In the example figure above, the index of Ru == 0.
   bash functionalize_and_optimize_obabel.sh C
   ```
   
-  This should generate 4 xyz and 4 .mol files in substituents_xyz/automatically_generated,
+  If the STARTING_C_SUBSTITUENT and RANDOM_C_SUBSTITUENT variables are not modified, the C argument means that 6 random carbon substituents 
+  will be placed. Similarly, the P argument will call the functionalize_skeletons_P_substituents function and 6 random phosphorus substituents will 
+  be placed on the indicated sites of the skeleton. **The P and CP arguments have not been tested as thoroughly as the C argument**.  
+  
+  In the example shown here, 4 xyz and 4 .mol files in substituents_xyz/automatically_generated should be generated,
   one for each functionalized structure. The .mol files contain the correcly optimized functionalized structures.  
   This workflow is similar if the user would like to optimize 
   every functionalized skeleton with xTB, but then the functionalize_and_optimize_xtb.sh 
@@ -163,7 +171,7 @@ In the example figure above, the index of Ru == 0.
   The user can modify the example of attach_substituent_folder/run.sh
   to their needs or use attach_substituent.py directly.
   
-  **generate_tetrahedron.py**
+  **(outdated) generate_tetrahedron.py**
   
   **Note: Make sure to check the relative path on line 124 
   is correctly set, relatively to your working directory. This 
@@ -192,7 +200,7 @@ The main_generate_tetrahedron.py takes input values as follows:
   The user can modify the example of generate_tetrahedron_folder/run.sh
   to their needs or use generate_tetrahedron.py directly.
   
-## Example usage of python scripts only
+## (outdated) Example usage of python scripts only
   - ```bash generate_tetrahedron_folder/run.sh``` to functionalize a RuPNP skeleton where 4 H sites 
   will be substituted for methyl groups using generate_tetrahedron.py
   - ```bash attach_substituent_folder/run.sh``` to functionalize a RuPNP skeleton where
