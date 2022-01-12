@@ -220,5 +220,7 @@ The main_generate_tetrahedron.py takes input values as follows:
     
   
 
-## Authors
-Adarsh Kalikadien & Vivek Sinha
+## Citation
+If you use ChemSpaX, please cite:  
+  
+<div class="csl-entry">Kalikadien, A. V, Pidko, E. A., &#38; Sinha, V. (2022). ChemSpaX: Exploration of chemical space by automated functionalization of molecular scaffold. <i>Digital Discovery</i>. <a href="https://doi.org/10.1039/D1DD00017A">https://doi.org/10.1039/D1DD00017A</a></div>
