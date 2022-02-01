@@ -52,7 +52,7 @@ for j in $(seq 1 ${N}); do
     # functionalize and optimize initial functionalized version of skeleton
     # Use C-C bond length = 1.54 Angstrom for distance of new substituent group, FF optimization will fix this
     # https://phys.org/news/2018-03-carbon-carbon-bond-length.html
-    python3 main_attach_substituent.py ${skeleton} ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 False
+    python3 main_attach_substituent.py ${skeleton} ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_C_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 True False
     # optimization
     cd substituents_xyz/automatically_generated/
     xtb ${TARGET_NAME}_${i}.mol --opt --chrg 0 --uhf 0 --gbsa thf > xtb.out
@@ -74,7 +74,7 @@ for j in $(seq 1 ${N}); do
     cd -
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
-        python3 main_attach_substituent.py ${skeleton} substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 True
+        python3 main_attach_substituent.py ${skeleton} substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 True True
         # optimization
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --opt --chrg 0 --uhf 0 --gbsa thf > xtb.out
@@ -144,7 +144,7 @@ for j in $(seq 1 ${N}); do
     i=1
     echo "creating initial file of" ${skeleton} ${STARTING_P_SUBSTITUENT}
     # functionalize and optimize initial functionalized version of skeleton
-    python3 main_attach_substituent.py ${skeleton} ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_P_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 True
+    python3 main_attach_substituent.py ${skeleton} ${SOURCE_FILE}.xyz ${TARGET_NAME}_${i} ${STARTING_P_SUBSTITUENT} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 True True
 
     # optimization
     cd substituents_xyz/automatically_generated/
@@ -162,7 +162,7 @@ for j in $(seq 1 ${N}); do
     cd -
         for sub in ${RANDOM_P_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
-        python3 main_attach_substituent.py ${skeleton} substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 False
+        python3 main_attach_substituent.py ${skeleton} substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 True False
         # optimization
 	    cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out

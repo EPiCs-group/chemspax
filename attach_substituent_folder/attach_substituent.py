@@ -196,6 +196,40 @@ class Complex:
         self.normalized_bond_vector = self.bond_length / np.linalg.norm(
             self.bond_length)  # real bond between C-H in xyz plane
 
+    def create_functionalization_list_all_hydrogens(self):
+        # create functionalization list by finding all H atoms and atom bonded to it
+        source_mol_file = self.skeleton_path
+        # find all H
+        search_this_atomic_num = 1
+        # initalize openbabel classes
+        obconversion = openbabel.OBConversion()
+        # both xyz and mol can be used as input but mol contains an accurate graph representation
+        if source_mol_file[-4:] == '.mol':
+            obconversion.SetInFormat('mol')
+        elif source_mol_file[-4:] == '.xyz':
+            obconversion.SetInFormat('xyz')
+        else:
+            raise Exception('file type is incorrect, .mol and .xyz are supported, not', source_mol_file[-4:])
+
+        mol = openbabel.OBMol()
+        obconversion.ReadFile(mol, source_mol_file)
+
+        functionalization_site_list = []
+        # iterate over all atoms in structure
+        for atom in openbabel.OBMolAtomIter(mol):
+            atomic_number = atom.GetAtomicNum()
+            # if a hydrogen is found
+            if atomic_number == search_this_atomic_num:
+                atom_to_be_functionalized_index = atom.GetIndex()  # indexing for this OB method starts at 0
+                # if the hydrogen has 1 bond it can be functionalized and added to functionalization_list
+                if atom.CountBondsOfOrder(1) == 1:
+                    for neighbour_atom in openbabel.OBAtomAtomIter(atom):
+                        bonded_atom_index = neighbour_atom.GetIndex()  # indexing for this OB method starts at 0
+                        functionalization_site_list.append(
+                            [int(atom_to_be_functionalized_index), int(bonded_atom_index)])
+
+        return functionalization_site_list
+
     def generate_substituent_group_vector(self, length_skeleton_bonded_substituent_central=1.54):
         """Used to translate and rotate the substituent group for correct placement on the skeleton
 
@@ -290,7 +324,7 @@ class Complex:
         f.close()
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54,
-                                           use_xtb_script_after=True):
+                                           functionalize_all_hydrogens=True, use_xtb_script_after=True):
         """Used to generate translated and rotated vectors for substituents and attaching them to the skeleton
 
         :param target_filename: name of target xyz file that will be written
@@ -318,6 +352,11 @@ class Complex:
         #     substituents_new_data.loc[self.substituent_central_atom_index, :]
         # # remove central atom from dataframe of substituent group
         # substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
+
+        # if we want to functionalize all hydrogens, the funtionalization_list needs to be created first
+        # else just use the existing one
+        if functionalize_all_hydrogens:
+            self.functionalization_site_list = self.create_functionalization_list_all_hydrogens()
 
         # since atom_to_be_functionalized is dropped, indices in functionalization list need to shift
         # shift bonded_atom first
