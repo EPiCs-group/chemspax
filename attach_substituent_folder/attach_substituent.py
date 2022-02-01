@@ -357,7 +357,16 @@ class Complex:
         # else just use the existing one
         if functionalize_all_hydrogens:
             self.functionalization_site_list = self.create_functionalization_list_all_hydrogens()
-
+            # reassign atom_to_be_functionalized and bonded_atom based on new functionalization list
+            if len(self.functionalization_site_list) != 0:
+                # take indices from converted list and assign to correct variable
+                self.skeleton_atom_to_be_functionalized_index = self.functionalization_site_list[
+                    0][0]  # index in .xyz file of atom to be functionalized
+                self.skeleton_bonded_atom_index = self.functionalization_site_list[
+                    0][1]  # index in .xyz file of atom bonded to atom to be functionalized
+                # remove first item of nested list for correct formatting later
+                self.functionalization_site_list = self.functionalization_site_list[1:]
+        
         # since atom_to_be_functionalized is dropped, indices in functionalization list need to shift
         # shift bonded_atom first
         self.skeleton_bonded_atom_index = self.skeleton_bonded_atom_index - 1 if self.skeleton_bonded_atom_index > self\
