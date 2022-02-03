@@ -140,10 +140,16 @@ class Complex:
         # skeleton data
         self.skeleton_path = source_data
         # for the first usage this is purely the skeleton, for recursive usage it's skeleton + prev. functionalization
-        self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
-                                         names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
-        if len(self.skeleton_xyz) == 0:
-            raise ValueError('Skeleton .xyz is empty')
+        try:
+            self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
+                                             names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+            if len(self.skeleton_xyz) == 0:
+                raise ValueError('Skeleton .xyz is empty')
+        except:
+            # this error happens when there are more substituents defined than functionalization sites
+            print('No functionalization sites left. Exiting program')
+            sys.exit()
+
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
         substituent_folder = 'substituents_xyz/manually_generated/'
@@ -366,7 +372,7 @@ class Complex:
                     0][1]  # index in .xyz file of atom bonded to atom to be functionalized
                 # remove first item of nested list for correct formatting later
                 self.functionalization_site_list = self.functionalization_site_list[1:]
-        
+
         # since atom_to_be_functionalized is dropped, indices in functionalization list need to shift
         # shift bonded_atom first
         self.skeleton_bonded_atom_index = self.skeleton_bonded_atom_index - 1 if self.skeleton_bonded_atom_index > self\
