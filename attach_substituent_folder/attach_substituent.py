@@ -148,7 +148,7 @@ class Complex:
         except:
             # this error happens when there are more substituents defined than functionalization sites
             print('No functionalization sites left. Exiting program')
-            sys.exit()
+            sys.exit(1)
 
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
@@ -193,7 +193,7 @@ class Complex:
             # write to .xyz file in generate_and_write_xyz function
         else:
             print('No more indices left. Exiting program')
-            sys.exit()
+            sys.exit(1)
 
         self.skeleton_atom_to_be_functionalized_xyz = self.skeleton_xyz.loc[
             self.skeleton_atom_to_be_functionalized_index, [

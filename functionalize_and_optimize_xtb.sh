@@ -75,8 +75,14 @@ for j in $(seq 1 ${N}); do
         for sub in ${RANDOM_C_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
         python3 main_attach_substituent.py ${skeleton} substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.54 True
+        # if a SystemExit is raised in the python script, we break the loop and move to the next skeleton
+        if [ $? != 0 ];
+        then
+            break
+        fi
+
         # optimization
-	    cd substituents_xyz/automatically_generated
+	      cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --opt --chrg 0 --uhf 0 --gbsa thf > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
         FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
@@ -163,8 +169,14 @@ for j in $(seq 1 ${N}); do
         for sub in ${RANDOM_P_SUBSTITUENTS}; do
         echo "Running recursive loop, run:" ${i} ${sub}
         python3 main_attach_substituent.py ${skeleton} substituents_xyz/automatically_generated/optimized_structures/${TARGET_NAME}_${i}_opt.xyz ${TARGET_NAME}_$((i+1)) ${sub} substituents_xyz/manually_generated/central_atom_centroid_database.csv 1.87 False
+        # if a SystemExit is raised in the python script, we break the loop and move to the next skeleton
+        if [ $? != 0 ];
+        then
+            break
+        fi
+
         # optimization
-	    cd substituents_xyz/automatically_generated
+	      cd substituents_xyz/automatically_generated
         xtb ${TARGET_NAME}_$((i+1)).mol --cma --cycles 200 --gfn 1 --opt --chrg 0 --uhf 0 --gbsa acetonitrile > xtb.out
         # write functionalization list to optimized file to be able to use that file as source for new functionalizations
         FUNCTIONALIZATION_LIST=$(sed '2q;d' ${TARGET_NAME}_$((i+1)).xyz)
