@@ -334,7 +334,7 @@ class Complex:
         f.close()
 
     def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54,
-                                           functionalize_all_hydrogens=True, use_xtb_script_after=True):
+                                           use_xtb_script_after=True):
         """Used to generate translated and rotated vectors for substituents and attaching them to the skeleton
 
         :param target_filename: name of target xyz file that will be written
@@ -362,20 +362,6 @@ class Complex:
         #     substituents_new_data.loc[self.substituent_central_atom_index, :]
         # # remove central atom from dataframe of substituent group
         # substituents_new_data = substituents_new_data.drop([self.substituent_central_atom_index])
-
-        # # if we want to functionalize all hydrogens, the funtionalization_list needs to be created first
-        # # else just use the existing one
-        # if functionalize_all_hydrogens:
-        #     self.functionalization_site_list = self.create_functionalization_list_all_hydrogens()
-        #     # reassign atom_to_be_functionalized and bonded_atom based on new functionalization list
-        #     if len(self.functionalization_site_list) != 0:
-        #         # take indices from converted list and assign to correct variable
-        #         self.skeleton_atom_to_be_functionalized_index = self.functionalization_site_list[
-        #             0][0]  # index in .xyz file of atom to be functionalized
-        #         self.skeleton_bonded_atom_index = self.functionalization_site_list[
-        #             0][1]  # index in .xyz file of atom bonded to atom to be functionalized
-        #         # remove first item of nested list for correct formatting later
-        #         self.functionalization_site_list = self.functionalization_site_list[1:]
 
         # since atom_to_be_functionalized is dropped, indices in functionalization list need to shift
         # shift bonded_atom first
