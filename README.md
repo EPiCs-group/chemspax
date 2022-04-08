@@ -58,7 +58,7 @@ The first item of each list (red circle) is the index of the atom_to_be_function
 be replaced by the substituent).  
   
   
-**Since commit bf59491b619c5064c1314848e2d4d8eb31e7d71d all hydrogens are functionalized (used as atom_to_be_functionalized)
+**Since commit [bf59491](https://github.com/EPiCs-group/chemspax/commit/bf59491b619c5064c1314848e2d4d8eb31e7d71d) all hydrogens are functionalized (used as atom_to_be_functionalized)
 if no functionalization_list is given in the skeleton's xyz file (second line is empty). This preparation step can thus be skipped if 
 the whole structure needs to be functionalized instead of specific indices.**  
 
