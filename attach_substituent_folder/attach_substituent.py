@@ -140,10 +140,16 @@ class Complex:
         # skeleton data
         self.skeleton_path = source_data
         # for the first usage this is purely the skeleton, for recursive usage it's skeleton + prev. functionalization
-        self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
-                                         names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
-        if len(self.skeleton_xyz) == 0:
-            raise ValueError('Skeleton .xyz is empty')
+        try:
+            self.skeleton_xyz = pd.read_table(self.skeleton_path, skiprows=2, delim_whitespace=True,
+                                             names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
+            if len(self.skeleton_xyz) == 0:
+                raise ValueError('Skeleton .xyz is empty')
+        except:
+            # this error happens when there are more substituents defined than functionalization sites
+            print('No functionalization sites left. Exiting program')
+            sys.exit(1)
+
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
         substituent_folder = 'substituents_xyz/manually_generated/'
@@ -166,12 +172,16 @@ class Complex:
         self.substituent_central_atom_xyz = self.substituent_xyz.loc[
             self.substituent_central_atom_index, ['x', 'y', 'z']]
 
-        # functionalization list from source file
+        # get functionalization list from source file
         with open(self.skeleton_path) as f:
             lines = f.readlines()
             self.functionalization_site_list = lines[1]
-        # convert list from string to integer
-        self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)
+        try:
+            # convert list from string to integer, throws exception if there is no list
+            self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)
+        except:
+            # when no functionalization list is defined, assume that all H need to be functionalized
+            self.functionalization_site_list = self.create_functionalization_list_all_hydrogens()
         if len(self.functionalization_site_list) != 0:
             # take indices from converted list and assign to correct variable
             self.skeleton_atom_to_be_functionalized_index = self.functionalization_site_list[
@@ -183,7 +193,7 @@ class Complex:
             # write to .xyz file in generate_and_write_xyz function
         else:
             print('No more indices left. Exiting program')
-            sys.exit()
+            sys.exit(1)
 
         self.skeleton_atom_to_be_functionalized_xyz = self.skeleton_xyz.loc[
             self.skeleton_atom_to_be_functionalized_index, [
@@ -195,6 +205,40 @@ class Complex:
                          - self.skeleton_bonded_atom_xyz  # vector with origin on C and points to H in xyz plane
         self.normalized_bond_vector = self.bond_length / np.linalg.norm(
             self.bond_length)  # real bond between C-H in xyz plane
+
+    def create_functionalization_list_all_hydrogens(self):
+        # create functionalization list by finding all H atoms and atom bonded to it
+        source_mol_file = self.skeleton_path
+        # find all H
+        search_this_atomic_num = 1
+        # initalize openbabel classes
+        obconversion = openbabel.OBConversion()
+        # both xyz and mol can be used as input but mol contains an accurate graph representation
+        if source_mol_file[-4:] == '.mol':
+            obconversion.SetInFormat('mol')
+        elif source_mol_file[-4:] == '.xyz':
+            obconversion.SetInFormat('xyz')
+        else:
+            raise Exception('file type is incorrect, .mol and .xyz are supported, not', source_mol_file[-4:])
+
+        mol = openbabel.OBMol()
+        obconversion.ReadFile(mol, source_mol_file)
+
+        functionalization_site_list = []
+        # iterate over all atoms in structure
+        for atom in openbabel.OBMolAtomIter(mol):
+            atomic_number = atom.GetAtomicNum()
+            # if a hydrogen is found
+            if atomic_number == search_this_atomic_num:
+                atom_to_be_functionalized_index = atom.GetIndex()  # indexing for this OB method starts at 0
+                # if the hydrogen has 1 bond it can be functionalized and added to functionalization_list
+                if atom.CountBondsOfOrder(1) == 1:
+                    for neighbour_atom in openbabel.OBAtomAtomIter(atom):
+                        bonded_atom_index = neighbour_atom.GetIndex()  # indexing for this OB method starts at 0
+                        functionalization_site_list.append(
+                            [int(atom_to_be_functionalized_index), int(bonded_atom_index)])
+
+        return functionalization_site_list
 
     def generate_substituent_group_vector(self, length_skeleton_bonded_substituent_central=1.54):
         """Used to translate and rotate the substituent group for correct placement on the skeleton
