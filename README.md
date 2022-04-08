@@ -56,6 +56,12 @@ In the functionalization_list each item is a functionalization. In the example f
 4 functionalizations are done.   
 The first item of each list (red circle) is the index of the atom_to_be_functionalized (the atom that will 
 be replaced by the substituent).  
+  
+  
+**Since commit bf59491b619c5064c1314848e2d4d8eb31e7d71d all hydrogens are functionalized (used as atom_to_be_functionalized)
+if no functionalization_list is given in the skeleton's xyz file (second line is empty). This preparation step can thus be skipped if 
+the whole structure needs to be functionalized instead of specific indices.**  
+
 Make sure to put no spaces in this functionalization_list. Since 
 `sys.argv()` is used in the main.py files, each space might be interpreted as a new argument
 to the function. Also note that index 0 is the **first atom in the xyz file**.
@@ -73,9 +79,10 @@ In the example figure above, the index of Ru == 0.
   the skeleton's xyz file and this skeleton's xyz file should be 
   moved to the  skeletons/ folder (**note: there should be no newline at the end of the xyz file!**).  
   To attach a substituent to this skeleton, an 
-  explanation is given on how to proceed with the next 2 steps.
+  explanation is given on how to proceed with the next 2 steps.  
+
   
-  ###attach_substituent.py
+  ### attach_substituent.py
   
   **Note: Make sure to check the relative path on line 175, 88, 66 
   and 21 are correctly set if you want to use attach_substituent.py directly.   
