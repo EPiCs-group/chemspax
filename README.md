@@ -65,7 +65,7 @@ the whole structure needs to be functionalized instead of specific indices.**
 Make sure to put no spaces in this functionalization_list. Since 
 `sys.argv()` is used in the main.py files, each space might be interpreted as a new argument
 to the function. Also note that index 0 is the **first atom in the xyz file**.
-In the example figure above, the index of Ru == 0.  
+In the example figure above, the index of Ru = 0.  
 ![example](images/example_atom_to_be_functionalized.jpg)
   
   The second item of each list (green circle) is the index of the bonded_atom, this is the 
