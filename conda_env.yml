@@ -13,3 +13,4 @@ dependencies:
      - sphinx
      pip:
           - myst-parser
+          - sphinx-rtd-theme

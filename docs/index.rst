@@ -11,3 +11,4 @@ Welcome to ChemSpaX's documentation!
    :caption: Contents:
 
    README.md
+   apidoc/modules

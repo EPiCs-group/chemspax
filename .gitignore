@@ -98,5 +98,6 @@ substituents_xyz/automatically_generated/*.mol
 substituents_xyz/automatically_generated/*.txt
 substituents_xyz/automatically_generated/*.csv
 temp_skeletons_file
+docs/_build/
 .pytest_cache/
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
