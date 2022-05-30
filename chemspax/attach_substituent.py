@@ -11,10 +11,13 @@ import numpy as np
 import pandas as pd
 import openbabel
 
-sys.path.append("..")
-from utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
+from chemspax.utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
     print_mol_counts_block, print_correct_connectivity_line, remove_last_line, convert_xyz_2_mol_file, \
     read_connectivity_from_mol_file, ff_optimize
+# sys.path.append("..")
+# from utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
+#     print_mol_counts_block, print_correct_connectivity_line, remove_last_line, convert_xyz_2_mol_file, \
+#     read_connectivity_from_mol_file, ff_optimize
 """A substituent from the library can be attached to another molecule with the functions given in this file. 
 The substituent is seen as a 'rigid block' that is rotated and translated. After placement of a new substituent, the 
 new substituent is optimized with openbabel's FF methods. This is a constrained optimization since the skeleton 

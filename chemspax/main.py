@@ -3,7 +3,7 @@
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
-from attach_substituent_folder.attach_substituent import Complex
+from chemspax.attach_substituent import Complex
 import sys
 """Main class that takes command line arguments and passes them to attach_substituent.py's Complex class
 """

@@ -4,7 +4,7 @@
 #  __institution__ = TU Delft                         #
 #                                                     #
 from utilities import *
-from attach_substituent_folder.attach_substituent import Substituent
+from chemspax.attach_substituent import Substituent
 import glob
 import os
 """Run this script before running any of the main files and bash scripts to prepare the csv database and .mol files 
