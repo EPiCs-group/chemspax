@@ -14,6 +14,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -83,7 +84,7 @@
            <div itemprop="articleBody">
              
   <section id="chemspax">
-<h1>ChemSpaX<a class="headerlink" href="#chemspax" title="Permalink to this headline"></a></h1>
+<h1>ChemSpaX<a class="headerlink" href="#chemspax" title="Permalink to this heading"></a></h1>
 <p>ChemSpaX can be used for local chemical space exploration of any structure.
 This is done by placing substuents on a skeleton.
 Two approaches were considered:</p>
@@ -96,7 +97,7 @@ then a tetrahedron is formed around this atom and this atom can be replaced.
 See generate_tetrahedron.py. <strong>This approach is outdated and not maintained</strong></p></li>
 </ol>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
 <p>Python 3.6.0 or higher is recommended.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">EPiCs</span><span class="o">-</span><span class="n">group</span><span class="o">/</span><span class="n">chemspax</span>
 </pre></div>
@@ -130,7 +131,7 @@ The environment will be named ‘chemspax’, the conda_env.yml file can be chan
 <a class="reference external" href="https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/">this Anaconda cheatsheet</a></p>
 </section>
 <section id="instructions">
-<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline"></a></h2>
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading"></a></h2>
 <p>First, we need to prepare the xyz file of the skeleton to which we want to attach a substituent.
 An example .xyz file of a skeleton in the skeletons/ folder looks like this:
 <img alt="example" src="_images/example_functionalization_list.jpg" /></p>
@@ -156,19 +157,19 @@ moved to the  skeletons/ folder (<strong>note: there should be no newline at the
 To attach a substituent to this skeleton, an
 explanation is given on how to proceed with the next 2 steps.</p>
 <section id="attach-substituent-py">
-<h3>attach_substituent.py<a class="headerlink" href="#attach-substituent-py" title="Permalink to this headline"></a></h3>
+<h3>attach_substituent.py<a class="headerlink" href="#attach-substituent-py" title="Permalink to this heading"></a></h3>
 <p><strong>Note: Make sure to check the relative path on line 175, 88, 66
 and 21 are correctly set if you want to use attach_substituent.py directly.<br />
 It is recommended to keep everything as default and use the
 functionalize_and_optimize_obabel.sh or
 functionalize_and_optimize_xtb.sh scripts instead, which will be explained.</strong></p>
 <section id="choosing-from-library-adding-a-substituent-to-library">
-<h4>1 Choosing from library/adding a substituent to library<a class="headerlink" href="#choosing-from-library-adding-a-substituent-to-library" title="Permalink to this headline"></a></h4>
+<h4>1 Choosing from library/adding a substituent to library<a class="headerlink" href="#choosing-from-library-adding-a-substituent-to-library" title="Permalink to this heading"></a></h4>
 <p>The user can upload manually generated substituents
 to substituents_xyz/manually_generated/ or use the pre-made substituents
 contained in that folder.</p>
 <section id="use-pre-made-substituents">
-<h5>Use pre-made substituents<a class="headerlink" href="#use-pre-made-substituents" title="Permalink to this headline"></a></h5>
+<h5>Use pre-made substituents<a class="headerlink" href="#use-pre-made-substituents" title="Permalink to this heading"></a></h5>
 <ul class="simple">
 <li><p>Move skeleton’s xyz file to skeletons/ folder</p></li>
 <li><p>Run data_preparation.py</p></li>
@@ -176,7 +177,7 @@ contained in that folder.</p>
 </ul>
 </section>
 <section id="optional-add-new-substituent">
-<h5>(optional) Add new substituent<a class="headerlink" href="#optional-add-new-substituent" title="Permalink to this headline"></a></h5>
+<h5>(optional) Add new substituent<a class="headerlink" href="#optional-add-new-substituent" title="Permalink to this heading"></a></h5>
 <p>I’ll take the example of methyl (which is already in the substituents_xyz/manually_generated folder):</p>
 <ul class="simple">
 <li><p>Take an xyz file for (optimized) CH4, then remove one of the hydrogens, this is where the substituent will form a bond with the skeleton.</p></li>
@@ -201,7 +202,7 @@ we can move on to the next step.</p>
 </section>
 </section>
 <section id="attaching-substituent-s-to-skeleton-s">
-<h4>2 Attaching substituent(s) to skeleton(s)<a class="headerlink" href="#attaching-substituent-s-to-skeleton-s" title="Permalink to this headline"></a></h4>
+<h4>2 Attaching substituent(s) to skeleton(s)<a class="headerlink" href="#attaching-substituent-s-to-skeleton-s" title="Permalink to this heading"></a></h4>
 <p>The user can use the
 functionalize_and_optimize_obabel.sh or
 functionalize_and_optimize_xtb.sh scripts to generate their functionalized complexes.
@@ -232,7 +233,7 @@ every functionalized skeleton with xTB, but then the functionalize_and_optimize_
 script should be edited and used.</p>
 </section>
 <section id="done">
-<h4>Done<a class="headerlink" href="#done" title="Permalink to this headline"></a></h4>
+<h4>Done<a class="headerlink" href="#done" title="Permalink to this heading"></a></h4>
 <p>More information for devs:<br />
 The Complex.generate_substituent_and_write_xyz()
 function from attach_substituent.py is used to functionalize a skeleton. The main_attach_substituent.py takes the following
@@ -281,7 +282,7 @@ to their needs or use generate_tetrahedron.py directly.</p>
 </section>
 </section>
 <section id="outdated-example-usage-of-python-scripts-only">
-<h2>(outdated) Example usage of python scripts only<a class="headerlink" href="#outdated-example-usage-of-python-scripts-only" title="Permalink to this headline"></a></h2>
+<h2>(outdated) Example usage of python scripts only<a class="headerlink" href="#outdated-example-usage-of-python-scripts-only" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">generate_tetrahedron_folder/run.sh</span></code> to functionalize a RuPNP skeleton where 4 H sites
 will be substituted for methyl groups using generate_tetrahedron.py</p></li>
@@ -290,7 +291,7 @@ will be substituted for methyl groups using generate_tetrahedron.py</p></li>
 </ul>
 </section>
 <section id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline"></a></h2>
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h2>
 <p><strong>skeletons/</strong></p>
 <ul class="simple">
 <li><p>contains .xyz files of skeletons to be functionalized.</p></li>
@@ -309,7 +310,7 @@ If functionalize_and_optimize_xtb.sh is used the xTB optimized structures are pl
 </ul>
 </section>
 <section id="citation">
-<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline"></a></h2>
+<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this heading"></a></h2>
 <p>If you use ChemSpaX, please cite:</p>
 <div class="csl-entry">Kalikadien, A. V, Pidko, E. A., &#38; Sinha, V. (2022). ChemSpaX: Exploration of chemical space by automated functionalization of molecular scaffold. <i>Digital Discovery</i>. <a href="https://doi.org/10.1039/D1DD00017A">https://doi.org/10.1039/D1DD00017A</a></div>
 </section>
