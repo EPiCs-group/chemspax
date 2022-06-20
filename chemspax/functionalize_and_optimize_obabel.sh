@@ -12,6 +12,10 @@ echo "Looks like you want to add some substituents to a metal-ligand complex & o
 echo "Created by: Adarsh Kalikadien & Vivek Sinha"
 echo "---------------------------------------------------------------------------------------------"
 
+# the project has a new file structure, so the first chemspax folder needs to be added to the python path
+# else the python imports do not work. This assumes that the chemspax folder is cloned in HOME directly
+export PYTHONPATH="$HOME/chemspax:$PYTHONPATH"
+
 functionalize_skeletons_C_substituents (){
 # ------------------- edit this part -------------------------
 # define substituents that will be attached to the skeleton
