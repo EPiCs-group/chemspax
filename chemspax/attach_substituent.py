@@ -214,6 +214,7 @@ class Complex:
             self.bond_length)  # real bond between C-H in xyz plane
 
     def create_functionalization_list_all_hydrogens(self):
+        # ToDo: use an unconventional dummy atom (such as Br) instead of H to replace with substituent
         # create functionalization list by finding all H atoms and atom bonded to it
         source_mol_file = self.skeleton_path
         # find all H

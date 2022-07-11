@@ -532,6 +532,21 @@ def remove_hydrogens_and_write(source_mol_file):
     obconversion.WriteFile(mol, source_mol_file)
 
 
+def copy_functionalization_list_xyz_2_mol(source_xyz_file, target_mol_file):
+    """Copy the functionalization list from a xyz file to a mol file
+
+    :param source_xyz_file:
+    :param target_mol_file:
+    :return:
+    """
+    # get the functionalization list from the xyz file
+    functionalization_list = open(source_xyz_file).readlines()[1]
+    # write the functionalization list to the mol file
+    molfile_handle = open(target_mol_file, 'r').readlines()
+    molfile_handle[0] = functionalization_list
+    open(target_mol_file, 'w').writelines(molfile_handle)
+
+
 if __name__ == '__main__':
     # molec = 'H2O'
     # create_molecule_and_write_xyz('H2O', 'substituents_xyz/automatically_generated/' + molec + '.xyz')

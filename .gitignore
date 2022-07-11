@@ -93,10 +93,10 @@ test.xyz
 substituents_xyz/test.xyz
 __pycache__/
 logfile.txt
-substituents_xyz/automatically_generated/*.xyz
-substituents_xyz/automatically_generated/*.mol
-substituents_xyz/automatically_generated/*.txt
-substituents_xyz/automatically_generated/*.csv
+chemspax/substituents_xyz/automatically_generated/*.xyz
+chemspax/substituents_xyz/automatically_generated/*.mol
+chemspax/substituents_xyz/automatically_generated/*.txt
+chemspax/substituents_xyz/automatically_generated/*.csv
 temp_skeletons_file
 docs/_build/
 .pytest_cache/
