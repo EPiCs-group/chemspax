@@ -34,9 +34,9 @@ def main(skeleton_list, substituent_list):
         skeleton_path = os.path.normpath(skeleton)
         skeleton_name = os.path.basename(skeleton_path).split(".")[0]
         print("Attaching substituents to skeleton: " + skeleton_name)
-        first_target_name = skeleton_name + "_func"
+        # first_target_name =
         # intialize the complex class with a random substituent to be able to find lenght of functionalization_list
-        first_target_file = first_target_name + '_1'
+        first_target_file = skeleton_name + "_func_" + '1'
         path_to_substituent_database = os.path.join("substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")
         complex = initialize_complex(skeleton_name, skeleton_path, "CH3", path_to_substituent_database)
         if substituent_list is not None:
@@ -57,7 +57,10 @@ def main(skeleton_list, substituent_list):
             complex.generate_substituent_and_write_xyz(first_target_file, 1.54, False)
 
         # copy functionalization_list from xyz to molfile
-        copy_functionalization_list_xyz_2_mol(first_target_name + '_1.xyz', first_target_name + '_1.mol')
+        # ToDo: fix copy_functionalization_list_xyz_2_mol
+        cwd = os.getcwd()
+        copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.xyz'),
+                                              os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.mol'))
         # Continue with looping over substituents and attaching them to the skeleton
         for idx, substituent in enumerate(substituent_list[1:]):
             print("Attaching substituent: " + substituent)
@@ -67,6 +70,9 @@ def main(skeleton_list, substituent_list):
             target_name = skeleton_name + "_func_" + str(idx + 2)
             complex = initialize_complex(new_skeleton_name, new_skeleton_path, substituent, path_to_substituent_database)
             complex.generate_substituent_and_write_xyz(target_name, 1.54, False)
+            # ToDo: add copy_functionalization_list_xyz_2_mol here
+            copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.xyz'),
+                                                  os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.mol'))
             print("Attached substituent: " + substituent)
         print("Attached substituents to skeleton: " + skeleton_name)
         print("\n")
