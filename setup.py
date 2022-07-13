@@ -25,7 +25,7 @@ setup(
 
     package_data={'chemspax': ['chemspax/substituents_xyz']},
 
-    long_description=open('README.md').read(),
+    long_description=open('docs/README.md').read(),
 
 
 )

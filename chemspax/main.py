@@ -116,11 +116,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='chemspax', description='Attach substituents to a skeleton molecule')
     # ToDo: theoretically, we should have 3 flags, one for substituent_list, one to ask for parallelization and one to
     # ToDo: to skip everything until the last functionalization. This is not implemented yet.
-    parser.add_argument('-s', '--substituent_list', help='List of substituents to attach', required=False, default=None)
+    parser.add_argument('-s', '--substituent', help='Name of substituent to attach', required=False, action='append', default=None)
+    parser.add_argument('-p', '--parallelize', help='Run skeletons in parallel', action='store_true')
+    parser.add_argument('-skip', '--skip', help='Only store the last functionalized structure', action='store_true')
 
     args = parser.parse_args()
-    substituent_list = args.substituent_list
-
+    substituent_list = []
+    for arg in args.substituent:
+        substituent_list.append(arg)
 
 
     list_of_skeleton_files = glob.glob("skeletons/*.xyz")
