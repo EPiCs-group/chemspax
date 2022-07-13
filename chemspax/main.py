@@ -24,8 +24,24 @@ def initialize_complex(original_skeleton_name, source_data, substituent_name, pa
 
 
 def main(skeleton_list, substituent_list):
+    # ToDo: parallelize this function by using multiprocessing instead of for loops
     # initialize logger
     logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    # create a file handler
+    handler = logging.FileHandler('chemspax.log')
+    handler.setLevel(logging.INFO)
+    # create a logging format
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    # add the handlers to the logger
+    logger.addHandler(handler)
+    # create a console handler
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    # add the handlers to the logger
+    logger.addHandler(console)
+
     logger.log(logging.INFO, "Looks like you want to add some substituents to a metal-ligand complex & optimize 'em.\n")
     logger.log(logging.INFO, "Created by: Adarsh Kalikadien & Vivek Sinha")
 
@@ -33,44 +49,62 @@ def main(skeleton_list, substituent_list):
     for skeleton in skeleton_list:
         skeleton_path = os.path.normpath(skeleton)
         skeleton_name = os.path.basename(skeleton_path).split(".")[0]
-        print("Attaching substituents to skeleton: " + skeleton_name)
-        # first_target_name =
+        logger.log(logging.INFO, f"Attaching substituents to skeleton: {skeleton_name}")
         # intialize the complex class with a random substituent to be able to find lenght of functionalization_list
         first_target_file = skeleton_name + "_func_" + '1'
         path_to_substituent_database = os.path.join("substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")
         complex = initialize_complex(skeleton_name, skeleton_path, "CH3", path_to_substituent_database)
         if substituent_list is not None:
-            print(f"initializing complex by placing {substituent_list[0]} on {skeleton_name}")
-            complex = initialize_complex(skeleton_name, skeleton_path, substituent_list[0], path_to_substituent_database)
-            complex.generate_substituent_and_write_xyz(first_target_file, 1.54, False)
+            logger.log(logging.INFO, f"initializing complex by placing {substituent_list[0]} on {skeleton_name}")
         else:
-            print("No substituent list found, using random substituents based on length of functionalization_list")
+            logger.log(logging.INFO, f"initializing complex by placing random substituents based on length of functionalization_list")
             # create substituent_list with correct length (number of substituents)
             len_functionalization_list = len(complex.functionalization_site_list)
-            # select random substituents, same length as functionalization_list (number of functionalization sites)
-            all_substituents = glob.glob("substituents_xyz/manually_generated/*.xyz")
+            # select random carbon (C) substituents, same length as functionalization_list (number of functionalization sites)
+            all_substituents = glob.glob("substituents_xyz/manually_generated/C*.xyz")
             # only get name of substituent file without extension
             all_substituents = [os.path.basename(os.path.normpath(substituent)).split(".")[0] for substituent in all_substituents]
             substituent_list = random.choices(all_substituents, k=len_functionalization_list)
-            print(f"initializing complex by placing {substituent_list[0]} on {skeleton_name}")
-            complex = initialize_complex(skeleton_name, skeleton_path, substituent_list[0], path_to_substituent_database)
-            complex.generate_substituent_and_write_xyz(first_target_file, 1.54, False)
+            logger.log(logging.INFO, f"initializing complex by placing {substituent_list[0]} on {skeleton_name}")
+
+
+        # if functionalization_list is empty, skip this skeleton
+        if len(complex.functionalization_site_list) == 0:
+            logger.log(logging.INFO, f"No functionalization sites found for {skeleton_name}")
+            continue
+        # if substituent_list is too large, just use the first n elements of the list
+        if len(substituent_list) > len(complex.functionalization_site_list):
+            logger.log(logging.INFO, f"Substituent list is larger than amount of specified functionalization sites, "
+                                     f"only using first {len(complex.functionalization_site_list)} elements")
+            substituent_list = substituent_list[:len(complex.functionalization_site_list)]
+        # if substituent_list is too small, add random substituents to the list
+        if len(substituent_list) < len(complex.functionalization_site_list):
+            logger.log(logging.INFO, f"Substituent list is smaller than amount of specified functionalization sites, "
+                                     f"adding random carbon (C) substituents to the list")
+            # get all C substituents from the database
+            all_substituents = glob.glob("substituents_xyz/manually_generated/C*.xyz")
+            # only get name of substituent file without extension
+            all_substituents = [os.path.basename(os.path.normpath(substituent)).split(".")[0] for substituent in all_substituents]
+            # add random substituents to the list
+            for i in range(len(substituent_list), len(complex.functionalization_site_list)):
+                substituent_list.append(random.choice(all_substituents))
+
+        complex = initialize_complex(skeleton_name, skeleton_path, substituent_list[0], path_to_substituent_database)
+        complex.generate_substituent_and_write_xyz(first_target_file, 1.54, False)
 
         # copy functionalization_list from xyz to molfile
-        # ToDo: fix copy_functionalization_list_xyz_2_mol
         cwd = os.getcwd()
         copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.xyz'),
                                               os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.mol'))
         # Continue with looping over substituents and attaching them to the skeleton
         for idx, substituent in enumerate(substituent_list[1:]):
-            print("Attaching substituent: " + substituent)
+            print("Attaching substituent: " + substituent + "iteration: " + str(idx + 1))
             # enumerate starts at 0, so we need to add +1 to get the correct index of previous functionalization
-            new_skeleton_name = skeleton_name + f'func_{idx+1}'
+            new_skeleton_name = skeleton_name + f'_func_{idx+1}'
             new_skeleton_path = os.path.join("substituents_xyz", "automatically_generated", new_skeleton_name + '.xyz')
             target_name = skeleton_name + "_func_" + str(idx + 2)
-            complex = initialize_complex(new_skeleton_name, new_skeleton_path, substituent, path_to_substituent_database)
+            complex = initialize_complex(skeleton_name, new_skeleton_path, substituent, path_to_substituent_database)
             complex.generate_substituent_and_write_xyz(target_name, 1.54, False)
-            # ToDo: add copy_functionalization_list_xyz_2_mol here
             copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.xyz'),
                                                   os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.mol'))
             print("Attached substituent: " + substituent)
@@ -79,9 +113,9 @@ def main(skeleton_list, substituent_list):
 
 
 if __name__ == "__main__":
-
-
     parser = argparse.ArgumentParser(prog='chemspax', description='Attach substituents to a skeleton molecule')
+    # ToDo: theoretically, we should have 3 flags, one for substituent_list, one to ask for parallelization and one to
+    # ToDo: to skip everything until the last functionalization. This is not implemented yet.
     parser.add_argument('-s', '--substituent_list', help='List of substituents to attach', required=False, default=None)
 
     args = parser.parse_args()
