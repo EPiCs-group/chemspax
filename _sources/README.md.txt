@@ -11,16 +11,12 @@ Two approaches were considered:
   See generate_tetrahedron.py. **This approach is outdated and not maintained**
 
 ## Installation
-Python 3.6.0 or higher is recommended. 
-
-```
-git clone https://github.com/EPiCs-group/chemspax
-``` 
-
+Python 3.6.0 or higher is recommended.  
 It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments (**using Anaconda allows the user to skip 
 compilation of openbabel from source**):  
      Download the latest installer from 
-     [Anaconda's website](https://www.anaconda.com/products/individual).    
+     [Anaconda's website](https://www.anaconda.com/products/individual)
+(Or load the Anaconda/Miniconda module if working on a supercomputer).
      For example: 
    ``` 
    wget https://repo.anaconda.com/archive/Anaconda3-2020.07-Linux-x86_64.sh
@@ -43,10 +39,28 @@ The environment will be named 'chemspax', the conda_env.yml file can be changed 
   ```
   conda env list
   ```
-   
+  
   More information on virtual environments can be found at the
   [venv homepage](https://docs.python.org/3/library/venv.html) or 
   [this Anaconda cheatsheet](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
+  
+  Now the repository can be cloned with: 
+  
+```
+git clone https://github.com/EPiCs-group/chemspax
+``` 
+  This will create a folder called chemspax in the current directory. 
+ChemSpaX can be installed by running the following command in the ChemSpaX folder: 
+  
+```pip install -e .```
+  
+  This will install the dependencies and the package itself.
+
+## Usage
+The following commands can be used to run the program:
+```python main.py```
+To specify the substituents that should be added, use the -s or --substituents option.
+```python main.py -s CH3 -s CH3```
 ## Instructions
 First, we need to prepare the xyz file of the skeleton to which we want to attach a substituent.
 An example .xyz file of a skeleton in the skeletons/ folder looks like this: 

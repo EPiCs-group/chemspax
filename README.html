@@ -42,6 +42,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ChemSpaX</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#instructions">Instructions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#attach-substituent-py">attach_substituent.py</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#choosing-from-library-adding-a-substituent-to-library">1 Choosing from library/adding a substituent to library</a></li>
@@ -98,14 +99,12 @@ See generate_tetrahedron.py. <strong>This approach is outdated and not maintaine
 </ol>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
-<p>Python 3.6.0 or higher is recommended.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">EPiCs</span><span class="o">-</span><span class="n">group</span><span class="o">/</span><span class="n">chemspax</span>
-</pre></div>
-</div>
-<p>It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments (<strong>using Anaconda allows the user to skip
+<p>Python 3.6.0 or higher is recommended.<br />
+It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments (<strong>using Anaconda allows the user to skip
 compilation of openbabel from source</strong>):<br />
 Download the latest installer from
-<a class="reference external" href="https://www.anaconda.com/products/individual">Anaconda’s website</a>.<br />
+<a class="reference external" href="https://www.anaconda.com/products/individual">Anaconda’s website</a>
+(Or load the Anaconda/Miniconda module if working on a supercomputer).
 For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">repo</span><span class="o">.</span><span class="n">anaconda</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="n">Anaconda3</span><span class="o">-</span><span class="mf">2020.07</span><span class="o">-</span><span class="n">Linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
@@ -129,6 +128,21 @@ The environment will be named ‘chemspax’, the conda_env.yml file can be chan
 <p>More information on virtual environments can be found at the
 <a class="reference external" href="https://docs.python.org/3/library/venv.html">venv homepage</a> or
 <a class="reference external" href="https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/">this Anaconda cheatsheet</a></p>
+<p>Now the repository can be cloned with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">EPiCs</span><span class="o">-</span><span class="n">group</span><span class="o">/</span><span class="n">chemspax</span>
+</pre></div>
+</div>
+<p>This will create a folder called chemspax in the current directory.
+ChemSpaX can be installed by running the following command in the ChemSpaX folder:</p>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code></p>
+<p>This will install the dependencies and the package itself.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
+<p>The following commands can be used to run the program:
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code>
+To specify the substituents that should be added, use the -s or –substituents option.
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> <span class="pre">-s</span> <span class="pre">CH3</span> <span class="pre">-s</span> <span class="pre">CH3</span></code></p>
 </section>
 <section id="instructions">
 <h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading"></a></h2>
