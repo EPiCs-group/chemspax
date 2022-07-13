@@ -98,7 +98,7 @@ def main(skeleton_list, substituent_list):
                                               os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.mol'))
         # Continue with looping over substituents and attaching them to the skeleton
         for idx, substituent in enumerate(substituent_list[1:]):
-            print("Attaching substituent: " + substituent + "iteration: " + str(idx + 1))
+            logger.log(logging.INFO, f"Attaching substituent: {substituent} iteration: {idx + 1}")
             # enumerate starts at 0, so we need to add +1 to get the correct index of previous functionalization
             new_skeleton_name = skeleton_name + f'_func_{idx+1}'
             new_skeleton_path = os.path.join("substituents_xyz", "automatically_generated", new_skeleton_name + '.xyz')
@@ -107,9 +107,9 @@ def main(skeleton_list, substituent_list):
             complex.generate_substituent_and_write_xyz(target_name, 1.54, False)
             copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.xyz'),
                                                   os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.mol'))
-            print("Attached substituent: " + substituent)
-        print("Attached substituents to skeleton: " + skeleton_name)
-        print("\n")
+            logger.log(logging.INFO, f"Attached substituent: {substituent} iteration: {idx + 1}")
+        logger.log(logging.INFO, f"Attached substituents to skeleton: {skeleton_name}")
+        logger.log(logging.INFO, f"\n")
 
 
 if __name__ == "__main__":
