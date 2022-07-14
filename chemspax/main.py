@@ -121,10 +121,12 @@ if __name__ == "__main__":
     parser.add_argument('-skip', '--skip', help='Only store the last functionalized structure', action='store_true')
 
     args = parser.parse_args()
-    substituent_list = []
-    for arg in args.substituent:
-        substituent_list.append(arg)
-
+    if args.substituent is not None:
+        substituent_list = []
+        for arg in args.substituent:
+            substituent_list.append(arg)
+    else:
+        substituent_list = None
 
     list_of_skeleton_files = glob.glob("skeletons/*.xyz")
     # substituent_list = ["CH3", "CH3"]
