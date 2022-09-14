@@ -9,7 +9,7 @@ import random
 import glob
 import argparse
 import logging
-from gooey import Gooey
+
 from pathlib import Path
 from chemspax.attach_substituent import Complex
 from chemspax.utilities import copy_functionalization_list_xyz_2_mol
@@ -26,7 +26,7 @@ def initialize_complex(original_skeleton_name, source_data, substituent_name, pa
 path_to_database = os.path.join(CHEMSPAX_HOME_DIR, "substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")
 path_to_substituents = os.path.join(CHEMSPAX_HOME_DIR,"substituents_xyz","manually_generated/")
 path_to_output = os.path.join(CHEMSPAX_HOME_DIR,"functionalized_complexes/")
-@Gooey
+
 def main(path_to_database=path_to_database, path_to_substituents = path_to_substituents):
     parser = argparse.ArgumentParser(prog='chemspax', description='Attach substituents to a skeleton molecule')
     parser.add_argument('-s', '--substituent', help='Name of substituent to attach', required=False, action='append', default=None)
