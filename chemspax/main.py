@@ -9,23 +9,43 @@ import random
 import glob
 import argparse
 import logging
-
+from gooey import Gooey
+from pathlib import Path
 from chemspax.attach_substituent import Complex
 from chemspax.utilities import copy_functionalization_list_xyz_2_mol
-"""Main class that takes command line arguments and passes them to attach_substituent.py's Complex class
-"""
-
-
+CHEMSPAX_HOME_DIR=os.environ["CHEMSPAX_HOME_DIR"]
+if CHEMSPAX_HOME_DIR == None:
+    print("none is set")
+else:
+    print(CHEMSPAX_HOME_DIR)
 def initialize_complex(original_skeleton_name, source_data, substituent_name, path_to_database):
     """Main function that takes command line arguments and passes them to attach_substituent.py's Complex class
     """
     complex = Complex(original_skeleton_name, source_data, substituent_name, path_to_database)
     return complex
-
-
-def main(skeleton_list, substituent_list):
-    # ToDo: parallelize this function by using multiprocessing instead of for loops
+path_to_database = os.path.join(CHEMSPAX_HOME_DIR, "substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")
+path_to_substituents = os.path.join(CHEMSPAX_HOME_DIR,"substituents_xyz","manually_generated/")
+path_to_output = os.path.join(CHEMSPAX_HOME_DIR,"functionalized_complexes/")
+@Gooey
+def main(path_to_database=path_to_database, path_to_substituents = path_to_substituents):
+    parser = argparse.ArgumentParser(prog='chemspax', description='Attach substituents to a skeleton molecule')
+    parser.add_argument('-s', '--substituent', help='Name of substituent to attach', required=False, action='append', default=None)
+    parser.add_argument('-k', '--skeleton', help='Provide path for skeletons in .xyz format', required=False,action='store', default=None)
+    parser.add_argument('-o', '--output', help="path to output files", required=False, action='store',default=path_to_output)
+    args = parser.parse_args()
+    if args.substituent is not None:
+        substituent_list = []
+        for arg in args.substituent:
+            substituent_list.append(arg)
+    else:
+        substituent_list = None
+    if args.skeleton is not None:
+        list_of_skeleton_files = glob.glob(args.skeleton+"/*.xyz")
+    else:
+        list_of_skeleton_files = glob.glob(CHEMSPAX_HOME_DIR+"/skeletons/*.xyz")
+    skeleton_list = list_of_skeleton_files 
     # initialize logger
+    Path(path_to_output).mkdir(parents=True, exist_ok=True)  #create directory for functionalized output
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     # create a file handler
@@ -52,8 +72,8 @@ def main(skeleton_list, substituent_list):
         logger.log(logging.INFO, f"Attaching substituents to skeleton: {skeleton_name}")
         # intialize the complex class with a random substituent to be able to find lenght of functionalization_list
         first_target_file = skeleton_name + "_func_" + '1'
-        path_to_substituent_database = os.path.join("substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")
-        complex = initialize_complex(skeleton_name, skeleton_path, "CH3", path_to_substituent_database)
+#        path_to_substituent_database = os.path.join("substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")    #to keep things consistent let us just use "path_to_database" as used in "Complex" class as well"
+        complex = initialize_complex(skeleton_name, skeleton_path, "CH3", path_to_database)
         if substituent_list is not None:
             logger.log(logging.INFO, f"initializing complex by placing {substituent_list[0]} on {skeleton_name}")
         else:
@@ -61,7 +81,7 @@ def main(skeleton_list, substituent_list):
             # create substituent_list with correct length (number of substituents)
             len_functionalization_list = len(complex.functionalization_site_list)
             # select random carbon (C) substituents, same length as functionalization_list (number of functionalization sites)
-            all_substituents = glob.glob("substituents_xyz/manually_generated/C*.xyz")
+            all_substituents = glob.glob(path_to_substituents+"/C*.xyz")
             # only get name of substituent file without extension
             all_substituents = [os.path.basename(os.path.normpath(substituent)).split(".")[0] for substituent in all_substituents]
             substituent_list = random.choices(all_substituents, k=len_functionalization_list)
@@ -83,69 +103,35 @@ def main(skeleton_list, substituent_list):
                                      f"adding random carbon (C) substituents to the list")
             # get all C substituents from the database
             all_substituents = glob.glob("substituents_xyz/manually_generated/C*.xyz")
+#            all_substituents = glob.glob(path_to_substituents+"/C*.xyz".split(".")[0])
             # only get name of substituent file without extension
             all_substituents = [os.path.basename(os.path.normpath(substituent)).split(".")[0] for substituent in all_substituents]
             # add random substituents to the list
             for i in range(len(substituent_list), len(complex.functionalization_site_list)):
                 substituent_list.append(random.choice(all_substituents))
 
-        complex = initialize_complex(skeleton_name, skeleton_path, substituent_list[0], path_to_substituent_database)
-        complex.generate_substituent_and_write_xyz(first_target_file, 1.54, False)
+        complex = initialize_complex(skeleton_name, skeleton_path, substituent_list[0], path_to_database)
+        complex.generate_substituent_and_write_xyz(first_target_file, 1.54, False,path_to_output=path_to_output)
 
         # copy functionalization_list from xyz to molfile
         cwd = os.getcwd()
-        copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.xyz'),
-                                              os.path.join(cwd, "substituents_xyz", "automatically_generated", first_target_file + '.mol'))
+        copy_functionalization_list_xyz_2_mol(os.path.join(path_to_output, first_target_file + '.xyz'),
+                                              os.path.join(path_to_output, first_target_file + '.mol'))
         # Continue with looping over substituents and attaching them to the skeleton
         for idx, substituent in enumerate(substituent_list[1:]):
             logger.log(logging.INFO, f"Attaching substituent: {substituent} iteration: {idx + 1}")
             # enumerate starts at 0, so we need to add +1 to get the correct index of previous functionalization
             new_skeleton_name = skeleton_name + f'_func_{idx+1}'
-            new_skeleton_path = os.path.join("substituents_xyz", "automatically_generated", new_skeleton_name + '.xyz')
+            new_skeleton_path = os.path.join(path_to_output, new_skeleton_name + '.xyz')
             target_name = skeleton_name + "_func_" + str(idx + 2)
-            complex = initialize_complex(skeleton_name, new_skeleton_path, substituent, path_to_substituent_database)
-            complex.generate_substituent_and_write_xyz(target_name, 1.54, False)
-            copy_functionalization_list_xyz_2_mol(os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.xyz'),
-                                                  os.path.join(cwd, "substituents_xyz", "automatically_generated", target_name + '.mol'))
+            complex = initialize_complex(skeleton_name, new_skeleton_path, substituent, path_to_database)
+            complex.generate_substituent_and_write_xyz(target_name, 1.54, False, path_to_output=path_to_output)
+            copy_functionalization_list_xyz_2_mol(os.path.join(path_to_output, target_name + '.xyz'),
+                                                  os.path.join(path_to_output, target_name + '.mol'))
             logger.log(logging.INFO, f"Attached substituent: {substituent} iteration: {idx + 1}")
         logger.log(logging.INFO, f"Attached substituents to skeleton: {skeleton_name}")
         logger.log(logging.INFO, f"\n")
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='chemspax', description='Attach substituents to a skeleton molecule')
-    # ToDo: theoretically, we should have 3 flags, one for substituent_list, one to ask for parallelization and one to
-    # ToDo: to skip everything until the last functionalization. This is not implemented yet.
-    parser.add_argument('-s', '--substituent', help='Name of substituent to attach', required=False, action='append', default=None)
-    parser.add_argument('-p', '--parallelize', help='Run skeletons in parallel', action='store_true')
-    parser.add_argument('-skip', '--skip', help='Only store the last functionalized structure', action='store_true')
 
-    args = parser.parse_args()
-    if args.substituent is not None:
-        substituent_list = []
-        for arg in args.substituent:
-            substituent_list.append(arg)
-    else:
-        substituent_list = None
-
-    list_of_skeleton_files = glob.glob("skeletons/*.xyz")
-    # substituent_list = ["CH3", "CH3"]
-    main(list_of_skeleton_files, substituent_list)
-
-#
-# def main():
-#     original_skeleton_name = sys.argv[1]
-#     source_data = sys.argv[2]
-#     target_file = sys.argv[3]
-#     substituent_molecule = sys.argv[4]
-#     path_to_database = sys.argv[5]
-#     length_skeleton_bonded_atom_substituent_central_atom = sys.argv[6]
-#     use_xtb_script_after = True if sys.argv[7].lower() == 'true' else False
-#
-#     some_complex = Complex(original_skeleton_name, source_data, substituent_molecule, path_to_database)
-#     some_complex.generate_substituent_and_write_xyz(target_file, length_skeleton_bonded_atom_substituent_central_atom,
-#                                                     use_xtb_script_after)
-#
-#
-# if __name__ == '__main__':
-#     main()
+    main(path_to_database=path_to_database, path_to_substituents = path_to_substituents)
