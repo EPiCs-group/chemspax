@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChemSpaX &mdash; ChemSpaX  documentation</title>
+  <title>Installation &mdash; ChemSpaX  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -16,6 +16,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -40,23 +41,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ChemSpaX</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#instructions">Instructions</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#attach-substituent-py">attach_substituent.py</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#choosing-from-library-adding-a-substituent-to-library">1 Choosing from library/adding a substituent to library</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#attaching-substituent-s-to-skeleton-s">2 Attaching substituent(s) to skeleton(s)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#done">Done</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#outdated-example-usage-of-python-scripts-only">(outdated) Example usage of python scripts only</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#contents">Contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#citation">Citation</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#indicating-functionalization-sites">Indicating functionalization sites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#optional-adding-new-substituent-to-the-substituent-library">(optional) Adding new substituent to the substituent library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#contents">Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#citation">Citation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="apidoc/modules.html">chemspax</a></li>
 </ul>
 
@@ -74,7 +64,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>ChemSpaX</li>
+      <li>Installation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,21 +74,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="chemspax">
-<h1>ChemSpaX<a class="headerlink" href="#chemspax" title="Permalink to this heading"></a></h1>
-<p>ChemSpaX can be used for local chemical space exploration of any structure.
-This is done by placing substuents on a skeleton.
-Two approaches were considered:</p>
-<ol class="arabic simple">
-<li><p>From a library of existing substituents choose a substituent and
-attach it the skeleton.
-See attach_substituent.py.</p></li>
-<li><p>The user inputs an atom to be functionalized on a skeleton complex,
-then a tetrahedron is formed around this atom and this atom can be replaced.
-See generate_tetrahedron.py. <strong>This approach is outdated and not maintained</strong></p></li>
-</ol>
+  <p><img alt="logo" src="_images/logo.png" />
+ChemSpaX can be used for local chemical space exploration of any structure. This is done by placing substuents on a skeleton.
+A substituent can be chosen from an existing library and can be attached to the skeleton.</p>
 <section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <p>Python 3.6.0 or higher is recommended.<br />
 It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments (<strong>using Anaconda allows the user to skip
 compilation of openbabel from source</strong>):<br />
@@ -135,17 +115,80 @@ The environment will be named ‘chemspax’, the conda_env.yml file can be chan
 <p>This will create a folder called chemspax in the current directory.
 ChemSpaX can be installed by running the following command in the ChemSpaX folder:</p>
 <p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code></p>
-<p>This will install the dependencies and the package itself.</p>
+<p>This will install the dependencies and the package itself in the chemspax conda environment.</p>
 </section>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
-<p>The following commands can be used to run the program:
-<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code>
-To specify the substituents that should be added, use the -s or –substituents option.
-<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> <span class="pre">-s</span> <span class="pre">CH3</span> <span class="pre">-s</span> <span class="pre">CH3</span></code></p>
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h1>
+<p>The main funcion and Python file are used to place functional groups. The user needs to provide an MDL Molfile (.mol)
+and xyz file for the skeleton on which functional groups need to be placed. If only a .mol file is present, ChemSpaX’
+data_preperation functionality can take care of file conversions. <strong>Before running ChemSpaX, the functionalization sites
+need to be indicated, this is discussed in <span class="xref myst">the next section</span>.</strong></p>
+<p>ChemSpaX can be used as a commandline utility. By default, skeletons should be placed in the chemspax/skeleton/ folder
+and functionalized complexes will be placed in
+chemspax/substituents_xyz/automatically_generated/ folder. If no substituents (or not enough, based on the amount of functionalization sites)
+are provided, ChemSpaX will add random C-based substituents to place on the skeleton. This can be invoked by running:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span></code></p>
+<p>Available flags:</p>
+<ul class="simple">
+<li><p><strong>-s or –substituents</strong> indicate which substituents from the library to place on the skeleton’s indicated functionalization sites.
+Example: <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">CH3</span></code></p></li>
+<li><p><strong>-k or –skeleton</strong> non-default path to folder containing skeleton .xyz and .mol files</p></li>
+<li><p><strong>-o or –output</strong> non-default path to place functionalized structures</p></li>
+<li><p><strong>-pd or –prepare</strong> convert .mol files to .xyz and vice-versa in the indicated skeletons’ folder and in the substituent library
+(chemspax/substituents_xyz/manually_generated/)</p></li>
+</ul>
+<p>The flags will be discussed in more detail below.</p>
+<p>To specify the substituents that should be added, use the -s or –substituents option. This example will add 2 CH3
+substituents to the indicated functionalization sites on the skeleton. (if more sites are indicated than substituents,
+ChemSpaX will add random C-based substituents from the substituent library)</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> <span class="pre">-s</span> <span class="pre">CH3</span> <span class="pre">-s</span> <span class="pre">CH3</span></code></p>
+<p>For skeleton structures, both a .xyz and .mol file should be present. This conversion can be done using the openbabel
+backend of ChemSpaX. Additionally, the substituent library contained in chemspax/substituents_xyz/manually_generated/
+is updated. The -pd flag can be added to invoke this functionality. Make sure to check the newly generated skeletons and substituents.</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> <span class="pre">-pd</span></code></p>
+<p>The chemspax/ folder is used as working directory by default, but ChemSpaX can be used in other directories by
+supplying a CHEMSPAX_HOME_DIR environment variable. This method expects a skeletons/ folder in this directory with .mol and
+.xyz files of the skeletons to be functionalized. On linux systems this method works in the following way:</p>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>export CHEMSPAX_HOME_DIR=&quot;&lt;your/path&gt;&quot; # The path in which a skeletons/ folder with skeleton&#39;s .mol and .xyz files is present 
+python main.py -s CH3 -s CH3
+</pre></div>
+</div>
+<p>To change the folder in which skeletons can be found, use the -k flag. For example:</p>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>export CHEMSPAX_HOME_DIR=&quot;&lt;your/path&gt;&quot;
+python main.py -s CH3 -s CH3 -k &lt;your/other/skeleton/path&gt;
+</pre></div>
+</div>
+<p>To change the folder to which functionalized skeletons are written, use the -o flag. For example:</p>
+<div class="highlight-commandline notranslate"><div class="highlight"><pre><span></span>export CHEMSPAX_HOME_DIR=&quot;&lt;your/path&gt;&quot;
+python main.py -s CH3 -s CH3 -k &lt;your/other/skeleton/path&gt; -o &lt;your/output/path&gt;
+</pre></div>
+</div>
+<p>ChemSpaX can also be used in other Python scripts. To iterate over skeletons and functionalize them on two sites with CH3’s:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">chemspax.main</span> <span class="kn">import</span> <span class="n">main</span>
+
+<span class="n">current_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+
+<span class="n">path_to_substituents</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="s2">&quot;substituents_xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;manually_generated/&quot;</span><span class="p">)</span>  <span class="c1"># should always point to the chemspax/substituents_xyz/manually_generated folder</span>
+<span class="n">path_to_database</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_to_substituents</span><span class="p">,</span> <span class="s2">&quot;central_atom_centroid_database.csv&quot;</span><span class="p">)</span>
+
+<span class="n">substituent_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CH3&quot;</span><span class="p">,</span> <span class="s2">&quot;CH3&quot;</span><span class="p">]</span>
+<span class="n">skeleton_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chemspax_working_directory</span><span class="p">,</span> <span class="s2">&quot;skeletons&quot;</span><span class="p">,</span> <span class="s2">&quot;*.xyz&quot;</span><span class="p">))</span>
+<span class="n">path_to_skeletons</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="s2">&quot;skeletons&quot;</span><span class="p">)</span>
+<span class="n">working_directory</span> <span class="o">=</span> <span class="n">current_directory</span>
+<span class="n">path_to_output</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_directory</span><span class="p">,</span> <span class="s2">&quot;substituents_xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;automatically_generated&quot;</span><span class="p">)</span>
+<span class="n">main</span><span class="p">(</span><span class="n">skeleton_list</span><span class="p">,</span> <span class="n">substituent_list</span><span class="p">,</span> <span class="n">path_to_database</span><span class="p">,</span> <span class="n">path_to_substituents</span><span class="p">,</span> <span class="n">path_to_skeletons</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">path_to_output</span><span class="p">)</span>
+</pre></div>
+</div>
 </section>
-<section id="instructions">
-<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this heading"></a></h2>
+<section id="indicating-functionalization-sites">
+<h1>Indicating functionalization sites<a class="headerlink" href="#indicating-functionalization-sites" title="Permalink to this heading"></a></h1>
+<p>There are 2 options to indicate functionalization sites:</p>
+<ol class="arabic simple">
+<li><p>Indicate no functionalization_list in the comment line of the .xyz or .mol file of the skeleton that will be functionalized.
+In this case, dummy molecules (currently all H’s of the skeleton’s structure) will be used as functionalization sites.</p></li>
+<li><p>Indicate a functionalization_list using the index of the atoms to be replaced. Preparing this list is explained below.</p></li>
+</ol>
 <p>First, we need to prepare the xyz file of the skeleton to which we want to attach a substituent.
 An example .xyz file of a skeleton in the skeletons/ folder looks like this:
 <img alt="example" src="_images/example_functionalization_list.jpg" /></p>
@@ -156,9 +199,7 @@ be replaced by the substituent).</p>
 <p><strong>Since commit <a class="reference external" href="https://github.com/EPiCs-group/chemspax/commit/bf59491b619c5064c1314848e2d4d8eb31e7d71d">bf59491</a> all hydrogens are functionalized (used as atom_to_be_functionalized)
 if no functionalization_list is given in the skeleton’s xyz file (second line is empty). This preparation step can thus be skipped if
 the whole structure needs to be functionalized instead of specific indices.</strong></p>
-<p>Make sure to put no spaces in this functionalization_list. Since
-<code class="docutils literal notranslate"><span class="pre">sys.argv()</span></code> is used in the main.py files, each space might be interpreted as a new argument
-to the function. Also note that index 0 is the <strong>first atom in the xyz file</strong>.
+<p>Note that index 0 is the <strong>first atom in the xyz file</strong>.
 In the example figure above, the index of Ru = 0.<br />
 <img alt="example" src="_images/example_atom_to_be_functionalized.jpg" /></p>
 <p>The second item of each list (green circle) is the index of the bonded_atom, this is the
@@ -167,39 +208,19 @@ skeleton’s atom that will be bonded to the substituent.</p>
 <p>With these instructions the user should be able to
 write the functionalization_list of the skeletons correctly to
 the skeleton’s xyz file and this skeleton’s xyz file should be
-moved to the  skeletons/ folder (<strong>note: there should be no newline at the end of the xyz file!</strong>).<br />
-To attach a substituent to this skeleton, an
-explanation is given on how to proceed with the next 2 steps.</p>
-<section id="attach-substituent-py">
-<h3>attach_substituent.py<a class="headerlink" href="#attach-substituent-py" title="Permalink to this heading"></a></h3>
-<p><strong>Note: Make sure to check the relative path on line 175, 88, 66
-and 21 are correctly set if you want to use attach_substituent.py directly.<br />
-It is recommended to keep everything as default and use the
-functionalize_and_optimize_obabel.sh or
-functionalize_and_optimize_xtb.sh scripts instead, which will be explained.</strong></p>
-<section id="choosing-from-library-adding-a-substituent-to-library">
-<h4>1 Choosing from library/adding a substituent to library<a class="headerlink" href="#choosing-from-library-adding-a-substituent-to-library" title="Permalink to this heading"></a></h4>
-<p>The user can upload manually generated substituents
-to substituents_xyz/manually_generated/ or use the pre-made substituents
-contained in that folder.</p>
-<section id="use-pre-made-substituents">
-<h5>Use pre-made substituents<a class="headerlink" href="#use-pre-made-substituents" title="Permalink to this heading"></a></h5>
-<ul class="simple">
-<li><p>Move skeleton’s xyz file to skeletons/ folder</p></li>
-<li><p>Run data_preparation.py</p></li>
-<li><p>Go to step 2</p></li>
-</ul>
+moved to the  skeletons/ folder (<strong>note: there should be no newline at the end of the xyz file!</strong>).</p>
 </section>
-<section id="optional-add-new-substituent">
-<h5>(optional) Add new substituent<a class="headerlink" href="#optional-add-new-substituent" title="Permalink to this heading"></a></h5>
+<section id="optional-adding-new-substituent-to-the-substituent-library">
+<h1>(optional) Adding new substituent to the substituent library<a class="headerlink" href="#optional-adding-new-substituent-to-the-substituent-library" title="Permalink to this heading"></a></h1>
 <p>I’ll take the example of methyl (which is already in the substituents_xyz/manually_generated folder):</p>
 <ul class="simple">
 <li><p>Take an xyz file for (optimized) CH4, then remove one of the hydrogens, this is where the substituent will form a bond with the skeleton.</p></li>
 <li><p>Let the C (central atom of the
 substituent) be the first atom in the list of atoms in the xyz file. (by moving C to the third line of the xyz file)</p></li>
-<li><p>Save the xyz file in substituents_xyz/manually_generated</p></li>
-<li><p>Run data_preparation.py to be able to use this substituent for functionalizations</p></li>
-<li><p>Go to step 2</p></li>
+<li><p>Save the CH3.xyz file in substituents_xyz/manually_generated</p></li>
+<li><p>Run ChemSpaX with the -pd or –prepare flag to be able to use the new substituent.</p></li>
+<li><p>Use ChemSpaX to functionalize the skeleton with the new substituent. Example:<br />
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">main.py</span> <span class="pre">-s</span> <span class="pre">CH3</span></code></p></li>
 </ul>
 <p>data_preparation.py is used to add the central atom and centroid vector per substituent to a .csv file
 as these will be used to align the substituent with the skeleton. This script also manages to conversion between .mol and .xyz files.
@@ -211,123 +232,28 @@ has a free electron pair such that a new bond can be formed!</strong></p>
 as generated by data_preparation.py is shown below:
 <img alt="example" src="_images/example_csv_database.jpg" /></p>
 <p>After correct preparation of the xyz/mol files for the skeleton and
-(new) substituents and running data_preparation.py as explained above,
-we can move on to the next step.</p>
-</section>
-</section>
-<section id="attaching-substituent-s-to-skeleton-s">
-<h4>2 Attaching substituent(s) to skeleton(s)<a class="headerlink" href="#attaching-substituent-s-to-skeleton-s" title="Permalink to this heading"></a></h4>
-<p>The user can use the
-functionalize_and_optimize_obabel.sh or
-functionalize_and_optimize_xtb.sh scripts to generate their functionalized complexes.
-In these scripts the $STARTING_C_SUBSTITUENT should be the first substituent to place on the skeleton,
-the $RANDOM_C_SUBSTITUENTS should be a list of substituents that should be added after that.
-The amount of substituents should match the amount of functionalization sites specified in the
-xyz file of the skeleton.<br />
-For example, if the user would like to place 4 methyl groups on a skeleton (as defined in the example skeleton xyz file in the pictures above)
-and optimize each functionalization with
-FF, functionalize_and_optimize_obabel.sh needs to be edited to:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># select 1 random substituent with C as central atom as starting point</span>
-<span class="n">STARTING_C_SUBSTITUENT</span><span class="o">=</span><span class="s2">&quot;CH3&quot;</span>
-<span class="c1"># select 3 random substituents with C as central atom</span>
-<span class="n">RANDOM_C_SUBSTITUENTS</span><span class="o">=</span><span class="s2">&quot;CH3 CH3 CH3&quot;</span>
-</pre></div>
-</div>
-<p>After this edit the script can be run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bash</span> <span class="n">functionalize_and_optimize_obabel</span><span class="o">.</span><span class="n">sh</span> <span class="n">C</span>
-</pre></div>
-</div>
-<p>If the STARTING_C_SUBSTITUENT and RANDOM_C_SUBSTITUENT variables are not modified, the C argument means that 6 random carbon substituents
-will be placed. Similarly, the P argument will call the functionalize_skeletons_P_substituents function and 6 random phosphorus substituents will
-be placed on the indicated sites of the skeleton. <strong>The P and CP arguments have not been tested as thoroughly as the C argument</strong>.</p>
-<p>In the example shown here, 4 xyz and 4 .mol files in substituents_xyz/automatically_generated should be generated,
-one for each functionalized structure. The .mol files contain the correcly optimized functionalized structures.<br />
-This workflow is similar if the user would like to optimize
-every functionalized skeleton with xTB, but then the functionalize_and_optimize_xtb.sh
-script should be edited and used.</p>
-</section>
-<section id="done">
-<h4>Done<a class="headerlink" href="#done" title="Permalink to this heading"></a></h4>
-<p>More information for devs:<br />
-The Complex.generate_substituent_and_write_xyz()
-function from attach_substituent.py is used to functionalize a skeleton. The main_attach_substituent.py takes the following
-input:</p>
-<ol class="arabic simple">
-<li><p>path_to_source_file</p></li>
-<li><p>target_name (<strong>Note: name only, the file will always be placed in
-substituents_xyz/automatically_generated with extension .xyz</strong>)</p></li>
-<li><p>name of substituent group (same as key in .csv database)</p></li>
-<li><p>relative path to .csv database file</p></li>
-<li><p>bond length between central atom of the substituent and bonded_atom of skeleton</p></li>
-<li><p>(Not used currently) whether the user wants to use the python script with the xtb bash script, in the
-xtb bash script the conversion of the optimized .mol file to .xyz file doesn’t happen in python.
-If this is set to false only ff optimization will be done and the python script will handle file conversions.</p></li>
-</ol>
-<p>Where each input value is given as a space delimited system argument.
-The user can modify the example of attach_substituent_folder/run.sh
-to their needs or use attach_substituent.py directly.</p>
-<p><strong>(outdated) generate_tetrahedron.py</strong></p>
-<p><strong>Note: Make sure to check the relative path on line 124
-is correctly set, relatively to your working directory. This
-script is not actively used anymore, it is recommended to use the approach
-described under attach_substituent.py.</strong></p>
-<p>To functionalize a skeleton using this approach, now the bond lengths
-between bonded_atom and central_atom of substituent and
-surrounding atoms of the substituent with central_atom of substituent is needed.
-The main_generate_tetrahedron.py takes input values as follows:</p>
-<ol class="arabic simple">
-<li><p>path_to_source_file</p></li>
-<li><p>target_name (<strong>Note: name only, the file will always be placed in
-substituents_xyz/automatically_generated with extension .xyz</strong>)</p></li>
-<li><p>bond length of new central atom of substituent with bonded_atom</p></li>
-<li><p>actual new central atom of substituent</p></li>
-<li><p>bond length of new central atom of substituent with first surrounding
-substituent atom</p></li>
-<li><p>actual first surrounding substituent atom</p></li>
-<li><p>same as 5) for second surrounding substituent atom</p></li>
-<li><p>same as 6) for second surrounding substituent atom</p></li>
-<li><p>same as 5) for third surrounding substituent atom</p></li>
-<li><p>same as 6) for third surrounding substituent atom</p></li>
-</ol>
-<p>Where each input value is given as a space delimited system argument.
-The user can modify the example of generate_tetrahedron_folder/run.sh
-to their needs or use generate_tetrahedron.py directly.</p>
-</section>
-</section>
-</section>
-<section id="outdated-example-usage-of-python-scripts-only">
-<h2>(outdated) Example usage of python scripts only<a class="headerlink" href="#outdated-example-usage-of-python-scripts-only" title="Permalink to this heading"></a></h2>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">generate_tetrahedron_folder/run.sh</span></code> to functionalize a RuPNP skeleton where 4 H sites
-will be substituted for methyl groups using generate_tetrahedron.py</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bash</span> <span class="pre">attach_substituent_folder/run.sh</span></code> to functionalize a RuPNP skeleton where
-6 sites will be functionalized with substituents</p></li>
-</ul>
+(new) substituents and running data_preparation.py as explained above the main function of ChemSpaX can be used.</p>
 </section>
 <section id="contents">
-<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h2>
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h1>
 <p><strong>skeletons/</strong></p>
 <ul class="simple">
-<li><p>contains .xyz files of skeletons to be functionalized.</p></li>
+<li><p>contains .xyz and .mol files of skeletons to be functionalized.</p></li>
 </ul>
 <p><strong>substituents_xyz/</strong></p>
 <ul class="simple">
 <li><p>contains .xyz files for substituents and functionalized skeletons</p>
 <ul>
-<li><p>automatically_generated/: output of functionalized skeletons by attach_substituent.py.
-If functionalize_and_optimize_xtb.sh is used the xTB optimized structures are placed in the optimized_structures/ subfolder.</p></li>
-<li><p>manually_generated/: Substituents that will be attached to skeletons in attach_substituent.py.</p></li>
-<li><p>old/: contains substituents that became either obsolete or will be dealt with later.</p></li>
-<li><p>visualizations/: contains .png files of the functionalizations made in generate_tetrahedron.py</p></li>
+<li><p>automatically_generated/: Default output path of functionalized skeletons by attach_substituent.py.</p></li>
+<li><p>manually_generated/: Substituent library.</p></li>
 </ul>
 </li>
 </ul>
 </section>
 <section id="citation">
-<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this heading"></a></h2>
+<h1>Citation<a class="headerlink" href="#citation" title="Permalink to this heading"></a></h1>
 <p>If you use ChemSpaX, please cite:</p>
 <div class="csl-entry">Kalikadien, A. V, Pidko, E. A., &#38; Sinha, V. (2022). ChemSpaX: Exploration of chemical space by automated functionalization of molecular scaffold. <i>Digital Discovery</i>. <a href="https://doi.org/10.1039/D1DD00017A">https://doi.org/10.1039/D1DD00017A</a></div>
-</section>
 </section>
 
 
