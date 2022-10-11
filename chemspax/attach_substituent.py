@@ -15,19 +15,6 @@ from pathlib import Path
 from chemspax.utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
     print_mol_counts_block, print_correct_connectivity_line, remove_last_line, convert_xyz_2_mol_file, \
     read_connectivity_from_mol_file, ff_optimize
-CHEMSPAX_HOME_DIR=os.environ["CHEMSPAX_HOME_DIR"]
-path_to_database = os.path.join(CHEMSPAX_HOME_DIR, "substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")
-path_to_substituents = os.path.join(CHEMSPAX_HOME_DIR,"substituents_xyz","manually_generated/")
-path_to_output = os.path.join(CHEMSPAX_HOME_DIR,"functionalized_complexes/")
-path_to_skeletons = os.path.join(CHEMSPAX_HOME_DIR,"skeletons/")
-#if CHEMSPAX_HOME_DIR == None:
-#    print("none is set")
-#else:
-#    print(CHEMSPAX_HOME_DIR)
-# sys.path.append("..")
-# from utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
-#     print_mol_counts_block, print_correct_connectivity_line, remove_last_line, convert_xyz_2_mol_file, \
-#     read_connectivity_from_mol_file, ff_optimize
 """A substituent from the library can be attached to another molecule with the functions given in this file. 
 The substituent is seen as a 'rigid block' that is rotated and translated. After placement of a new substituent, the 
 new substituent is optimized with openbabel's FF methods. This is a constrained optimization since the skeleton 
@@ -38,7 +25,7 @@ This approach can be used in the functionalize_and_optimize_obabel.sh and functi
 
 
 class Substituent:
-    def __init__(self, molecule, central_atom=0, bond_length=1.2, path_to_substituents=path_to_substituents):
+    def __init__(self, molecule, path_to_substituents, central_atom=0, bond_length=1.2):
         """Holds information about substituents, used to write the central atom and centroid vector to the .csv database
         The information of the .csv database is then used to attach the substituents to a skeleton in
         attach_substituent.py
@@ -51,11 +38,10 @@ class Substituent:
         >>> atom = Substituent(../CH3.xyz[36:-4], 0, 2.0)
         >>> atom.write_central_atom_and_centroid_to_csv('manually')
         """
-        folder = path_to_substituents
-#        folder = 'substituents_xyz/manually_generated/'
+        self.substituents_folder = path_to_substituents
         extension = '.xyz'
         self.molecule = molecule
-        self.path = folder + self.molecule + extension
+        self.path = os.path.join(self.substituents_folder, self.molecule + extension)
         self.bond_length = bond_length  # bond_length for the newly formed bond
         self.data_matrix = pd.read_table(self.path, skiprows=2, delim_whitespace=True, names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
         if len(self.data_matrix) == 0:
@@ -110,16 +96,15 @@ class Substituent:
         centroid = (centroid - self.central_atom)/np.linalg.norm(centroid - self.central_atom)
         return np.array(centroid)
 
-    def write_central_atom_and_centroid_to_csv(self, manually_or_automatically_generated):
+    def write_central_atom_and_centroid_to_csv(self):
         """Write the central atom and centroid data of the substituent to the csv database
 
         :param manually_or_automatically_generated: folder where substituent.xyz should be read from
         :return: new entry to csv database with molecule name, index of central atom, centroid vector for the s
         substituent
         """
-        folder = 'substituents_xyz/'
-        filename = 'central_atom_centroid_database.csv'
-        path_to_file = folder + manually_or_automatically_generated + '_generated/' + filename
+        # path_to_file = folder + manually_or_automatically_generated + '_generated/' + filename
+        path_to_file = os.path.join(self.substituents_folder, 'central_atom_centroid_database.csv')
         # if there is only 1 atom to be attached there's no need to calculate a centroid, position atom == centroid
         if len(self.data_matrix) != 1:
             centroid = self.first_coordination()
@@ -136,7 +121,7 @@ class Substituent:
 
 
 class Complex:
-    def __init__(self, original_skeleton_name, source_data, substituent_to_be_attached, path_to_database=path_to_database, path_to_skeletons=path_to_skeletons, path_to_substituents=path_to_substituents):
+    def __init__(self, original_skeleton_name, source_data, substituent_to_be_attached, path_to_database, path_to_skeletons, path_to_substituents):
         """Holds information about skeletons on which substituents will be placed,
         used to attach substituents to the skeleton using information from the .csv database.
 
@@ -152,10 +137,9 @@ class Complex:
         >>> some_complex.generate_substituent_and_write_xyz('PCP-cy_func_1', 1.54, False)
         """
         # original skeleton data (so starting point of each functionalization)
-#        skeleton_folder = 'skeletons/'
         skeleton_folder = path_to_skeletons
         extension = '.xyz'
-        self.original_skeleton_path = skeleton_folder + original_skeleton_name +extension
+        self.original_skeleton_path = os.path.join(skeleton_folder, original_skeleton_name +extension)
         # skeleton data
         self.skeleton_path = source_data
         # for the first usage this is purely the skeleton, for recursive usage it's skeleton + prev. functionalization
@@ -171,10 +155,9 @@ class Complex:
 
         # substituent data
         self.substituent_molecule = substituent_to_be_attached
-#        substituent_folder = 'substituents_xyz/manually_generated/'
         substituent_folder = path_to_substituents
         extension = '.xyz'
-        self.substituent_path = substituent_folder + self.substituent_molecule + extension
+        self.substituent_path = os.path.join(substituent_folder, self.substituent_molecule + extension)
         self.substituent_xyz = pd.read_table(self.substituent_path, skiprows=2, delim_whitespace=True,
                                          names=['atom', 'x', 'y', 'z'])  # read standard .xyz file
         if len(self.substituent_xyz) == 0:
@@ -354,8 +337,8 @@ class Complex:
         np.savetxt(f, end_line, delimiter='  ', fmt="%s")  # pd doesn't support '  ' as delimiter :(
         f.close()
 
-    def generate_substituent_and_write_xyz(self, target_filename, length_skeleton_bonded_substituent_central=1.54,
-                                           use_xtb_script_after=True, path_to_output=path_to_output):
+    def generate_substituent_and_write_xyz(self, target_filename, path_to_output, length_skeleton_bonded_substituent_central=1.54,
+                                           use_xtb_script_after=True):
         """Used to generate translated and rotated vectors for substituents and attaching them to the skeleton
 
         :param target_filename: name of target xyz file that will be written
@@ -367,10 +350,9 @@ class Complex:
         skeleton
         """
         Path(path_to_output).mkdir(parents=True, exist_ok=True)  #create directory for functionalized output
-#        folder = 'substituents_xyz/automatically_generated/'
         folder = path_to_output
         extension = '.xyz'
-        target_path = folder + target_filename + extension
+        target_path = os.path.join(folder, target_filename + extension)
 
         # replace substituent x y z with newly calculated positions
         substituent_vectors = self.generate_substituent_group_vector(float(length_skeleton_bonded_substituent_central))

@@ -23,7 +23,10 @@ setup(
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
 
-    package_data={'chemspax': ['chemspax/substituents_xyz']},
+    # ToDo: add package data and change paths to pkg_data_dirs in attach_substitutions.py
+    # source: https://kiwidamien.github.io/making-a-python-package-vi-including-data-files.html
+    # include_package_data=True,
+    package_data={'chemspax': ['substituents_xyz', 'skeletons']},
 
     long_description=open('docs/README.md').read(),
 
