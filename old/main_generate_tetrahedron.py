@@ -4,7 +4,7 @@
 #  __institution__ = TU Delft                         #
 #                                                     #
 import sys
-from generate_tetrahedron_folder.generate_tetrahedron import Complex  # conflicting folder name gave error
+from old.generate_tetrahedron import Complex  # conflicting folder name gave error
 
 
 def main():

@@ -10,3 +10,7 @@ dependencies:
      - ase
      - openbabel==3.1.1
      - pip
+     - sphinx
+     pip:
+          - myst-parser
+          - sphinx-rtd-theme
