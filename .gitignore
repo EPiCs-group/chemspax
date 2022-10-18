@@ -101,3 +101,5 @@ temp_skeletons_file
 docs/_build/
 .pytest_cache/
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
+.eggs/
+*.egg-info/

@@ -191,8 +191,6 @@ class Complex:
                 0][0]  # index in .xyz file of atom to be functionalized
             self.skeleton_bonded_atom_index = self.functionalization_site_list[
                 0][1]  # index in .xyz file of atom bonded to atom to be functionalized
-            # remove first item of nested list for correct formatting later
-            self.functionalization_site_list = self.functionalization_site_list[1:]
             # write to .xyz file in generate_and_write_xyz function
         else:
             print('No more indices left. Exiting program')
@@ -382,7 +380,7 @@ class Complex:
                 item = item - 1 if item > self.skeleton_atom_to_be_functionalized_index else item
                 some_list[j] = item
             new_functionalization_list[i] = some_list
-        self.functionalization_site_list = new_functionalization_list
+        self.functionalization_site_list = new_functionalization_list[1:]  # remove first element, which is functionalized
 
         # concat both dataframes and write to file
         write_data = pd.concat([skeleton_new_data, substituents_new_data])
