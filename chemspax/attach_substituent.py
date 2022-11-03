@@ -9,7 +9,7 @@ import ast
 import glob
 import numpy as np
 import pandas as pd
-import openbabel
+from openbabel import openbabel
 from pathlib import Path
 
 from chemspax.utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
