@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #                                                     #
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
@@ -7,6 +7,7 @@
 such that jobs' CPU time became easily comparable
 """
 import sys
+
 # convert gaussian CPU job time to seconds
 days = float(sys.argv[1])
 hours = float(sys.argv[2])

@@ -103,3 +103,9 @@ docs/_build/
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
 .eggs/
 *.egg-info/
+
+# Workflow
+/venv
+.DS_Store
+/openbabel
+*.log

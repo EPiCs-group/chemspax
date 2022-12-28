@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #                                                     #
 #  __authors__ = Adarsh Kalikadien & Vivek Sinha      #
 #  __institution__ = TU Delft                         #
 #                                                     #
 import glob
 import subprocess
+
 """ Run script to convert all .gjf files in current path to .xyz files
 """
 
@@ -13,8 +14,8 @@ def remove_last_line(filename):
     with open(filename) as f:
         lines = f.readlines()
         last = len(lines) - 1
-        lines[last] = lines[last].replace('\r', '').replace('\n', '')
-    with open(filename, 'w') as wr:
+        lines[last] = lines[last].replace("\r", "").replace("\n", "")
+    with open(filename, "w") as wr:
         wr.writelines(lines)
 
 
@@ -22,8 +23,8 @@ def count_atoms_and_write(filename):
     lines = open(filename).readlines()
     count = len(lines)
     count -= 2
-    lines[0] = str(count)+'\n'
-    with open(filename, 'w') as wr:
+    lines[0] = str(count) + "\n"
+    with open(filename, "w") as wr:
         wr.writelines(lines)
 
 
