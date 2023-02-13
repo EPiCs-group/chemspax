@@ -9,7 +9,7 @@ echo "--------------------------------------------------------------------------
 if [ $# -lt 3 ]
   then
     echo "This is not how it works..."
-    echo "Input arguments are: xyzfile1 xyzfile2 relative_path_to_xyzfile2_rotated.xyz"
+    echo "Input arguments are: xyzfile1 xyzfile2 relative_path_to_xyzfile2_rotated.xyz Element_type"
     exit 1
 fi
 
@@ -22,8 +22,8 @@ echo `calculate_rmsd $1 $2`
 calculate_rmsd --print $1 $2  > ${NAME_2}_rotated.xyz
 N_ATOMS=`sed "1q;d" ${NAME_2}_rotated.xyz`
 echo "moving molecule to origin"
-move_molecule_to_origin.py ${NAME_2}_rotated.xyz
-move_molecule_to_origin.py ${NAME_1}.xyz
+python move_molecule_to_origin.py ${NAME_2}_rotated.xyz
+python move_molecule_to_origin.py ${NAME_1}.xyz
 # concat file and delete n_atoms and comment line from original molecule file
 cat $1 >> ${NAME_2}_rotated.xyz
 # the comment line of the second file is located at n_atoms + n_atoms_and_comment_line of $1 + 1 or + 2
@@ -450,7 +450,7 @@ mol clipplane normal 5 1 top {0.0 0.0 1.0}
 mol clipplane status 5 1 top {0}
 mol representation VDW 0.200000 300.000000
 mol color ColorID 11
-mol selection {name Ru}
+mol selection {name $4}
 mol material HardPlastic
 mol addrep top
 mol selupdate 2 top 0
@@ -721,8 +721,8 @@ mol clipplane color  5 9 top {0.5 0.5 0.5 }
 mol clipplane normal 5 9 top {0.0 0.0 1.0}
 mol clipplane status 5 9 top {0}
 mol representation VDW 0.200000 300.000000
-mol color ColorID 11
-mol selection {name RU}
+mol color ColorID 3
+mol selection {name P}
 mol material HardPlastic
 mol addrep top
 mol selupdate 10 top 0
@@ -754,6 +754,40 @@ mol clipplane center 5 10 top {0.0 0.0 0.0}
 mol clipplane color  5 10 top {0.5 0.5 0.5 }
 mol clipplane normal 5 10 top {0.0 0.0 1.0}
 mol clipplane status 5 10 top {0}
+mol representation VDW 0.200000 300.000000
+mol color ColorID 11
+mol selection {name ${4^^}}
+mol material HardPlastic
+mol addrep top
+mol selupdate 11 top 0
+mol colupdate 11 top 0
+mol scaleminmax top 11 0.000000 0.000000
+mol smoothrep top 11 0
+mol drawframes top 11 {now}
+mol clipplane center 0 11 top {0.0 0.0 0.0}
+mol clipplane color  0 11 top {0.5 0.5 0.5 }
+mol clipplane normal 0 11 top {0.0 0.0 1.0}
+mol clipplane status 0 11 top {0}
+mol clipplane center 1 11 top {0.0 0.0 0.0}
+mol clipplane color  1 11 top {0.5 0.5 0.5 }
+mol clipplane normal 1 11 top {0.0 0.0 1.0}
+mol clipplane status 1 11 top {0}
+mol clipplane center 2 11 top {0.0 0.0 0.0}
+mol clipplane color  2 11 top {0.5 0.5 0.5 }
+mol clipplane normal 2 11 top {0.0 0.0 1.0}
+mol clipplane status 2 11 top {0}
+mol clipplane center 3 11 top {0.0 0.0 0.0}
+mol clipplane color  3 11 top {0.5 0.5 0.5 }
+mol clipplane normal 3 11 top {0.0 0.0 1.0}
+mol clipplane status 3 11 top {0}
+mol clipplane center 4 11 top {0.0 0.0 0.0}
+mol clipplane color  4 11 top {0.5 0.5 0.5 }
+mol clipplane normal 4 11 top {0.0 0.0 1.0}
+mol clipplane status 4 11 top {0}
+mol clipplane center 5 11 top {0.0 0.0 0.0}
+mol clipplane color  5 11 top {0.5 0.5 0.5 }
+mol clipplane normal 5 11 top {0.0 0.0 1.0}
+mol clipplane status 5 11 top {0}
 mol rename top ${NAME_2}_rotated.xyz
 set viewpoints([molinfo top]) {{{1 0 0 -0.51921} {0 1 0 -0.190306} {0 0 1 -0.0146199} {0 0 0 1}} {{-0.943842 -0.200501 -0.262639 0} {-0.28993 0.883816 0.367207 0} {0.1585 0.422754 -0.892301 0} {0 0 0 1}} {{0.264163 0 0 0} {0 0.264163 0 0} {0 0 0.264163 0} {0 0 0 1}} {{1 0 0 0} {0 1 0 0} {0 0 1 0} {0 0 0 1}}}
 lappend viewplist [molinfo top]
