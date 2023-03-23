@@ -11,6 +11,6 @@ dependencies:
      - openbabel==3.1.1
      - pip
      - sphinx
-     pip:
+     - pip:
           - myst-parser
           - sphinx-rtd-theme
