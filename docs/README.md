@@ -4,6 +4,12 @@ A substituent can be chosen from an existing library and can be attached to the 
 
 ## Installation
 Python 3.6.0 or higher is recommended.  
+First, the repository can be cloned with: 
+  
+```
+git clone https://github.com/EPiCs-group/chemspax
+``` 
+This will create a folder called chemspax in the current directory. 
 It is recommended to use a virtual environment. Anaconda can be used to manage virtual environments (**using Anaconda allows the user to skip 
 compilation of openbabel from source**):  
      Download the latest installer from 
@@ -35,14 +41,8 @@ The environment will be named 'chemspax', the conda_env.yml file can be changed 
   More information on virtual environments can be found at the
   [venv homepage](https://docs.python.org/3/library/venv.html) or 
   [this Anaconda cheatsheet](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/)
-  
-  Now the repository can be cloned with: 
-  
-```
-git clone https://github.com/EPiCs-group/chemspax
-``` 
-  This will create a folder called chemspax in the current directory. 
-ChemSpaX can be installed by running the following command in the ChemSpaX folder: 
+
+ChemSpaX can be installed by running the following command in the ChemSpaX folder after creating and activating the conda environment: 
   
 ```pip install -e .```
   
