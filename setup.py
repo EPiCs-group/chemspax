@@ -11,7 +11,7 @@ setup(
     version='0.1.0',
     packages=find_packages(include=['chemspax', 'chemspax.*']),
     url='github.com/epics-group/chemspax',
-    license='GPLv3',
+    license='MIT',
     author='Adarsh Kalikadien',
     author_email='a.v.kalikadien@tudelft.nl',
     description='A Python tool for local chemical space exploration of any structure based on their 3D geometry',
