@@ -104,8 +104,10 @@ export CHEMSPAX_HOME_DIR="<your/path>"
 python main.py -s CH3 -s CH3 -k <your/other/skeleton/path> -o <your/output/path>
 ```
 
-ChemSpaX can also be used in other Python scripts. To iterate over skeletons and functionalize them on two sites with CH3's:
+ChemSpaX can also be used in other Python scripts, see run_example.py. To iterate over skeletons and functionalize them on two sites with CH3's:
 ```python
+import os
+import glob
 from chemspax.main import main
 
 current_directory = os.getcwd()
@@ -114,9 +116,9 @@ current_directory = os.getcwd()
 path_to_substituents = os.path.join(current_directory, "substituents_xyz", "manually_generated/")  # should always point to the chemspax/substituents_xyz/manually_generated folder
 path_to_database = os.path.join(path_to_substituents, "central_atom_centroid_database.csv")
 
-substituent_list = ["CH3", "CH3"]
-skeleton_list = glob.glob(os.path.join(chemspax_working_directory, "skeletons", "*.xyz"))
-path_to_skeletons = os.path.join(current_directory, "skeletons")
+substituent_list = ["CH3", "CH3", "CH3", "CH3"]
+skeleton_list = glob.glob(os.path.join(current_directory, "skeletons_test", "*.xyz"))
+path_to_skeletons = os.path.join(current_directory, "skeletons_test")
 working_directory = current_directory
 path_to_output = os.path.join(current_directory, "substituents_xyz", "automatically_generated")
 main(skeleton_list, substituent_list, path_to_database, path_to_substituents, path_to_skeletons, working_directory, path_to_output)
@@ -126,7 +128,7 @@ main(skeleton_list, substituent_list, path_to_database, path_to_substituents, pa
 ## Indicating functionalization sites
 There are 2 options to indicate functionalization sites:
 1. Indicate no functionalization_list in the comment line of the .xyz or .mol file of the skeleton that will be functionalized. 
-In this case, dummy molecules (currently all H's of the skeleton's structure) will be used as functionalization sites.
+In this case, dummy molecules (currently all Br's of the skeleton's structure) will be used as functionalization sites.
 2. Indicate a functionalization_list using the index of the atoms to be replaced. Preparing this list is explained below.
 
 First, we need to prepare the xyz file of the skeleton to which we want to attach a substituent.
@@ -139,9 +141,8 @@ The first item of each list (red circle) is the index of the atom_to_be_function
 be replaced by the substituent).  
   
   
-**Since commit [bf59491](https://github.com/EPiCs-group/chemspax/commit/bf59491b619c5064c1314848e2d4d8eb31e7d71d) all hydrogens are functionalized (used as atom_to_be_functionalized)
-if no functionalization_list is given in the skeleton's xyz file (second line is empty). This preparation step can thus be skipped if 
-the whole structure needs to be functionalized instead of specific indices.**  
+**Since commit [bf59491](https://github.com/EPiCs-group/chemspax/commit/bf59491b619c5064c1314848e2d4d8eb31e7d71d) it is possible to replace all dummy atoms (currently Br atoms) in a structure with a substituent,
+if no functionalization_list is given in the skeleton's xyz file (second line is empty.)**  
 
 Note that index 0 is the **first atom in the xyz file**.
 In the example figure above, the index of Ru = 0.  
