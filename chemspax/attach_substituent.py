@@ -183,8 +183,9 @@ class Complex:
             # convert list from string to integer, throws exception if there is no list
             self.functionalization_site_list = ast.literal_eval(self.functionalization_site_list)
         except:
-            # when no functionalization list is defined, assume that all H need to be functionalized
-            self.functionalization_site_list = self.create_functionalization_list_all_hydrogens()
+            # when no functionalization list is defined, assume that all dummy atoms need to be functionalized
+            # use Br as dummy atom by default
+            self.functionalization_site_list = self.create_functionalization_list_dummy_atom(atomic_nr_of_dummy_atom=35)
         if len(self.functionalization_site_list) != 0:
             # take indices from converted list and assign to correct variable
             self.skeleton_atom_to_be_functionalized_index = self.functionalization_site_list[
@@ -207,12 +208,12 @@ class Complex:
         self.normalized_bond_vector = self.bond_length / np.linalg.norm(
             self.bond_length)  # real bond between C-H in xyz plane
 
-    def create_functionalization_list_all_hydrogens(self):
+    def create_functionalization_list_dummy_atom(self, atomic_nr_of_dummy_atom=1):
         # ToDo: use an unconventional dummy atom (such as Br) instead of H to replace with substituent
         # create functionalization list by finding all H atoms and atom bonded to it
         source_mol_file = self.skeleton_path
         # find all H
-        search_this_atomic_num = 1
+        search_this_atomic_num = atomic_nr_of_dummy_atom
         # initalize openbabel classes
         obconversion = openbabel.OBConversion()
         # both xyz and mol can be used as input but mol contains an accurate graph representation
