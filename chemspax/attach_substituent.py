@@ -212,7 +212,9 @@ class Complex:
         # ToDo: use an unconventional dummy atom (such as Br) instead of H to replace with substituent
         # create functionalization list by finding all H atoms and atom bonded to it
         source_mol_file = self.skeleton_path
-        # find all H
+        if glob.glob(self.skeleton_path[:-4] + '.mol'):
+            source_mol_file = self.skeleton_path[:-4]+'.mol'
+        # find all dummy atoms based on their atomic number
         search_this_atomic_num = atomic_nr_of_dummy_atom
         # initalize openbabel classes
         obconversion = openbabel.OBConversion()
