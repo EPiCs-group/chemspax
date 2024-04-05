@@ -286,6 +286,8 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
     connectivity_list = []
     # each item has 3 spaces, based on this the item can be loaded in a dataframe
     for line in connectivity_data:
+        if line[:3].replace(' ', '') == 'M': # This prevents the program to crash over a properties block in the end
+            break
         idx1 = int(line[:3].replace(' ', ''))
         idx2 = int(line[3:6].replace(' ', ''))
         bond = int(line[6:9].replace(' ', ''))
