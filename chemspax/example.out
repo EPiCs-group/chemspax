@@ -1,0 +1,233 @@
+      -----------------------------------------------------------      
+     |                   =====================                   |     
+     |                    Recursive ChemSpaX                     |     
+     |                   =====================                   |     
+     |                         M. Heezen                         |     
+     |Master in Theoretical Chemistry and Computational Modelling|     
+     |                 Master Thesis, April 2024                 |     
+      ----------------------------------------------------------- 
+
+Program started at  2024-04-29 10:46:18.597111
+
+ START: initialisation
+Folders cleared
+Functionalisation sites found
+Command line parsed
+END: initialisation 
+ 
+
+START: FUNCTIONALISATIONS
+START: struc 0 skeleton:  skeleton0
+Chosen substituent:  0 imidothioester subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH3']
+Chosen substituent:  1 guanidine subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'CH2CH3', 'H']
+Starting on final functionalisation for struc 0
+END: struc 0 
+ 
+
+START: struc 1 skeleton:  skeleton0
+Chosen substituent:  0 iminohetarene subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Chosen substituent:  1 thiourea subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'H']
+Starting on final functionalisation for struc 1
+END: struc 1 
+ 
+
+START: struc 2 skeleton:  skeleton0
+Chosen substituent:  0 sulfonicacidderiv subfunctionalisation: yes
+Subfunctionalisations:  ['OCH3']
+Chosen substituent:  1 thiocarboxylicacidderiv subfunctionalisation: yes
+Subfunctionalisations:  ['OCH3']
+Starting on final functionalisation for struc 2
+END: struc 2 
+ 
+
+START: struc 3 skeleton:  skeleton1
+Chosen substituent:  0 alkyliodide subfunctionalisation: no
+Chosen substituent:  1 guanidine subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'H', 'CH3']
+Starting on final functionalisation for struc 3
+END: struc 3 
+ 
+
+START: struc 4 skeleton:  skeleton1
+Chosen substituent:  0 lactone subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'CH2CH3', 'CH3', 'CH3']
+Chosen substituent:  1 carbonicaciddiester subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Starting on final functionalisation for struc 4
+END: struc 4 
+ 
+
+START: struc 5 skeleton:  skeleton1
+Chosen substituent:  0 thiourea subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH2CH3', 'H']
+Chosen substituent:  1 prim-alcohol subfunctionalisation: no
+Starting on final functionalisation for struc 5
+END: struc 5 
+ 
+
+START: struc 6 skeleton:  skeleton2
+Chosen substituent:  0 iminohetarene subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Chosen substituent:  1 guanidine subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH3', 'CH3', 'CH3']
+Starting on final functionalisation for struc 6
+END: struc 6 
+ 
+
+START: struc 7 skeleton:  skeleton2
+Chosen substituent:  0 lactone subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'CH2CH3', 'H', 'CH3']
+Chosen substituent:  1 hydrazone subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'H']
+Starting on final functionalisation for struc 7
+END: struc 7 
+ 
+
+START: struc 8 skeleton:  skeleton2
+Chosen substituent:  0 aryliodide subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH3', 'H', 'CH3']
+Chosen substituent:  1 thiocarboxylicacidderiv subfunctionalisation: yes
+Subfunctionalisations:  ['OCH3']
+Starting on final functionalisation for struc 8
+END: struc 8 
+ 
+
+START: struc 9 skeleton:  skeleton3
+Chosen substituent:  0 guanidine subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH2CH3', 'H', 'CH2CH3']
+Chosen substituent:  1 thioketone subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Chosen substituent:  2 thiourea subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH3', 'CH2CH3']
+Chosen substituent:  3 thiophosphoricacidamide subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'NH2', 'OCH2CH3']
+Chosen substituent:  4 hydroxylamine subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH2CH3']
+Starting on final functionalisation for struc 9
+END: struc 9 
+ 
+
+START: struc 10 skeleton:  skeleton3
+Chosen substituent:  0 iminohetarene subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Chosen substituent:  1 carbonicaciddiester subfunctionalisation: yes
+Subfunctionalisations:  ['CH2CH3']
+Chosen substituent:  2 thiolactone subfunctionalisation: no
+Chosen substituent:  3 thioketone subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Chosen substituent:  4 alkyliodide subfunctionalisation: no
+Starting on final functionalisation for struc 10
+END: struc 10 
+ 
+
+START: struc 11 skeleton:  skeleton3
+Chosen substituent:  0 thiourea subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'H', 'H']
+Chosen substituent:  1 iminohetarene subfunctionalisation: yes
+Subfunctionalisations:  ['CH2CH3']
+Chosen substituent:  2 aminal subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'H', 'H', 'H', 'CH3']
+Chosen substituent:  3 aminal subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH2CH3', 'H', 'H', 'CH3']
+Chosen substituent:  4 thiophosphoricacidamide subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'OCH2CH3', 'NH2']
+Starting on final functionalisation for struc 11
+END: struc 11 
+ 
+
+START: struc 12 skeleton:  skeleton4
+Chosen substituent:  0 lactone subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'H', 'H', 'CH3', 'H']
+Chosen substituent:  1 semicarbazone subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH2CH3', 'CH3', 'CH3']
+Starting on final functionalisation for struc 12
+END: struc 12 
+ 
+
+START: struc 13 skeleton:  skeleton4
+Chosen substituent:  0 hydrazone subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH3', 'H']
+Chosen substituent:  1 prim-alcohol subfunctionalisation: no
+Starting on final functionalisation for struc 13
+END: struc 13 
+ 
+
+START: struc 14 skeleton:  skeleton5
+Chosen substituent:  0 prim-alcohol subfunctionalisation: no
+Chosen substituent:  1 aryliodide subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH2CH3', 'H', 'H']
+Chosen substituent:  2 iminohetarene subfunctionalisation: yes
+Subfunctionalisations:  ['H']
+Chosen substituent:  3 12-aminoalcohol subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH3', 'H']
+Starting on final functionalisation for struc 14
+END: struc 14 
+ 
+
+START: struc 15 skeleton:  skeleton5
+Chosen substituent:  0 thiocarboxylicacidderiv subfunctionalisation: yes
+Subfunctionalisations:  ['NH2']
+Chosen substituent:  1 semicarbazone subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH3', 'H', 'CH3']
+Chosen substituent:  2 lactone subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'H', 'CH3', 'H']
+Chosen substituent:  3 isothiourea subfunctionalisation: yes
+Subfunctionalisations:  ['CH2CH3', 'H', 'H']
+Starting on final functionalisation for struc 15
+END: struc 15 
+ 
+
+START: struc 16 skeleton:  skeleton6
+Chosen substituent:  0 imidothioester subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH3']
+Chosen substituent:  1 thiocarbonicacidmonoester subfunctionalisation: no
+Chosen substituent:  2 aminal subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH2CH3', 'H', 'CH3', 'CH3']
+Chosen substituent:  3 lactone subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'H', 'H', 'CH3', 'CH2CH3']
+Starting on final functionalisation for struc 16
+END: struc 16 
+ 
+
+START: struc 17 skeleton:  skeleton6
+Chosen substituent:  0 imidothioester subfunctionalisation: yes
+Subfunctionalisations:  ['C6H6', 'CH3']
+Chosen substituent:  1 guanidine subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'H', 'H', 'CH2CH3']
+Chosen substituent:  2 thiocarboxylicacidderiv subfunctionalisation: yes
+Subfunctionalisations:  ['OCH3']
+Chosen substituent:  3 imidothioester subfunctionalisation: yes
+Subfunctionalisations:  ['CH3', 'CH2CH3']
+Starting on final functionalisation for struc 17
+END: struc 17 
+ 
+
+START: struc 18 skeleton:  skeleton7
+Chosen substituent:  0 imidothioester subfunctionalisation: yes
+Subfunctionalisations:  ['CH2CH3', 'CH3']
+Chosen substituent:  1 prim-alcohol subfunctionalisation: no
+Chosen substituent:  2 thiolactone subfunctionalisation: no
+Chosen substituent:  3 alkyliodide subfunctionalisation: no
+Starting on final functionalisation for struc 18
+END: struc 18 
+ 
+
+START: struc 19 skeleton:  skeleton7
+Chosen substituent:  0 phosphonicacidderiv subfunctionalisation: yes
+Subfunctionalisations:  ['OCH3', 'OCH2CH3']
+Chosen substituent:  1 iminohetarene subfunctionalisation: yes
+Subfunctionalisations:  ['CH3']
+Chosen substituent:  2 thiophosphoricacidamide subfunctionalisation: yes
+Subfunctionalisations:  ['CH2CH3', 'OCH3', 'OCH3']
+Chosen substituent:  3 hydroxylamine subfunctionalisation: yes
+Subfunctionalisations:  ['H', 'CH3']
+Starting on final functionalisation for struc 19
+END: struc 19 
+ 
+
+END: FUNCTIONALISATIONS
+Successful  termination at  2024-04-29 10:47:46.168585 after 0:01:27.571474

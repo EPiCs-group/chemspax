@@ -1,3 +1,22 @@
+## Changes to regular ChemSpaX
+This branch is an extension of ChemSpaX. It uses ChemSpaX in a recursive way to generate structures based on two functionalisation steps.
+ 
+**For this branch it is necessary to have GFN2-xTB (10.1021/acs.jctc.8b01176) installed and added to your path.**
+
+The main skeletons should be placed in the skeletons folder having a *Br* in the functionalisation places.
+The subskeletons should be placed in the subskeletons folder having a *Br* in the functionalisation places and a *Li* in the places to connect to the main skeleton.
+It is important that these subskeletons have the atom that they use to connect to the main skeleton as the first atom in the MDL Molfile and XYZ file.
+The subfunctionalisations should be placed in the subfunctionalisations folder according to the ChemSpaX specifications (1 open place on the top atom).
+
+All subfunctionalisations must be specified in the sub_sites dictionary in subfunctionalisations.py. This dictionary tells the program the possible subskeletons and
+whether there are conditions for the subfunctionalisations. The functions to create these conditions are in pick_subfunctionalisations.py and are based on rolling a dice.
+
+This extension is run using the *run_structures.py* file. The *main.py* file is the regular ChemSpaX main file. When executing this program the number of structures to be generated must be specified using the -n flag. By default 10 structures will be generated. 
+These structures are divided as evenly as possible over the main skeletons. The command used to run the program for the provided structures was: *python run_structures.py -n 20*
+
+------
+
+
 ![logo](../images/logo.png)
 ChemSpaX can be used for local chemical space exploration of any structure. This is done by placing substuents on a skeleton.
 A substituent can be chosen from an existing library and can be attached to the skeleton.
