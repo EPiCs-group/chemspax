@@ -282,7 +282,7 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
     # https://chem.libretexts.org/Courses/University_of_Arkansas_Little_Rock/ChemInformatics_(2017)%3A_Chem_4399%2F%2F5399/2.2%3A_Chemical_Representations_on_Computer%3A_Part_II/2.2.2%3A_Anatomy_of_a_MOL_file
     skip_rows = n_atoms + 4  # title line, whiteline, comment line, n_atoms & n_bonds line = 4 lines to skip
     connectivity_data = open(source_file).readlines()[skip_rows:-1]
-
+    print(source_file)
     connectivity_list = []
     # each item has 3 spaces, based on this the item can be loaded in a dataframe
     for line in connectivity_data:
@@ -292,9 +292,9 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
         idx2 = int(line[3:6].replace(' ', ''))
         bond = int(line[6:9].replace(' ', ''))
         stereochem = int(line[9:12].replace(' ', ''))
-        other_info = int(line[12:15].replace(' ', ''))
-        other_info2 = int(line[15:18].replace(' ', ''))
-        other_info3 = int(line[18:21].replace(' ', ''))
+        other_info = 0
+        other_info2 = 0
+        other_info3 = 0
         # print([idx1, idx2, bond, stereochem, other_info, other_info2, other_info3])
         connectivity_list.append([idx1, idx2, bond, stereochem, other_info, other_info2, other_info3])
     connectivity = pd.DataFrame(connectivity_list, columns=[0, 1, 2, 3, 4, 5, 6])

@@ -12,7 +12,7 @@ import pandas as pd
 from openbabel import openbabel
 from pathlib import Path
 
-from chemspax.utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
+from utilities import get_bonded_atoms, scale_vector, convert_list_of_string_to_np_array, \
     print_mol_counts_block, print_correct_connectivity_line, remove_last_line, convert_xyz_2_mol_file, \
     read_connectivity_from_mol_file, ff_optimize
 """A substituent from the library can be attached to another molecule with the functions given in this file. 

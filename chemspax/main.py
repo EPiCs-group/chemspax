@@ -11,9 +11,9 @@ import argparse
 import logging
 from pathlib import Path
 
-from chemspax.attach_substituent import Complex
-from chemspax.utilities import copy_functionalization_list_xyz_2_mol
-from chemspax.data_preparation import prepare_data
+from attach_substituent import Complex
+from utilities import copy_functionalization_list_xyz_2_mol
+from data_preparation import prepare_data
 
 
 def initialize_complex(original_skeleton_name, source_data, substituent_name, path_to_database, path_to_skeletons, path_to_substituents):
@@ -23,12 +23,12 @@ def initialize_complex(original_skeleton_name, source_data, substituent_name, pa
     return structure
 
 
-def main(skeleton_list, substituent_list, path_to_database, path_to_substituents, path_to_skeletons, working_directory, path_to_output):
+def main(skeleton_list, substituent_list, path_to_database, path_to_substituents, path_to_skeletons, working_directory, path_to_output,sub=True):
     # initialize logger
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     # create a file handler
-    handler = logging.FileHandler('chemspax.log', mode='a')
+    handler = logging.FileHandler('chemspax.log', mode='w+')
     handler.setLevel(logging.INFO)
     # create a logging format
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -39,7 +39,7 @@ def main(skeleton_list, substituent_list, path_to_database, path_to_substituents
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     # add the handlers to the logger
-    logger.addHandler(console)
+    #logger.addHandler(console)
 
     Path(path_to_output).mkdir(parents=True, exist_ok=True)  # create directory for functionalized output
 
@@ -74,7 +74,10 @@ def main(skeleton_list, substituent_list, path_to_database, path_to_substituents
         # intialize the complex class with a random substituent to be able to find lenght of functionalization_list
         first_target_file = skeleton_name + "_func_" + '1'
 #        path_to_substituent_database = os.path.join("substituents_xyz", "manually_generated", "central_atom_centroid_database.csv")    #to keep things consistent let us just use "path_to_database" as used in "Complex" class as well"
-        complex = initialize_complex(skeleton_name, skeleton_path, "CH3", path_to_database, path_to_skeletons, path_to_substituents)
+        if sub==True:
+            complex = initialize_complex(skeleton_name, skeleton_path, "CH3", path_to_database, path_to_skeletons, path_to_substituents)
+        else:
+            complex = initialize_complex(skeleton_name, skeleton_path, "sub0", path_to_database, path_to_skeletons, path_to_substituents)
         if substituent_list is not None:
             logger.log(logging.INFO, f"initializing complex by placing {substituent_list[0]} on {skeleton_name}")
         else:
