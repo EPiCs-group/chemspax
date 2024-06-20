@@ -11,9 +11,9 @@ import argparse
 import logging
 from pathlib import Path
 
-from chemspax.attach_substituent import Complex
-from chemspax.utilities import copy_functionalization_list_xyz_2_mol
-from chemspax.data_preparation import prepare_data
+from attach_substituent import Complex
+from utilities import copy_functionalization_list_xyz_2_mol
+from data_preparation import prepare_data
 
 
 def initialize_complex(original_skeleton_name, source_data, substituent_name, path_to_database, path_to_skeletons, path_to_substituents):

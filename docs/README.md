@@ -1,5 +1,5 @@
-## Changes to regular ChemSpaX
-This branch is an extension of ChemSpaX. It uses ChemSpaX in a recursive way to generate structures based on two functionalisation steps.
+## Changes on the subfunctionalisation branch
+This branch is an extension of ChemSpaX. It uses ChemSpaX in a recursive way to generate structures based on two functionalisation steps, a functionalisation to the main skeleton and a subfunctionalisation to the substituent with a subsubstituent.
  
 **For this branch it is necessary to have GFN2-xTB (10.1021/acs.jctc.8b01176) installed and added to your path.**
 
@@ -13,6 +13,8 @@ whether there are conditions for the subfunctionalisations. The functions to cre
 
 This extension is run using the *run_structures.py* file. The *main.py* file is the regular ChemSpaX main file. When executing this program the number of structures to be generated must be specified using the -n flag. By default 10 structures will be generated. 
 These structures are divided as evenly as possible over the main skeletons. The command used to run the program for the provided structures was: *python run_structures.py -n 20*
+
+An example for subfunctionalisation can be found in *run_example.py*.
 
 ------
 

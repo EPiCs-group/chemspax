@@ -8,7 +8,7 @@ import subprocess
 
 # ChemSpaX setup
 import glob
-from chemspax.main import main
+from main import main
 
 # Own functions
 from pick_subfunctionalisations import *

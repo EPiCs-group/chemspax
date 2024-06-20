@@ -7,8 +7,8 @@ import glob
 import os
 import logging
 
-from chemspax.utilities import *
-from chemspax.attach_substituent import Substituent
+from utilities import *
+from attach_substituent import Substituent
 """Run this script before running any of the main files and bash scripts to prepare the csv database and .mol files 
 for attach_substituent.py 
 """

@@ -17,36 +17,17 @@ import shutil
 import datetime
 import resource
 from subfunctionalisations import *
-start=datetime.datetime.now()
 
 # ChemSpaX setup
 import glob
-from chemspax.main import main
-from chemspax.data_preparation import prepare_data
+from main import main
+from data_preparation import prepare_data
 from rdkit import Chem
 
 
 
-# resource.setrlimit(resource.RLIMIT_NOFILE, (131072, 131072))
-working_directory = os.getcwd()
-path_to_output = os.path.join(working_directory, "tmp")
-path_to_substituents = os.path.join(working_directory, "subfunctionalisations/")
-path_to_database = os.path.join(path_to_substituents, "central_atom_centroid_database.csv")
-path_to_skeletons = os.path.join(working_directory, "subskeletons")
-prepare_data(path_to_substituents, path_to_skeletons, path_to_database)
-
-print('''      -----------------------------------------------------------      
-     |                   =====================                   |     
-     |                    Recursive ChemSpaX                     |     
-     |                   =====================                   |     
-     |                         M. Heezen                         |     
-     |Master in Theoretical Chemistry and Computational Modelling|     
-     |                 Master Thesis, April 2024                 |     
-      ----------------------------------------------------------- \n''')
-
-print("Program started at ",str(start))
 """Initialisation"""
-def check_skeleton_sites(folder_name,dummy_atom='Br'):
+def check_skeleton_sites(folder_name,dummy_atom='Br',test=False):
     """This function counts the number of functionalisation sites (by default the number of Br atoms) per skeleton"""
     func_sites={}
     for file in sorted(os.listdir(os.path.join(os.getcwd(),folder_name))):
@@ -79,15 +60,6 @@ def parse_command_line():
         strucs[i]+=1
     return strucs
 
-print("\n START: initialisation")
-initialise(["tmp","functionalisations","results"])
-print("Folders cleared")
-func_sites=check_skeleton_sites('skeletons')
-print("Functionalisation sites found")
-strucs=parse_command_line()
-print("Command line parsed")
-print("END: initialisation \n \n")
-
 """(Sub)functionalisations"""
 
 def final_functionalisation(skeleton):
@@ -110,8 +82,7 @@ def final_functionalisation(skeleton):
     shutil.copy(os.path.join(os.getcwd(),'tmp',str(list(func_sites.keys())[skeleton])+'_func_'+str(func_sites[list(func_sites.keys())[skeleton]])+'.mol'),os.path.join(os.getcwd(),'results','struc_'+str(struccounter)+'.mol'))
     shutil.copy(os.path.join(os.getcwd(),'tmp',str(list(func_sites.keys())[skeleton])+'_func_'+str(func_sites[list(func_sites.keys())[skeleton]])+'.xyz'),os.path.join(os.getcwd(),'results','struc_'+str(struccounter)+'.xyz'))
     print("END: struc",str(struccounter),"\n \n")
-print("START: FUNCTIONALISATIONS")
-struccounter=0
+
 
 def close_all_files():
     """This function closes all open files python opened to prevent a 'too many files open' error"""
@@ -131,35 +102,72 @@ def close_all_files():
             pass
 
 
+if __name__ == "__main__":
+    """Initialisation"""
+    start=datetime.datetime.now()
 
-for skeleton in range(len(func_sites)): # Over all skeletons
-    for func in range(int(strucs[skeleton])): # Over the number of times you want this skeleton
-        while True: # This makes sure the script tries again if a functionalisation fails
-            try:
-                print("START: struc",str(struccounter),'skeleton: ',str(list(func_sites.keys())[skeleton]))
-                for chosen_sub in range(func_sites[list(func_sites.keys())[skeleton]]): # Over the number of functionalisation sites
-                    random_index = np.random.randint(0, len_sub_sites()) # Pick a substituent
-                    chosen_sub_name=sub_sites_name(random_index)
+    working_directory = os.getcwd()
+    path_to_output = os.path.join(working_directory, "tmp")
+    path_to_substituents = os.path.join(working_directory, "subfunctionalisations/")
+    path_to_database = os.path.join(path_to_substituents, "central_atom_centroid_database.csv")
+    path_to_skeletons = os.path.join(working_directory, "subskeletons")
+    prepare_data(path_to_substituents, path_to_skeletons, path_to_database)
 
-                    if sub_sites_value_length(chosen_sub_name) > 0: # Check if subfunctionalisation is necessary
-                        print("Chosen substituent: ",chosen_sub,chosen_sub_name,'subfunctionalisation: yes')
-                        subfunctionalisation(chosen_sub,chosen_sub_name,working_directory,path_to_output)
-                    else:
-                        print("Chosen substituent: ",chosen_sub,chosen_sub_name,'subfunctionalisation: no')
-                        remove_dummy_atom_MOL(working_directory,os.path.join(working_directory, "subskeletons",chosen_sub_name+".mol"),chosen_sub,False)
-                        remove_dummy_atom_XYZ(working_directory,os.path.join(working_directory, "subskeletons",chosen_sub_name+".xyz"),chosen_sub)
+    print('''      -----------------------------------------------------------      
+        |                   =====================                   |     
+        |                    Recursive ChemSpaX                     |     
+        |                   =====================                   |     
+        |                         M. Heezen                         |     
+        |Master in Theoretical Chemistry and Computational Modelling|     
+        |                 Master Thesis, April 2024                 |     
+        ----------------------------------------------------------- \n''')
+
+    print("Program started at ",str(start))
+
+    print("\n START: initialisation")
+    initialise(["tmp","functionalisations","results"])
+    print("Folders cleared")
+    func_sites=check_skeleton_sites('skeletons')
+    print("Functionalisation sites found")
+    strucs=parse_command_line()
+    print("Command line parsed")
+    print("END: initialisation \n \n")
+
+
+    """Functionalisations"""
+    print("START: FUNCTIONALISATIONS")
+    struccounter=0
+
+    for skeleton in range(len(func_sites)): # Over all skeletons
+        for func in range(int(strucs[skeleton])): # Over the number of times you want this skeleton
+            while True: # This makes sure the script tries again if a functionalisation fails
+                try:
+                    print("START: struc",str(struccounter),'skeleton: ',str(list(func_sites.keys())[skeleton]))
+                    for chosen_sub in range(func_sites[list(func_sites.keys())[skeleton]]): # Over the number of functionalisation sites
+                        random_index = np.random.randint(0, len_sub_sites()) # Pick a substituent
+                        chosen_sub_name=sub_sites_name(random_index)
+
+                        if sub_sites_value_length(chosen_sub_name) > 0: # Check if subfunctionalisation is necessary
+                            print("Chosen substituent: ",chosen_sub,chosen_sub_name,'subfunctionalisation: yes')
+                            subfunctionalisation(chosen_sub,chosen_sub_name,working_directory,path_to_output)
+                        else:
+                            print("Chosen substituent: ",chosen_sub,chosen_sub_name,'subfunctionalisation: no')
+                            remove_dummy_atom_MOL(working_directory,os.path.join(working_directory, "subskeletons",chosen_sub_name+".mol"),chosen_sub,False)
+                            remove_dummy_atom_XYZ(working_directory,os.path.join(working_directory, "subskeletons",chosen_sub_name+".xyz"),chosen_sub)
+                        
+                    # Final functionalisation
+                    initialise(["tmp"])
+                    final_functionalisation(skeleton)
+                    struccounter+=1
+                    initialise(["tmp","functionalisations"])
+                    break
+                except:
+                    print("Functionalisation failed, trying again")
+                    initialise(["tmp","functionalisations"])
                     
-                # Final functionalisation
-                initialise(["tmp"])
-                final_functionalisation(skeleton)
-                struccounter+=1
-                initialise(["tmp","functionalisations"])
-                break
-            except:
-                print("Functionalisation failed, trying again")
-                initialise(["tmp","functionalisations"])
-                
-    close_all_files()
-print("END: FUNCTIONALISATIONS")
-finish=datetime.datetime.now()
-print("Successful  termination at ",finish, "after",str(finish-start))
+        close_all_files()
+    print("END: FUNCTIONALISATIONS")
+
+    """Termination"""
+    finish=datetime.datetime.now()
+    print("Successful  termination at ",finish, "after",str(finish-start))
