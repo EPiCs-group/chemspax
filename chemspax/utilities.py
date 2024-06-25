@@ -292,9 +292,9 @@ def read_connectivity_from_mol_file(source_file, n_atoms):
         idx2 = int(line[3:6].replace(' ', ''))
         bond = int(line[6:9].replace(' ', ''))
         stereochem = int(line[9:12].replace(' ', ''))
-        other_info = int(line[12:15].replace(' ', ''))
-        other_info2 = int(line[15:18].replace(' ', ''))
-        other_info3 = int(line[18:21].replace(' ', ''))
+        other_info = 0
+        other_info2 = 0
+        other_info3 = 0
         # print([idx1, idx2, bond, stereochem, other_info, other_info2, other_info3])
         connectivity_list.append([idx1, idx2, bond, stereochem, other_info, other_info2, other_info3])
     connectivity = pd.DataFrame(connectivity_list, columns=[0, 1, 2, 3, 4, 5, 6])

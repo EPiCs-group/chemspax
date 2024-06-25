@@ -31,7 +31,7 @@ def prepare_data(path_to_substituents, path_to_skeletons, path_to_database):
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
     # create a file handler
-    handler = logging.FileHandler('chemspax.log', mode='a')
+    handler = logging.FileHandler('chemspax.log', mode='w+')
     handler.setLevel(logging.INFO)
     # create a logging format
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -42,7 +42,7 @@ def prepare_data(path_to_substituents, path_to_skeletons, path_to_database):
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
     # add the handlers to the logger
-    logger.addHandler(console)
+    # logger.addHandler(console)
 
     substituent_folder = path_to_substituents
     skeleton_folder = path_to_skeletons

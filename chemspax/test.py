@@ -5,7 +5,7 @@
 #                                                     #
 import pytest
 import os
-from utilities import *
+from chemspax.utilities import *
 """Some testing of the used utilities
 """
 
