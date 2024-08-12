@@ -124,7 +124,6 @@ path_to_output = os.path.join(current_directory, "substituents_xyz", "automatica
 main(skeleton_list, substituent_list, path_to_database, path_to_substituents, path_to_skeletons, working_directory, path_to_output)
 ```
 
-
 ## Indicating functionalization sites
 There are 2 options to indicate functionalization sites:
 1. Indicate no functionalization_list in the comment line of the .xyz or .mol file of the skeleton that will be functionalized. 
@@ -183,6 +182,20 @@ In the example figure above, the index of Ru = 0.
   
   After correct preparation of the xyz/mol files for the skeleton and 
   (new) substituents and running data_preparation.py as explained above the main function of ChemSpaX can be used.
+
+## Subfunctionlisations
+In 2024, a way for a second layer of functionalisaton is added. This results in more variety in the generated structures, especially useful for high throughput workflows. 
+
+To use this workflow, the main skeletons should be placed in the skeletons folder having a *Br* in the functionalisation places.
+The subskeletons should be placed in the subskeletons folder having a *Br* in the functionalisation places and a *Li* in the places to connect to the main skeleton.
+It is important that these subskeletons have the atom that they use to connect to the main skeleton as the first atom in the MDL Molfile and XYZ file.
+The subfunctionalisations should be placed in the subfunctionalisations folder according to the ChemSpaX specifications (1 open place on the top atom).
+
+All subfunctionalisations structures must be specified in the sub_sites dictionary in subfunctionalisations.py. This dictionary tells the program the possible subskeletons and whether there are conditions for the subfunctionalisations. The functions to create these conditions are in pick_subfunctionalisations.py and are based on rolling a dice.
+
+The last layer of substitutions uses structures from the regular substituents folder.
+
+This extension is run using the *run_subfunctionalisation.py* file. The *main.py* file is the regular ChemSpaX main file. When executing this program the number of structures to be generated must be specified using the -n flag (e.g. *python run_structures.py -n 20*). By default 10 structures will be generated. These structures are divided as evenly as possible over the main skeletons. 
 
 ## Contents
   **skeletons/**
