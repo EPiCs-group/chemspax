@@ -25,8 +25,16 @@ setup(
 
     # ToDo: add package data and change paths to pkg_data_dirs in attach_substitutions.py
     # source: https://kiwidamien.github.io/making-a-python-package-vi-including-data-files.html
-    # include_package_data=True,
-    package_data={'chemspax': ['substituents_xyz', 'skeletons']},
+    # Include non-code files
+    include_package_data=True,
+
+    # Include all files in substituents_xyz/ and skeletons/
+    package_data={
+        'chemspax': [
+            'substituents_xyz/**/*',   # All files in substituents_xyz and its subdirectories
+            'skeletons/*.xyz'          # Specific file pattern in skeletons directory
+        ]
+    },
 
     long_description=open('docs/README.md').read(),
 
