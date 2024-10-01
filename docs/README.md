@@ -184,7 +184,7 @@ In the example figure above, the index of Ru = 0.
   (new) substituents and running data_preparation.py as explained above the main function of ChemSpaX can be used.
 
 ## Subfunctionlisations
-In 2024, a way for a second layer of functionalisaton is added. This results in more variety in the generated structures, especially useful for high throughput workflows. 
+In 2024, a way for a second layer of functionalisaton is added. This results in more variety in the generated structures, especially useful for high throughput workflows. A subfunctionalisation is defined as placing a substituent (called subsubstituent) on a substituent which is then placed on the skeleton, as can be seen in the image below. 
 
 To use this workflow, the main skeletons should be placed in the skeletons folder having a *Br* in the functionalisation places.
 The subskeletons should be placed in the subskeletons folder having a *Br* in the functionalisation places and a *Li* in the places to connect to the main skeleton.
@@ -196,6 +196,8 @@ All subfunctionalisations structures must be specified in the sub_sites dictiona
 The last layer of substitutions uses structures from the regular substituents folder.
 
 This extension is run using the *run_subfunctionalisation.py* file. The *main.py* file is the regular ChemSpaX main file. When executing this program the number of structures to be generated must be specified using the -n flag (e.g. *python run_structures.py -n 20*). By default 10 structures will be generated. These structures are divided as evenly as possible over the main skeletons. 
+
+![example](../images/subfunctionalisation.jpg)
 
 ## Contents
   **skeletons/**
